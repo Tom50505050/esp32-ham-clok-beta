@@ -17136,6 +17136,15 @@ void setupWebServer() {
     requestRestart(1500);
   });
 
+  // API - reset NVS/Preferences do ustawień fabrycznych
+  server->on("/api/reset_nvs", HTTP_POST, []() {
+    Serial.println("Resetting NVS to factory defaults...");
+    preferences->clear();
+    Serial.println("NVS cleared - requesting restart");
+    server->send(200, "application/json", "{\"status\":\"ok\",\"action\":\"restart\"}");
+    requestRestart(1000);
+  });
+
   // API - usuń plik z LittleFS
   server->on("/api/delete_file", HTTP_GET, []() {
     if (!server->hasArg("path")) {
@@ -17950,6 +17959,7 @@ String getMainHTML() {
       'pskmap': 'PSK Map',
       'matrix': 'Matrix',
       'unlishunter': 'Unlis Hunter',
+      'isspasstracking': 'ISS Pass Tracking',
       'off': 'Wyłączony'
     };
 

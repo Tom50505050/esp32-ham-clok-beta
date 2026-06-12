@@ -923,6 +923,10 @@
                     <button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;">🔄 Przywróć domyślne (DEFAULT)</button>
                     <small>Przywraca domyślne wartości kalibracji dotyku z kodu</small>
                 </div>
+                <div class="form-group">
+                    <button type="button" class="btn" onclick="resetFactory()" style="background: #800; border-color: #600; color: #fff;">⚠️ RESET FABRYCZNY (USUŃ WSZYSTKO)</button>
+                    <small>Usuwa wszystkie ustawienia NVS i resetuje do fabrycznych</small>
+                </div>
             </div>
 
             <button type="button" class="save-btn" onclick="saveConfig()">💾 Zapisz ustawienia TFT</button>
@@ -2552,6 +2556,21 @@
                 loadConfig();
             })
             .catch(() => alert("Błąd resetowania kalibracji"));
+        };
+
+        const resetFactory = () => {
+            if (!confirm('⚠️ UWAGA! Czy na pewno chcesz wykonać RESET FABRYCZNY?\n\nTo usunie WSZYSTKIE ustawienia (WiFi, APRS, ekrany, itp.)!\n\nUrządzenie zrestartuje się z domyślnymi ustawieniami.')) {
+                return;
+            }
+            fetch('/api/reset_nvs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(r => r.json())
+            .then(data => {
+                alert("Reset fabryczny wykonany! Urządzenie zrestartuje się...");
+            })
+            .catch(() => alert("Błąd resetu fabrycznego"));
         };
 
         const saveConfig = () => {
