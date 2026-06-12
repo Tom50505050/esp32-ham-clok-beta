@@ -17248,6 +17248,9 @@ void setupWebServer() {
   
   // API - pobierz konfigurację
   server->on("/api/config", HTTP_GET, []() {
+    server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    server->sendHeader("Pragma", "no-cache");
+    server->sendHeader("Expires", "0");
     StaticJsonDocument<4096> doc;
     doc["wifi_ssid"] = wifiSSID;
     doc["wifi_pass"] = wifiPassword;
