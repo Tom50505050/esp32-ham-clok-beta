@@ -18079,8 +18079,8 @@ String getMainHTML() {
         cluster_noann: byId('cluster_noann').checked,
         cluster_nowwv: byId('cluster_nowwv').checked,
         cluster_nowcy: byId('cluster_nowcy').checked,
-        screen_order: Array.from({length: 13}, (_, i) => {
-          const select = byId('screen_' + i);
+        screen_order: Array.from({length: 14}, (_, i) => {
+          const select = byId('screen_slot_' + (i + 1));
           return select ? select.value : 'off';
         })
       };
