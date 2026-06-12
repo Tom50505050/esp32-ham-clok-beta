@@ -17398,6 +17398,34 @@ void setupWebServer() {
     server->send(200, "application/json", json);
   });
   
+
+  // API - diagnostyka systemu plikow
+  server->on("/api/debug", HTTP_GET, []() {
+    StaticJsonDocument<512> doc;
+    doc["littlefs_ready"] = littleFsReady;
+    doc["flash_size"] = ESP.getFlashChipSize();
+    doc["free_heap"] = ESP.getFreeHeap();
+    if (littleFsReady) {
+      doc["index_html_exists"] = LittleFS.exists("/index.html");
+      doc["splash_exists"] = LittleFS.exists("/littlefs_data/splash.bmp") || 
+                             LittleFS.exists("/splash.bmp");
+      JsonArray files = doc.createNestedArray("files");
+      File root = LittleFS.open("/");
+      if (root && root.isDirectory()) {
+        File file = root.openNextFile();
+        while (file) {
+          files.add(file.path());
+          file = root.openNextFile();
+        }
+        root.close();
+      }
+    }
+    String debugJson;
+    serializeJson(doc, debugJson);
+    server->sendHeader("Cache-Control", "no-cache");
+    server->send(200, "application/json", debugJson);
+  });
+
   // Upload nowej mapy BMP (np. przez curl -X POST -F "file=@Mapa swiata.bmp" http://esp-ip/upload/bmp)
   server->on("/upload/bmp", HTTP_POST, []() {
     server->send(200, "text/plain", "Upload complete");
