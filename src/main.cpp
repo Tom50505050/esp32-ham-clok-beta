@@ -46,6 +46,7 @@ void normalizePolish(String &text);
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <Preferences.h>
+#include <nvs_flash.h>
 #include <time.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
@@ -17138,11 +17139,24 @@ void setupWebServer() {
 
   // API - reset NVS/Preferences do ustawień fabrycznych
   server->on("/api/reset_nvs", HTTP_POST, []() {
-    Serial.println("Resetting NVS to factory defaults...");
-    preferences->clear();
-    Serial.println("NVS cleared - requesting restart");
-    server->send(200, "application/json", "{\"status\":\"ok\",\"action\":\"restart\"}");
-    requestRestart(1000);
+    Serial.println("Factory reset: Erasing NVS flash...");
+    
+    // Wyślij odpowiedź przed restartem
+    server->send(200, "text/plain", "Czyszczenie pamieci NVS i restart...");
+    
+    delay(500);
+    
+    // Czyszczenie całej partycji NVS
+    esp_err_t err = nvs_flash_erase();
+    if (err == ESP_OK) {
+      Serial.println("NVS erased successfully");
+      nvs_flash_init();
+    } else {
+      Serial.printf("NVS erase error: %s\n", esp_err_to_name(err));
+    }
+    
+    delay(500);
+    ESP.restart();
   });
 
   // API - usuń plik z LittleFS

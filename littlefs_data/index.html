@@ -926,6 +926,7 @@
                 <div class="form-group">
                     <button type="button" class="btn" onclick="resetFactory()" style="background: #800; border-color: #600; color: #fff;">⚠️ RESET FABRYCZNY (USUŃ WSZYSTKO)</button>
                     <small>Usuwa wszystkie ustawienia NVS i resetuje do fabrycznych</small>
+                    <div id="resetStatus" style="margin-top:8px;"></div>
                 </div>
             </div>
 
@@ -2562,15 +2563,17 @@
             if (!confirm('⚠️ UWAGA! Czy na pewno chcesz wykonać RESET FABRYCZNY?\n\nTo usunie WSZYSTKIE ustawienia (WiFi, APRS, ekrany, itp.)!\n\nUrządzenie zrestartuje się z domyślnymi ustawieniami.')) {
                 return;
             }
+            document.getElementById('resetStatus').innerHTML = '<span style="color:#f00;">⏳ Trwa czyszczenie pamięci NVS i restart...</span>';
             fetch('/api/reset_nvs', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
+                method: 'POST'
             })
-            .then(r => r.json())
+            .then(r => r.text())
             .then(data => {
-                alert("Reset fabryczny wykonany! Urządzenie zrestartuje się...");
+                document.getElementById('resetStatus').innerHTML = '<span style="color:#0a0;">✅ ' + data + '</span>';
             })
-            .catch(() => alert("Błąd resetu fabrycznego"));
+            .catch(() => {
+                document.getElementById('resetStatus').innerHTML = '<span style="color:#f00;">❌ Błąd resetu fabrycznego</span>';
+            });
         };
 
         const saveConfig = () => {
