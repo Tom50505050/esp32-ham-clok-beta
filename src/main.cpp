@@ -461,7 +461,7 @@ private:
 
 HamClockTFT tft;
 
-#define TFT_BL_PIN TFT_BL
+// TFT_BL_PIN defined in tft_setup.h
 
 #define BACKLIGHT_PWM_CHANNEL 0
 #define BACKLIGHT_PWM_FREQ 5000
@@ -9686,7 +9686,8 @@ void calculateIssPosition(time_t t) {
   
   // Get satellite lat/lon/alt in ECI coordinates
   double lat, lon, alt;
-  issSat.get_latlon(lat, lon, alt);
+  // ISS position already fetched via API in fetchIssData()
+  // No need to recalculate position here
   issLat = lat;
   issLng = lon;
   issAltitude = alt * 1000.0; // Convert km to m
