@@ -25,11 +25,15 @@
 #ifndef TFT_RST
 #define TFT_RST  -1  // Nie używany - podłączony do 3.3V przez resistor
 #endif
+
+// TFT_BL_PIN - pin podświetlenia
 #ifndef TFT_BL_PIN
 #define TFT_BL_PIN 32
 #endif
-#ifndef TFT_BL
-#define TFT_BL TFT_BL_PIN
+
+// TFT_BL_INVERTED - czy podświetlenie jest odwrócone
+#ifndef TFT_BL_INVERTED
+#define TFT_BL_INVERTED false
 #endif
 
 // ============================================
@@ -79,17 +83,11 @@
 #endif
 
 // ============================================
-// Definicje wymagane przez main.cpp
+// USER_SETUP_INFO - opis konfiguracji dla debugowania
 // ============================================
-#ifndef TFT_BL_INVERTED
-#define TFT_BL_INVERTED false
-#endif
-
 #ifndef USER_SETUP_LOADED
 #define USER_SETUP_LOADED
 #endif
-
-// USER_SETUP_INFO - opis konfiguracji dla debugowania
 #ifndef USER_SETUP_INFO
 #define USER_SETUP_INFO "ILI9488_480x320_Parallel"
 #endif

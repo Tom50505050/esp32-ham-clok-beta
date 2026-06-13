@@ -9519,11 +9519,11 @@ void drawIssIconProcedural(int16_t x, int16_t y, uint32_t color) {
 }
 
 void initIssTracking() {
-  // New SGP4 API: init(const char* naam[], char longstr1[130], char longstr2[130])
-  // Note: naam is satellite name, and strings must be 130 chars
-  char name[] = "ISS";
-  char tle1[130] = "1 25544U 98067A   26159.21147137  .00014761  00000-0  26477-3 0  9997";
-  char tle2[130] = "2 25544  51.6415 171.1234 0001234  75.1234 320.4321 15.49234123543217";
+  // SGP4 library v1.0.3 API: init(name, tle1, tle2)
+  // All strings must be exactly 130 characters
+  const char* name = "ISS                                          ";
+  char tle1[130] = "1 25544U 98067A   26159.21147137  .00014761  00000-0  26477-3 0  9997                    ";
+  char tle2[130] = "2 25544  51.6415 171.1234 0001234  75.1234 320.4321 15.49234123543217          ";
   issSat.init(name, tle1, tle2);
 }
 
@@ -9678,22 +9678,53 @@ void fetchIssData() {
 }
 
 void calculateIssPosition(time_t t) {
-  int yr = year(t); int mth = month(t); int dy = day(t);
-  int hr = hour(t); int mn = minute(t); int sc = second(t);
-
-  issSat.findsat(yr, mth, dy, hr, mn, sc);
+  // Use SGP4 library to calculate ISS position
+  unsigned long unixTime = (unsigned long)t;
   
-  double myAlt = 220.0;
-  if (userLatLonValid) {
-    issSat.get_observe_navigator(userLat, userLon, myAlt / 1000.0, issAzimuth, issElevation, issDistance, issAltitude);
-  } else {
-    issSat.get_observe_navigator(52.40, 16.92, myAlt / 1000.0, issAzimuth, issElevation, issDistance, issAltitude);
-  }
-
-  long double issLat_ld, issLng_ld;
-  issSat.get_latlon(issLat_ld, issLng_ld);
-  issLat = (double)issLat_ld;
-  issLng = (double)issLng_ld;
+  // Use findsat with unix timestamp
+  issSat.findsat(unixTime);
+  
+  // Get satellite lat/lon/alt in ECI coordinates
+  double lat, lon, alt;
+  issSat.get_latlon(lat, lon, alt);
+  issLat = lat;
+  issLng = lon;
+  issAltitude = alt * 1000.0; // Convert km to m
+  
+  // Calculate observer metrics
+  double userLatObs = userLatLonValid ? userLat : 52.40;
+  double userLonObs = userLatLonValid ? userLon : 16.92;
+  
+  // Calculate distance, azimuth, elevation manually
+  double home_lat = userLatObs * DEG_TO_RAD;
+  double iss_lat = issLat * DEG_TO_RAD;
+  double home_lon = userLonObs * DEG_TO_RAD;
+  double iss_lon = issLng * DEG_TO_RAD;
+  
+  // Earth radius in km
+  double R = 6371.0;
+  double r_iss = R + alt;
+  
+  // Haversine formula for distance
+  double dLat = iss_lat - home_lat;
+  double dLon = iss_lon - home_lon;
+  double a = sin(dLat/2) * sin(dLat/2) + cos(home_lat) * cos(iss_lat) * sin(dLon/2) * sin(dLon/2);
+  double c = 2 * atan2(sqrt(a), sqrt(1-a));
+  issDistance = R * c;
+  
+  // Calculate azimuth
+  double y = sin(dLon) * cos(iss_lat);
+  double x = cos(home_lat) * sin(iss_lat) - sin(home_lat) * cos(iss_lat) * cos(dLon);
+  issAzimuth = atan2(y, x) * RAD_TO_DEG;
+  if (issAzimuth < 0) issAzimuth += 360;
+  
+  // Calculate elevation
+  double cos_g = sin(home_lat) * sin(iss_lat) + cos(home_lat) * cos(iss_lat) * cos(dLon);
+  if (cos_g > 1.0) cos_g = 1.0;
+  if (cos_g < -1.0) cos_g = -1.0;
+  
+  double num = r_iss * cos_g - R;
+  issElevation = atan2(num, sqrt(r_iss*r_iss * (1 - cos_g*cos_g))) * RAD_TO_DEG;
 }
 
 void getIssCountryFromCoords(double lat, double lng) {
