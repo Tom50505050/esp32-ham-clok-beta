@@ -2335,152 +2335,133 @@
         </script>
     </div>
 
-    <div id="manual-page" class="page">
-        <div class="manual-container">
-            <div class="manual-header">
+        <div id="manual-page" class="page">
+        <div class="manual-wrap">
+            <div class="manual-hero">
                 <h2>📘 Dokumentacja Techniczna</h2>
-                <p>ESP32 HAM-CLOCK v1.4a</p>
+                <p>ESP32 HAM-CLOCK v1.4a — Kompletny przewodnik instalacji i konfiguracji</p>
             </div>
             
-            <div class="manual-grid">
-                <!-- SECTION 1: VISUAL PINOUT -->
-                <div class="manual-section">
-                    <div class="manual-section-header">
-                        <span class="manual-section-icon">🔌</span>
-                        <h3>VISUAL PINOUT</h3>
-                        <span class="manual-section-badge hardware">Hardware</span>
+            <!-- RED ALERT WARNING -->
+            <div class="alert-box alert-danger">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    <h3>WAŻNE OSTRZEŻENIE</h3>
+                    <p>Nie podłączaj pinu SDO (MISO / SDOK) z wyświetlacza TFT! Ten pin musi zostać wolny (NC), aby panel dotykowy XPT2046 mógł prawidłowo komunikować się przez magistralę SPI.</p>
+                </div>
+            </div>
+            
+            <div class="manual-sections">
+                <!-- SECTION 1: VISUAL WIRING -->
+                <div class="manual-card">
+                    <div class="card-header hardware">
+                        <span class="card-icon">🔌</span>
+                        <h3>SCHEMAT POŁĄCZEŃ</h3>
+                        <span class="card-badge hardware">ESP32 + TFT + Touch</span>
                     </div>
-                    
-                    <div class="pinout-container">
-                        <div class="pinout-card">
-                            <div class="pinout-card-header tft">
-                                <span class="pinout-label">📺 Wyświetlacz TFT (ILI9341 / ST7789)</span>
+                    <div class="card-body">
+                        <!-- PINOUT TABLES -->
+                        <div class="pinout-grid">
+                            <div class="pinout-table-wrap">
+                                <h4 class="table-title tft">📺 Display ILI9341 (SPI)</h4>
+                                <table class="pinout-tbl">
+                                    <tr><th>Sygnal</th><th>ESP32 Pin</th></tr>
+                                    <tr><td><span class="badge pwr">VCC</span></td><td>3V3</td></tr>
+                                    <tr><td><span class="badge gnd">GND</span></td><td>GND</td></tr>
+                                    <tr><td><span class="badge spi">CS</span></td><td>GPIO 15</td></tr>
+                                    <tr><td><span class="badge spi">RST</span></td><td>GPIO 4</td></tr>
+                                    <tr><td><span class="badge spi">DC</span></td><td>GPIO 2</td></tr>
+                                    <tr><td><span class="badge spi">MOSI</span></td><td>GPIO 23</td></tr>
+                                    <tr><td><span class="badge spi">SCK</span></td><td>GPIO 18</td></tr>
+                                    <tr><td><span class="badge pwr">LED</span></td><td>3V3</td></tr>
+                                </table>
                             </div>
-                            <div class="pinout-table">
-                                <div class="pinout-row">
-                                    <span class="pin-name">VCC</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge power">3V3</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">GND</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge gnd">GND</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">CS</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge spi">Pin 15</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">RESET</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge spi">Pin 4</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">DC/RS</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge spi">Pin 2</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">SDI(MOSI)</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge spi">Pin 23</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">SCK(CLK)</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge spi">Pin 18</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">LED</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge power">3V3</span></span>
-                                </div>
+                            
+                            <div class="pinout-table-wrap">
+                                <h4 class="table-title touch">👆 Touch XPT2046 (SPI)</h4>
+                                <table class="pinout-tbl">
+                                    <tr><th>Sygnal</th><th>ESP32 Pin</th></tr>
+                                    <tr><td><span class="badge spi">T_CLK</span></td><td>GPIO 18</td></tr>
+                                    <tr><td><span class="badge spi">T_DIN</span></td><td>GPIO 23</td></tr>
+                                    <tr><td><span class="badge touch">T_DO</span></td><td>GPIO 19</td></tr>
+                                    <tr><td><span class="badge touch">T_CS</span></td><td>GPIO 26</td></tr>
+                                    <tr><td><span class="badge touch">T_IRQ</span></td><td>GPIO 25</td></tr>
+                                </table>
+                            </div>
+                            
+                            <div class="pinout-table-wrap">
+                                <h4 class="table-title i2c">🌡️ I2C Sensors</h4>
+                                <table class="pinout-tbl">
+                                    <tr><th>Sygnal</th><th>ESP32 Pin</th></tr>
+                                    <tr><td><span class="badge i2c">SDA</span></td><td>GPIO 21</td></tr>
+                                    <tr><td><span class="badge i2c">SCL</span></td><td>GPIO 22</td></tr>
+                                </table>
                             </div>
                         </div>
                         
-                        <div class="pinout-card">
-                            <div class="pinout-card-header i2c">
-                                <span class="pinout-label">🌡️ Moduł I2C (BME280 / RTC)</span>
-                            </div>
-                            <div class="pinout-table">
-                                <div class="pinout-row">
-                                    <span class="pin-name">SDA</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge i2c">Pin 21</span></span>
-                                </div>
-                                <div class="pinout-row">
-                                    <span class="pin-name">SCL</span>
-                                    <span class="pin-arrow">➡️</span>
-                                    <span class="pin-target"><span class="pin-badge i2c">Pin 22</span></span>
-                                </div>
-                            </div>
-                        </div>
-                        
+                        <!-- LEGEND -->
                         <div class="pinout-legend">
-                            <span class="legend-item"><span class="pin-badge spi">SPI</span> Magistrala szeregowa</span>
-                            <span class="legend-item"><span class="pin-badge i2c">I2C</span> Interfejs I2C</span>
-                            <span class="legend-item"><span class="pin-badge power">3V3</span> Zasilanie</span>
-                            <span class="legend-item"><span class="pin-badge gnd">GND</span> Masa</span>
+                            <span class="legend-item"><span class="badge pwr">3V3</span> Zasilanie</span>
+                            <span class="legend-item"><span class="badge gnd">GND</span> Masa</span>
+                            <span class="legend-item"><span class="badge spi">SPI</span> Magistrala SPI</span>
+                            <span class="legend-item"><span class="badge touch">Touch</span> Panel dotykowy</span>
+                            <span class="legend-item"><span class="badge i2c">I2C</span> Magistrala I2C</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- SECTION 2: DEPLOYMENT -->
-                <div class="manual-section">
-                    <div class="manual-section-header">
-                        <span class="manual-section-icon">💻</span>
-                        <h3>DEPLOYMENT GUIDE</h3>
-                        <span class="manual-section-badge deploy">PowerShell</span>
+                <div class="manual-card">
+                    <div class="card-header deploy">
+                        <span class="card-icon">💻</span>
+                        <h3>WDROŻENIE OPROGRAMOWANIA</h3>
+                        <span class="card-badge deploy">PlatformIO CLI</span>
                     </div>
-                    
-                    <div class="deploy-content">
-                        <div class="deploy-step">
-                            <div class="deploy-step-header">
-                                <span class="step-number">1</span>
-                                <span class="step-title">Przygotowanie folderu</span>
+                    <div class="card-body">
+                        <div class="deploy-steps">
+                            <div class="step-card">
+                                <div class="step-num">1</div>
+                                <div class="step-content">
+                                    <h4>Przygotowanie</h4>
+                                    <p>Zainstaluj <strong>Visual Studio Code</strong> i rozszerzenie <strong>PlatformIO IDE</strong>.</p>
+                                    <p>Podłącz płytkę ESP32 kablem USB do komputera.</p>
+                                </div>
                             </div>
-                            <div class="deploy-step-body">
-                                <p>Umieść folder z projektem w dogodnej lokalizacji na dysku (np. <code>C:\Sciezka\Do\Projektu\esp32-ham-clock</code>).</p>
-                                <p>Otwórz ten folder w Visual Studio Code z zainstalowanym rozszerzeniem PlatformIO.</p>
-                                <p>Podłącz płytkę ESP32 kablem USB do komputera.</p>
+                            
+                            <div class="step-card">
+                                <div class="step-num">2</div>
+                                <div class="step-content">
+                                    <h4>Otwórz Terminal PlatformIO</h4>
+                                    <p>W VS Code użyj skrótu <kbd>Ctrl+`</kbd> aby otworzyć terminal.</p>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="deploy-step">
-                            <div class="deploy-step-header">
-                                <span class="step-number">2</span>
-                                <span class="step-title">Wdrożenie przez PowerShell</span>
+                        <!-- TERMINAL -->
+                        <div class="terminal-win">
+                            <div class="terminal-bar">
+                                <span class="t-dot r"></span>
+                                <span class="t-dot y"></span>
+                                <span class="t-dot g"></span>
+                                <span class="t-title">PowerShell — PlatformIO Core CLI</span>
                             </div>
-                            <div class="deploy-step-body">
-                                <div class="terminal-wrapper">
-                                    <div class="terminal-header">
-                                        <span class="terminal-dot red"></span>
-                                        <span class="terminal-dot yellow"></span>
-                                        <span class="terminal-dot green"></span>
-                                        <span class="terminal-title">PowerShell — ESP32 Deployment</span>
-                                    </div>
-                                    <div class="terminal-body">
-                                        <div class="terminal-line"><span class="terminal-prompt">PS C:\></span> <span class="terminal-comment"># 1. Przejdź do folderu ze swoim projektem</span></div>
-                                        <div class="terminal-line command">cd "C:\Sciezka\Do\Twojego\Projektu\esp32-ham-clock"</div>
-                                        
-                                        <div class="terminal-line"><span class="terminal-prompt">PS C:\></span> <span class="terminal-comment"># 2. Pobierz najnowszą strukturę interfejsu z repozytorium GitHub</span></div>
-                                        <div class="terminal-line command">Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Tom50505050/esp32-ham-clok-beta/main/littlefs_data/index.html" -OutFile "littlefs_data\index.html"</div>
-                                        
-                                        <div class="terminal-line"><span class="terminal-prompt">PS C:\></span> <span class="terminal-comment"># 3. Całkowite czyszczenie pamięci flash płytki ESP32</span></div>
-                                        <div class="terminal-line command">pio run --target erase</div>
-                                        
-                                        <div class="terminal-line"><span class="terminal-prompt">PS C:\></span> <span class="terminal-comment"># 4. Kompilacja kodu źródłowego i wgrywanie programu (Firmware)</span></div>
-                                        <div class="terminal-line command">pio run --target upload</div>
-                                        
-                                        <div class="terminal-line"><span class="terminal-prompt">PS C:\></span> <span class="terminal-comment"># 5. Budowanie oraz wgrywanie systemu plików (LittleFS)</span></div>
-                                        <div class="terminal-line command">pio run --target buildfs</div>
-                                        <div class="terminal-line command">pio run --target uploadfs</div>
-                                        
-                                        <div class="terminal-line success">✅ Deploy complete! Połącz się z siecią ESP32-HAM-CLOCK (hasło: 1234567890)</div>
-                                    </div>
-                                </div>
+                            <div class="terminal-body">
+                                <div class="t-line"><span class="t-prompt">PS C:\></span> <span class="t-comment"># Przejdź do folderu projektu</span></div>
+                                <div class="t-cmd">cd "C:\Sciezka\Do\Twojego\Projektu\esp32-ham-clock"</div>
+                                
+                                <div class="t-line"><span class="t-prompt">PS C:\></span> <span class="t-comment"># 1. Pełne czyszczenie pamięci Flash</span></div>
+                                <div class="t-cmd">pio run --target erase</div>
+                                
+                                <div class="t-line"><span class="t-prompt">PS C:\></span> <span class="t-comment"># 2. Kompilacja i wgrywanie programu (Firmware)</span></div>
+                                <div class="t-cmd">pio run --target upload</div>
+                                
+                                <div class="t-line"><span class="t-prompt">PS C:\></span> <span class="t-comment"># 3. Budowanie obrazu strony WWW (LittleFS)</span></div>
+                                <div class="t-cmd">pio run --target buildfs</div>
+                                
+                                <div class="t-line"><span class="t-prompt">PS C:\></span> <span class="t-comment"># 4. Wgrywanie plików interfejsu na płytkę</span></div>
+                                <div class="t-cmd">pio run --target uploadfs</div>
+                                
+                                <div class="t-success">✅ Gotowe! Połącz się z siecią ESP32-HAM-CLOCK</div>
                             </div>
                         </div>
                     </div>
@@ -2489,71 +2470,71 @@
             
             <div class="manual-footer">
                 <span class="footer-badge">ESP32-HAM-CLOCK v1.4a</span>
-                <span class="footer-text">Dokumentacja techniczna • GitHub: Tom50505050/esp32-ham-clok-beta</span>
+                <span>GitHub: Tom50505050/esp32-ham-clok-beta</span>
             </div>
         </div>
     </div>
     <style>
-        .manual-container { padding: 20px; max-width: 1200px; margin: 0 auto; }
-        .manual-header { text-align: center; margin-bottom: 30px; }
-        .manual-header h2 { color: #ffd700; font-size: 28px; margin-bottom: 8px; }
-        .manual-header p { color: #888; font-size: 14px; }
-        .manual-grid { display: flex; flex-direction: column; gap: 30px; }
+        .manual-wrap { padding: 20px; max-width: 1100px; margin: 0 auto; }
+        .manual-hero { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #1a2535 0%, #0f1a28 100%); border-radius: 16px; margin-bottom: 25px; border: 1px solid #2a4a6a; }
+        .manual-hero h2 { color: #ffd700; font-size: 28px; margin-bottom: 8px; }
+        .manual-hero p { color: #888; font-size: 14px; }
         
-        .manual-section { background: #1a2535; border-radius: 16px; overflow: hidden; border: 1px solid #2a4a6a; }
-        .manual-section-header { background: linear-gradient(135deg, #2a4a6a 0%, #1a3040 100%); padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #3a5a7a; }
-        .manual-section-icon { font-size: 28px; }
-        .manual-section-header h3 { color: #00d4ff; font-size: 18px; margin: 0; letter-spacing: 2px; }
-        .manual-section-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .manual-section-badge.hardware { background: rgba(0,255,136,0.2); color: #00ff88; }
-        .manual-section-badge.deploy { background: rgba(255,149,0,0.2); color: #ff9500; }
+        .alert-box { display: flex; gap: 15px; padding: 20px; border-radius: 12px; margin-bottom: 25px; align-items: flex-start; background: linear-gradient(135deg, #3a1a1a 0%, #2a0f0f 100%); border: 2px solid #ff4444; }
+        .alert-icon { font-size: 32px; }
+        .alert-content h3 { color: #ff6666; margin-bottom: 8px; font-size: 16px; }
+        .alert-content p { color: #ffcccc; line-height: 1.6; font-size: 14px; }
         
-        .pinout-container { padding: 20px; }
-        .pinout-card { background: #0f1a28; border-radius: 12px; margin-bottom: 20px; overflow: hidden; border: 1px solid #2a4a6a; }
-        .pinout-card-header { padding: 15px 20px; font-weight: bold; }
-        .pinout-card-header.tft { background: linear-gradient(90deg, #1a4a3a 0%, #0f2a20 100%); border-left: 4px solid #00ff88; }
-        .pinout-card-header.i2c { background: linear-gradient(90deg, #3a2a1a 0%, #2a1a0f 100%); border-left: 4px solid #ff9500; }
-        .pinout-label { color: #fff; font-size: 14px; }
-        .pinout-table { padding: 15px 20px; }
-        .pinout-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a2a3a; }
-        .pinout-row:last-child { border-bottom: none; }
-        .pin-name { color: #00d4ff; font-family: 'Courier New', monospace; font-size: 14px; min-width: 110px; font-weight: bold; }
-        .pin-arrow { color: #666; margin: 0 20px; font-size: 16px; }
-        .pin-target { color: #fff; }
-        .pin-badge { display: inline-block; padding: 5px 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; }
-        .pin-badge.spi { background: rgba(0,200,100,0.2); color: #00c864; border: 1px solid #00c864; }
-        .pin-badge.i2c { background: rgba(255,149,0,0.2); color: #ff9500; border: 1px solid #ff9500; }
-        .pin-badge.power { background: rgba(255,80,80,0.2); color: #ff5050; border: 1px solid #ff5050; }
-        .pin-badge.gnd { background: rgba(100,100,100,0.2); color: #aaa; border: 1px solid #888; }
-        .pinout-legend { display: flex; flex-wrap: wrap; gap: 20px; padding: 15px 20px; background: #0a1520; border-radius: 8px; margin-top: 10px; }
+        .manual-sections { display: flex; flex-direction: column; gap: 25px; }
+        .manual-card { background: #1a2535; border-radius: 16px; overflow: hidden; border: 1px solid #2a4a6a; }
+        .card-header { padding: 18px 25px; display: flex; align-items: center; gap: 15px; background: linear-gradient(90deg, #1a3a2a 0%, #1a2535 100%); border-bottom: 1px solid #2a4a3a; }
+        .card-header.deploy { background: linear-gradient(90deg, #2a2a1a 0%, #1a2535 100%); border-bottom: 1px solid #4a4a2a; }
+        .card-icon { font-size: 28px; }
+        .card-header h3 { color: #00d4ff; font-size: 18px; margin: 0; letter-spacing: 1px; }
+        .card-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; background: rgba(0,255,136,0.2); color: #00ff88; }
+        .card-badge.deploy { background: rgba(255,200,0,0.2); color: #ffc800; }
+        .card-body { padding: 25px; }
+        
+        .pinout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .pinout-table-wrap { background: #0f1a28; border-radius: 12px; overflow: hidden; border: 1px solid #2a4a6a; }
+        .table-title { padding: 12px 15px; font-size: 14px; margin: 0; background: linear-gradient(90deg, #1a3a2a 0%, #1a2535 100%); color: #00ff88; border-left: 4px solid #00ff88; }
+        .table-title.touch { background: linear-gradient(90deg, #3a2a1a 0%, #1a2535 100%); color: #ff9500; border-left: 4px solid #ff9500; }
+        .table-title.i2c { background: linear-gradient(90deg, #1a2a3a 0%, #1a2535 100%); color: #00b4ff; border-left: 4px solid #00b4ff; }
+        .pinout-tbl { width: 100%; border-collapse: collapse; }
+        .pinout-tbl th { background: #0a1520; color: #888; padding: 10px 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        .pinout-tbl td { padding: 10px 15px; border-bottom: 1px solid #1a2a3a; color: #ccc; }
+        .pinout-tbl tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; background: rgba(255,80,80,0.2); color: #ff6666; }
+        .badge.gnd { background: rgba(100,100,100,0.2); color: #aaa; }
+        .badge.spi { background: rgba(0,200,100,0.2); color: #00ff88; }
+        .badge.touch { background: rgba(255,149,0,0.2); color: #ff9500; }
+        .badge.i2c { background: rgba(0,180,255,0.2); color: #00b4ff; }
+        
+        .pinout-legend { display: flex; flex-wrap: wrap; gap: 20px; padding: 15px 20px; background: #0a1520; border-radius: 10px; }
         .legend-item { display: flex; align-items: center; gap: 8px; color: #888; font-size: 12px; }
         
-        .deploy-content { padding: 20px; }
-        .deploy-step { background: #0f1a28; border-radius: 12px; margin-bottom: 20px; overflow: hidden; border: 1px solid #2a4a6a; }
-        .deploy-step-header { background: linear-gradient(90deg, #2a4a6a 0%, #1a3040 100%); padding: 15px 20px; display: flex; align-items: center; gap: 15px; }
-        .step-number { background: #00d4ff; color: #000; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-        .step-title { color: #fff; font-size: 16px; font-weight: bold; }
-        .deploy-step-body { padding: 20px; }
-        .deploy-step-body p { color: #ccc; margin-bottom: 10px; line-height: 1.6; }
-        .deploy-step-body code { background: #1a2535; padding: 2px 8px; border-radius: 4px; color: #00d4ff; font-family: 'Courier New', monospace; }
+        .deploy-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .step-card { background: #0f1a28; border-radius: 12px; padding: 20px; display: flex; gap: 15px; border: 1px solid #2a4a6a; }
+        .step-num { background: linear-gradient(135deg, #00d4ff 0%, #0080aa 100%); color: #000; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; }
+        .step-content h4 { color: #fff; margin: 0 0 8px 0; font-size: 15px; }
+        .step-content p { color: #aaa; margin: 0 0 6px 0; font-size: 13px; line-height: 1.5; }
+        .step-content kbd { background: #2a4a6a; padding: 2px 8px; border-radius: 4px; color: #00d4ff; font-family: 'Courier New', monospace; }
         
-        .terminal-wrapper { border-radius: 12px; overflow: hidden; background: #0d1117; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5); margin-top: 15px; }
-        .terminal-header { background: #1e1e1e; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333; }
-        .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .terminal-dot.red { background: #ff5f56; }
-        .terminal-dot.yellow { background: #ffbd2e; }
-        .terminal-dot.green { background: #27c93f; }
-        .terminal-title { color: #ccc; font-size: 13px; margin-left: 10px; font-family: 'Segoe UI', sans-serif; }
-        .terminal-body { padding: 20px; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 13px; line-height: 1.8; background: #0d1117; }
-        .terminal-line { margin-bottom: 4px; }
-        .terminal-prompt { color: #00d4ff; }
-        .terminal-comment { color: #6a737d; }
-        .terminal-line.command { color: #e0e0e0; padding-left: 20px; }
-        .terminal-line.success { color: #00ff88; padding: 10px; background: rgba(0,255,136,0.1); border-radius: 6px; margin-top: 15px; }
+        .terminal-win { border-radius: 12px; overflow: hidden; background: #0d1117; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .terminal-bar { background: #1e1e1e; padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333; }
+        .t-dot { width: 12px; height: 12px; border-radius: 50%; background: #ff5f56; }
+        .t-dot.y { background: #ffbd2e; }
+        .t-dot.g { background: #27c93f; }
+        .t-title { color: #ccc; font-size: 13px; margin-left: 10px; font-family: 'Segoe UI', sans-serif; }
+        .terminal-body { padding: 20px; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 13px; line-height: 1.9; background: #0d1117; }
+        .t-line { margin-bottom: 2px; }
+        .t-prompt { color: #00d4ff; }
+        .t-comment { color: #6a737d; }
+        .t-cmd { color: #e0e0e0; padding-left: 20px; }
+        .t-success { color: #00ff88; padding: 12px; background: rgba(0,255,136,0.1); border-radius: 8px; margin-top: 15px; border: 1px solid rgba(0,255,136,0.3); }
         
         .manual-footer { text-align: center; padding: 30px 20px; color: #666; }
-        .footer-badge { display: inline-block; background: #2a4a6a; color: #00d4ff; padding: 6px 16px; border-radius: 20px; font-size: 12px; margin-bottom: 10px; }
-        .footer-text { display: block; font-size: 12px; color: #555; }
+        .footer-badge { display: inline-block; background: #2a4a6a; color: #00d4ff; padding: 6px 16px; border-radius: 20px; font-size: 12px; margin-right: 15px; }
     </style>    
     <script>
         let currentMode = "All";
