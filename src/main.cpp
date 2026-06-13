@@ -9482,8 +9482,6 @@ void drawUnlisHunter() {
 
 // Ekran śledzenia przelotu ISS
 Sgp4 issSat;
-char issTleLine1[] = "1 25544U 98067A   26159.21147137  .00014761  00000-0  26477-3 0  9997";
-char issTleLine2[] = "2 25544  51.6415 171.1234 0001234  75.1234 320.4321 15.49234123543217";
 
 double issAzimuth = 0.0, issElevation = 0.0, issDistance = 0.0, issAltitude = 0.0;
 double issLat = 0.0, issLng = 0.0;
@@ -9521,7 +9519,12 @@ void drawIssIconProcedural(int16_t x, int16_t y, uint32_t color) {
 }
 
 void initIssTracking() {
-  issSat.init(issTleLine1, issTleLine2);
+  // New SGP4 API: init(const char* naam[], char longstr1[130], char longstr2[130])
+  // Note: naam is satellite name, and strings must be 130 chars
+  char name[] = "ISS";
+  char tle1[130] = "1 25544U 98067A   26159.21147137  .00014761  00000-0  26477-3 0  9997";
+  char tle2[130] = "2 25544  51.6415 171.1234 0001234  75.1234 320.4321 15.49234123543217";
+  issSat.init(name, tle1, tle2);
 }
 
 void calculateIssObservationData() {
