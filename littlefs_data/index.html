@@ -983,7 +983,7 @@
         <button class="nav-btn" onclick="showPage('aprs')">APRS</button>
         <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
         <button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button>
-        <button class="nav-btn" onclick="showPage('isspasstracking')">ISS</button>
+        <button class="nav-btn" onclick="showPage('issfreq')">ISS Częstotliwości</button>
         <button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button>
         <button class="nav-btn" onclick="showPage('upload')">📤 Upload</button>
         <button class="nav-btn" onclick="showPage('config')">Ustawienia</button>
@@ -2011,45 +2011,9 @@
         </div>
     </div>
 
-    <div id="iss-page" class="page">
+    <div id="issfreq-page" class="page">
         <div class="cyd-container">
-            <h2 style="text-align: center; color: var(--text-color, #ffd700); margin-top: 10px;">ISS Pass Tracker</h2>
-            <div class="iss-telemetry-grid">
-                <div class="iss-card">
-                    <div class="iss-card-label">Aktualnie nad krajem:</div>
-                    <div class="iss-card-value" id="iss-country">Ładowanie...</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Szerokość geograficzna:</div>
-                    <div class="iss-card-value" id="iss-lat">--</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Długość geograficzna:</div>
-                    <div class="iss-card-value" id="iss-lng">--</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Wysokość:</div>
-                    <div class="iss-card-value" id="iss-altitude">-- km</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Prędkość:</div>
-                    <div class="iss-card-value" id="iss-speed">-- km/h</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Azymut:</div>
-                    <div class="iss-card-value" id="iss-azimuth">--°</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Wysokość kątowa:</div>
-                    <div class="iss-card-value" id="iss-elevation">--°</div>
-                </div>
-                <div class="iss-card">
-                    <div class="iss-card-label">Odległość:</div>
-                    <div class="iss-card-value" id="iss-distance">-- km</div>
-                </div>
-            </div>
-            <div class="iss-status" id="iss-status">Oczekiwanie na dane ISS...</div>
-            
+            <h2 style="text-align: center; color: var(--text-color, #ffd700); margin-top: 10px;">ISS Częstotliwości</h2>
             <!-- ISS Amateur Radio Frequencies - Premium UI -->
             <div class="iss-freq-container">
                 <div class="iss-freq-header">
