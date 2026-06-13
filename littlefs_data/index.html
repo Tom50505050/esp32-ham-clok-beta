@@ -715,6 +715,186 @@
             line-height: 1.4;
             white-space: pre-wrap;
         }
+        
+        /* === UPLOAD PAGE STYLES === */
+        .upload-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-header h2 {
+            color: #00d4ff;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .upload-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        .upload-zone {
+            background: linear-gradient(145deg, #1a2535 0%, #0f1a28 100%);
+            border: 2px dashed #2a5a8a;
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #00d4ff;
+            background: linear-gradient(145deg, #1a3045 0%, #152535 100%);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+        }
+        .upload-zone-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .upload-zone-text {
+            color: #e0e8f0;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .upload-zone-hint {
+            color: #6a7a8a;
+            font-size: 12px;
+        }
+        .upload-input {
+            display: none;
+        }
+        .upload-preview {
+            background: #1a2535;
+            border: 1px solid #2a4a6a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .upload-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .upload-preview-filename {
+            color: #00d4ff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .upload-preview-size {
+            color: #888;
+            font-size: 12px;
+        }
+        .upload-preview-path {
+            color: #6a7a8a;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0080aa 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #00e8ff 0%, #0099cc 100%);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .upload-progress {
+            margin-top: 20px;
+        }
+        .upload-progress-bar {
+            height: 8px;
+            background: #1a2535;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .upload-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #00ff88 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .upload-progress-text {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+        .upload-status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .upload-status.success {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+        .upload-status.error {
+            background: rgba(255, 100, 100, 0.15);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            color: #ff6464;
+        }
+        .upload-status.info {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+        }
+        .upload-info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .upload-info-card {
+            background: #1a2535;
+            border: 1px solid #2a4a6a;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        .upload-info-card h4 {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .upload-info-card p {
+            color: #888;
+            font-size: 12px;
+            margin: 0;
+        }
+        .upload-type-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .upload-type-badge {
+            padding: 5px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 11px;
+        }
         .screensaver-container {
             max-width: 720px;
             margin: 0 auto;
@@ -805,6 +985,7 @@
         <button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button>
         <button class="nav-btn" onclick="showPage('isspasstracking')">ISS</button>
         <button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button>
+        <button class="nav-btn" onclick="showPage('upload')">📤 Upload</button>
         <button class="nav-btn" onclick="showPage('config')">Ustawienia</button>
         <button class="nav-btn" onclick="showPage('screensaver')">Wygaszacz</button>
         <button class="nav-btn" onclick="showPage('manual')">Instrukcja</button>
@@ -2004,6 +2185,190 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="upload-page" class="page">
+        <div class="upload-container">
+            <div class="upload-header">
+                <h2>📤 Wireless File Upload</h2>
+                <p>Prześlij pliki bezpośrednio do pamięci ESP32 przez WiFi</p>
+            </div>
+            
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone-icon">📁</div>
+                <div class="upload-zone-text">Przeciągnij plik tutaj lub kliknij, aby wybrać</div>
+                <div class="upload-zone-hint">Wspierane formaty: .html, .css, .js, .bmp, .txt</div>
+                <input type="file" class="upload-input" id="fileInput" accept=".html,.css,.js,.bmp,.txt">
+            </div>
+            
+            <div class="upload-preview" id="uploadPreview" style="display: none;">
+                <div class="upload-preview-header">
+                    <span class="upload-preview-filename" id="fileName">-</span>
+                    <span class="upload-preview-size" id="fileSize">-</span>
+                </div>
+                <div class="upload-preview-path" id="filePath">Ścieżka: /</div>
+            </div>
+            
+            <button class="upload-btn" id="uploadBtn" disabled onclick="uploadFile()">
+                ⬆️ Wgraj plik do ESP32
+            </button>
+            
+            <div class="upload-progress" id="uploadProgress" style="display: none;">
+                <div class="upload-progress-bar">
+                    <div class="upload-progress-fill" id="progressFill"></div>
+                </div>
+                <div class="upload-progress-text" id="progressText">0%</div>
+            </div>
+            
+            <div class="upload-status" id="uploadStatus" style="display: none;"></div>
+            
+            <div class="upload-info-cards">
+                <div class="upload-info-card">
+                    <h4>📄 index.html</h4>
+                    <p>Główny plik interfejsu WWW</p>
+                </div>
+                <div class="upload-info-card">
+                    <h4>🎨 .css / .js</h4>
+                    <p>Style i skrypty</p>
+                </div>
+                <div class="upload-info-card">
+                    <h4>🖼️ .bmp</h4>
+                    <p>Obrazy splash i mapy</p>
+                </div>
+            </div>
+            
+            <div class="upload-type-badges">
+                <span class="upload-type-badge">.html</span>
+                <span class="upload-type-badge">.css</span>
+                <span class="upload-type-badge">.js</span>
+                <span class="upload-type-badge">.bmp</span>
+                <span class="upload-type-badge">.txt</span>
+            </div>
+        </div>
+        
+        <script>
+        let selectedFile = null;
+        let currentPath = '/';
+        
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const filePath = document.getElementById('filePath');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const uploadStatus = document.getElementById('uploadStatus');
+        
+        // Click to select file
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFileSelect(fileInput.files[0]);
+            }
+        });
+        
+        function handleFileSelect(file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatBytes(file.size);
+            
+            // Set path based on file type
+            if (file.name.endsWith('.html')) {
+                currentPath = '/index.html';
+            } else if (file.name.endsWith('.bmp')) {
+                currentPath = '/' + file.name;
+            } else if (file.name.endsWith('.txt')) {
+                currentPath = '/' + file.name;
+            } else {
+                currentPath = '/' + file.name;
+            }
+            filePath.textContent = 'Ścieżka: ' + currentPath;
+            
+            uploadPreview.style.display = 'block';
+            uploadBtn.disabled = false;
+            uploadStatus.style.display = 'none';
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function uploadFile() {
+            if (!selectedFile) return;
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Trwa wysyłanie...';
+            uploadProgress.style.display = 'block';
+            uploadStatus.style.display = 'none';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = percent + '%';
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200 || xhr.status === 201) {
+                    uploadStatus.className = 'upload-status success';
+                    uploadStatus.innerHTML = '✅ Sukces! Plik został wgrany.<br><small>Odśwież stronę (Ctrl+F5)</small>';
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.textContent = '✅ Wgrano!';
+                } else {
+                    uploadStatus.className = 'upload-status error';
+                    uploadStatus.textContent = '❌ Błąd: ' + xhr.statusText;
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+                }
+            });
+            
+            xhr.addEventListener('error', () => {
+                uploadStatus.className = 'upload-status error';
+                uploadStatus.textContent = '❌ Błąd połączenia z ESP32';
+                uploadStatus.style.display = 'block';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+            });
+            
+            xhr.open('POST', '/api/upload');
+            xhr.send(formData);
+        }
+        </script>
     </div>
 
     <div id="manual-page" class="page">
