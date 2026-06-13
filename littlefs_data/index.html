@@ -319,6 +319,61 @@
             margin-top: 20px;
             font-size: 14px;
         }
+        .iss-freq-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+        .iss-freq-table th {
+            background: #1a5a7a;
+            color: #ffd700;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #2a4a5a;
+        }
+        .iss-freq-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #2a3a3a;
+            vertical-align: middle;
+        }
+        .iss-freq-table tr:nth-child(even) {
+            background: #1e2a2a;
+        }
+        .iss-freq-table tr:hover {
+            background: #2a3a3a;
+        }
+        .iss-freq-table .uplink {
+            color: #ff6b6b;
+        }
+        .iss-freq-table .downlink {
+            color: #4ecdc4;
+        }
+        .iss-freq-table .mode {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .iss-freq-table .service-name {
+            color: #00ffcc;
+            font-weight: bold;
+            text-align: left;
+        }
+        .iss-freq-section {
+            background: #1a2a2a;
+            border: 1px solid #3a5a6a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        .iss-freq-title {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+        }
         .manual-content {
             background: #2a2a2a;
             border: 1px solid #444;
@@ -1481,6 +1536,55 @@
                 </div>
             </div>
             <div class="iss-status" id="iss-status">Oczekiwanie na dane ISS...</div>
+            
+            <!-- ISS Amateur Radio Frequencies -->
+            <div class="iss-freq-section">
+                <div class="iss-freq-title">📻 Częstotliwości ARISS (Amateur Radio on ISS)</div>
+                <table class="iss-freq-table">
+                    <thead>
+                        <tr>
+                            <th>Usługa</th>
+                            <th>Uplink (↑)</th>
+                            <th>Downlink (↓)</th>
+                            <th>Modulacja</th>
+                            <th>Uwagi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="service-name">🔁 Voice Repeater<br>(Repeater)</td>
+                            <td class="uplink">145.990 MHz</td>
+                            <td class="downlink">437.800 MHz</td>
+                            <td class="mode">FM</td>
+                            <td>Tone: 67.0 Hz</td>
+                        </tr>
+                        <tr>
+                            <td class="service-name">📦 APRS / Packet<br>(Digipeater)</td>
+                            <td class="uplink" colspan="2">145.825 MHz</td>
+                            <td class="mode">FM / AFSK</td>
+                            <td>1200 baud AX.25</td>
+                        </tr>
+                        <tr>
+                            <td class="service-name">🖼️ SSTV<br>(TV amatorska)</td>
+                            <td class="uplink">—</td>
+                            <td class="downlink">145.800 MHz</td>
+                            <td class="mode">FM</td>
+                            <td>Mode: PD120</td>
+                        </tr>
+                        <tr>
+                            <td class="service-name">🎙️ Voice Direct<br>(Kontakty z astronautami)</td>
+                            <td class="uplink">145.200 MHz<br><small>(Europa)</small></td>
+                            <td class="downlink">145.800 MHz<br><small>(Europa)</small></td>
+                            <td class="mode">FM</td>
+                            <td>Region 1 (EU)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align: center; color: #888; font-size: 11px; margin-top: 10px;">
+                    Dane: ARISS (Amateur Radio on the International Space Station) | 
+                    <a href="https://www.ariss.org" target="_blank" style="color: #00ffcc;">ariss.org</a>
+                </div>
+            </div>
         </div>
     </div>
 
