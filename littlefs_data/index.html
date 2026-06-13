@@ -971,6 +971,158 @@
                 padding: 4px 6px;
             }
         }
+    
+        /* === ISS TRACKER PAGE === */
+        .isstracker-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .isstracker-header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a1525 0%, #1a2535 100%);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #2a4a6a;
+        }
+        .isstracker-header h2 { color: #00d4ff; font-size: 28px; margin-bottom: 8px; }
+        .isstracker-header p { color: #888; font-size: 14px; }
+        
+        .isstracker-main {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        /* RADAR STYLES */
+        .radar-container {
+            background: #0a1520;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a4a6a;
+        }
+        .radar-wrapper {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        #issRadar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #0a1520 0%, #050a10 100%);
+            border: 3px solid #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3), inset 0 0 60px rgba(0, 212, 255, 0.1);
+        }
+        .radar-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #00ff88;
+            font-size: 12px;
+        }
+        .radar-station-icon { font-size: 24px; }
+        .radar-station-label { font-weight: bold; margin-top: 4px; }
+        .radar-iss-marker {
+            position: absolute;
+            font-size: 28px;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.8));
+            z-index: 10;
+        }
+        .radar-info {
+            text-align: center;
+            margin-top: 16px;
+            color: #666;
+            font-size: 12px;
+        }
+        .radar-range {
+            background: #1a2535;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        
+        /* TELEMETRY STYLES */
+        .telemetry-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .telemetry-row {
+            display: flex;
+            gap: 12px;
+        }
+        .telemetry-card {
+            flex: 1;
+            background: linear-gradient(135deg, #1a2535 0%, #0f1a28 100%);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #2a4a6a;
+            text-align: center;
+        }
+        .telemetry-card.wide { flex: unset; width: 100%; }
+        .telemetry-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .telemetry-value {
+            color: #00d4ff;
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        .telemetry-value.country {
+            color: #00ff88;
+            font-size: 18px;
+        }
+        
+        .isstracker-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0f1a28;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #888;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 900px) {
+            .isstracker-main {
+                grid-template-columns: 1fr;
+            }
+            .radar-wrapper {
+                width: 300px;
+                height: 300px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -984,6 +1136,7 @@
         <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
         <button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button>
         <button class="nav-btn" onclick="showPage('issfreq')">ISS Częstotliwości</button>
+        <button class="nav-btn" onclick="showPage('isstracker')">🛰️ ISS Tracker</button>
         <button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button>
         <button class="nav-btn" onclick="showPage('upload')">📤 Upload</button>
         <button class="nav-btn" onclick="showPage('config')">Ustawienia</button>
@@ -2151,6 +2304,87 @@
         </div>
     </div>
 
+    <!-- ISS TRACKER PAGE -->
+    <div id="isstracker-page" class="page">
+        <div class="isstracker-container">
+            <div class="isstracker-header">
+                <h2>🛰️ ISS Pass Tracker</h2>
+                <p>Śledzenie Międzynarodowej Stacji Kosmicznej w czasie rzeczywistym</p>
+            </div>
+            
+            <div class="isstracker-main">
+                <!-- LARGE RADAR DISPLAY -->
+                <div class="radar-container">
+                    <div class="radar-wrapper">
+                        <canvas id="issRadar" width="400" height="400"></canvas>
+                        <div class="radar-center">
+                            <div class="radar-station-icon">🏠</div>
+                            <div class="radar-station-label">QTH</div>
+                        </div>
+                        <div class="radar-iss-marker" id="issMarker">🛰️</div>
+                        <div class="radar-groundtrack" id="groundTrack"></div>
+                    </div>
+                    <div class="radar-info">
+                        <span class="radar-range">Zakres: 5000 km</span>
+                    </div>
+                </div>
+                
+                <!-- TELEMETRY PANEL -->
+                <div class="telemetry-panel">
+                    <div class="telemetry-row">
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">📍 Szerokość</div>
+                            <div class="telemetry-value" id="iss-lat">--.-°</div>
+                        </div>
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">📍 Długość</div>
+                            <div class="telemetry-value" id="iss-lng">--.-°</div>
+                        </div>
+                    </div>
+                    <div class="telemetry-row">
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">⬆️ Wysokość</div>
+                            <div class="telemetry-value" id="iss-alt">--- km</div>
+                        </div>
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">⚡ Prędkość</div>
+                            <div class="telemetry-value" id="iss-speed">--- km/h</div>
+                        </div>
+                    </div>
+                    <div class="telemetry-row">
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">📐 Azymut</div>
+                            <div class="telemetry-value" id="iss-az">---°</div>
+                        </div>
+                        <div class="telemetry-card">
+                            <div class="telemetry-label">📡 Elevacja</div>
+                            <div class="telemetry-value" id="iss-el">---°</div>
+                        </div>
+                    </div>
+                    <div class="telemetry-row">
+                        <div class="telemetry-card wide">
+                            <div class="telemetry-label">🌍 Kraj pod satelitą</div>
+                            <div class="telemetry-value country" id="iss-country">ŁADOWANIE...</div>
+                        </div>
+                    </div>
+                    <div class="telemetry-row">
+                        <div class="telemetry-card wide">
+                            <div class="telemetry-label">📏 Odległość</div>
+                            <div class="telemetry-value" id="iss-dist">--- km</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="isstracker-footer">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span id="iss-status">Ostatnia aktualizacja: --:--:--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="upload-page" class="page">
         <div class="upload-container">
             <div class="upload-header">
@@ -2332,7 +2566,97 @@
             xhr.open('POST', '/update');
             xhr.send(formData);
         }
-        </script>
+        
+        
+        // === ISS TRACKER FUNCTIONS ===
+        let issTrackerInterval;
+        
+        function initISSTracker() {
+            loadISSTrackerData();
+            drawRadar();
+            if (issTrackerInterval) clearInterval(issTrackerInterval);
+            issTrackerInterval = setInterval(loadISSTrackerData, 5000);
+        }
+        
+        function loadISSTrackerData() {
+            fetch('/api/iss?t=' + Date.now())
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.lat !== undefined) {
+                        document.getElementById('iss-lat').textContent = data.lat.toFixed(4) + '°';
+                        document.getElementById('iss-lng').textContent = data.lng.toFixed(4) + '°';
+                        document.getElementById('iss-alt').textContent = data.altitude.toFixed(1) + ' km';
+                        document.getElementById('iss-speed').textContent = data.speed.toFixed(0) + ' km/h';
+                        document.getElementById('iss-az').textContent = data.azimuth.toFixed(1) + '°';
+                        document.getElementById('iss-el').textContent = data.elevation.toFixed(1) + '°';
+                        document.getElementById('iss-dist').textContent = data.distance.toFixed(0) + ' km';
+                        document.getElementById('iss-country').textContent = data.country || 'OCEAN / MORZE';
+                        document.getElementById('iss-status').textContent = 'Ostatnia aktualizacja: ' + new Date().toLocaleTimeString();
+                        updateRadarPosition(data.lat, data.lng);
+                    }
+                })
+                .catch(err => {
+                    console.error('ISS Tracker error:', err);
+                });
+        }
+        
+        function drawRadar() {
+            const canvas = document.getElementById('issRadar');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const centerX = 200;
+            const centerY = 200;
+            const maxRadius = 195;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 400, 400);
+            
+            // Draw concentric circles
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, (maxRadius / 5) * i, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Draw cross lines
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, 400);
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(400, centerY);
+            ctx.stroke();
+            
+            // Draw diagonal lines
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(400, 400);
+            ctx.moveTo(400, 0);
+            ctx.lineTo(0, 400);
+            ctx.stroke();
+            
+            // Draw outer ring
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        function updateRadarPosition(lat, lng) {
+            const marker = document.getElementById('issMarker');
+            if (!marker) return;
+            // Simplified position calculation (centered for demo)
+            const angle = (lng + 180) / 360 * 360;
+            const dist = (90 - lat) / 90;
+            const x = 200 + Math.cos((angle - 90) * Math.PI / 180) * dist * 150;
+            const y = 200 + Math.sin((angle - 90) * Math.PI / 180) * dist * 150;
+            marker.style.left = x + 'px';
+            marker.style.top = y + 'px';
+        }
+
+    </script>
     </div>
 
         <div id="manual-page" class="page">
@@ -2627,6 +2951,12 @@
                 loadISSTelemetry();
             }
         }, 5000);
+
+        
+        // Initialize ISS Tracker when page is shown
+        if (page === 'isstracker') {
+            setTimeout(initISSTracker, 100);
+        }
 
         const showPage = (page) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));

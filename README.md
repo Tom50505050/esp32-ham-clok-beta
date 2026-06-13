@@ -47,21 +47,21 @@
 |--------|-----------|
 | VCC | 3V3 |
 | GND | GND |
-| CS | GPIO 15 |
-| RST | GPIO 4 |
-| DC | GPIO 2 |
 | MOSI | GPIO 23 |
+| MISO | GPIO 19 |
 | SCK | GPIO 18 |
-| LED | 3V3 |
+| CS | GPIO 15 |
+| DC | GPIO 2 |
+| RST | Nie używany (podłączony do 3.3V) |
 
 ### Panel Dotykowy (XPT2046)
 | Sygnał | ESP32 Pin |
 |--------|-----------|
-| T_CLK | GPIO 18 |
-| T_DIN | GPIO 23 |
-| T_DO | GPIO 19 |
-| T_CS | GPIO 26 |
-| T_IRQ | GPIO 25 |
+| T_MOSI (DIN) | GPIO 23 (współdzielone z TFT) |
+| T_MISO (DO) | GPIO 19 (współdzielone z TFT) |
+| T_CLK | GPIO 18 (współdzielone z TFT) |
+| T_CS | GPIO 21 |
+| T_IRQ | GPIO 22 |
 
 ### Moduł I2C (BME280 / RTC)
 | Sygnał | ESP32 Pin |
