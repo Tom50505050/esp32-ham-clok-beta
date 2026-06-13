@@ -1,0 +1,85 @@
+name: Dependabot Auto-Merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot-auto-merge:
+    runs-on: ubuntu-latest
+    # Only run for Dependabot PRs
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Wait for CI checks to complete
+        uses: actions/github-script@v7
+        id: wait-for-ci
+        with:
+          script: |
+            const pull_number = context.payload.pull_request?.number || context.payload.number;
+            const ref = context.payload.pull_request?.head?.ref;
+            
+            // Wait for all checks to complete
+            let attempts = 0;
+            const maxAttempts = 60; // Maximum 30 minutes (60 * 30 seconds)
+            
+            async function checkAllChecksComplete() {
+              // Check GitHub Actions status
+              const { data: statuses } = await github.rest.repos.listCommitStatusesForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: ref
+              });
+              
+              // Check checks API
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: ref
+              });
+              
+              const allStatusesComplete = statuses.length === 0 || 
+                statuses.every(s => s.state === 'success' || s.state === 'pending');
+              const allChecksComplete = checks.check_runs?.every(c => 
+                c.conclusion === 'success' || c.conclusion === null
+              ) ?? true;
+              
+              return allStatusesComplete && allChecksComplete && statuses.length > 0;
+            }
+            
+            // Initial wait for checks to start
+            await new Promise(r => setTimeout(r, 30000));
+            
+            while (attempts < maxAttempts) {
+              const complete = await checkAllChecksComplete();
+              if (complete) {
+                console.log('All CI checks completed successfully');
+                return true;
+              }
+              console.log(`Waiting for CI... attempt ${attempts + 1}/${maxAttempts}`);
+              await new Promise(r => setTimeout(r, 30000));
+              attempts++;
+            }
+            
+            throw new Error('Timeout waiting for CI checks');
+
+      - name: Enable auto-merge
+        if: steps.wait-for-ci.outcome == 'success'
+        run: |
+          # Use gh to enable auto-merge
+          gh pr merge --admin --merge "${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log failure
+        if: steps.wait-for-ci.outcome != 'success'
+        run: |
+          echo "CI checks did not complete successfully or timed out"
