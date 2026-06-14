@@ -1,0 +1,215 @@
+================================================================================
+     KONFIGURACJA PINÓW ESP32-D + WYŚWIETLACZ ILI9488 (480x320)
+================================================================================
+
+ROZKŁAD PINÓW ESP32-DEVKIT (38 pinów):
+--------------------------------------
+
+    ESP32-DEVKIT V1
+    ┌─────────────────────────────────────┐
+    │ 3.3V          │ 5V                  │
+    │ EN/RST        │ GND                 │
+│ GPIO23/MOSI   │ GPIO22 (T_IRQ)       │
+│ GPIO34/RX     │ GPIO21 (T_CS)        │
+│ GPIO35/TX     │ GPIO19 (T_DO)        │
+│ GPIO2/TFT_DC  │ GPIO18 (SCK)         │
+│ GPIO15/CS     │ GPIO5                │
+│ GPIO32/LED    │ GPIO17/TX2           │
+│ GPIO26/TOUCH  │ GPIO16/RX2           │
+│ -/TFT_RST     │ GPIO4/BOOT           │
+│ GPIO14/CLK    │ GPIO2/ADC            │
+│ GPIO12/SDA    │ GPIO15/CS            │
+│ GPIO13/SCL    │ GPIO0/BOOT           │
+│ GPIO9/SD2     │ GPIO36/VP            │
+│ GPIO10/SD3    │ GPIO39/VN            │
+│ GPIO11/CMD    │ GPIO35/              │
+│ GPIO6/CLK     │ GPIO34/              │
+│ GPIO7/SD0     │ GPIO38/              │
+│ GPIO8/SD1     │ GPIO37/              │
+│ 5V            │ GND                  │
+    └─────────────────────────────────────┘
+
+
+POŁĄCZENIE ESP32-D → ILI9488 (TFT 3.5" 480x320):
+--------------------------------------------------
+
+    ILI9488 PIN          ESP32-D PIN          KOLOR PRZEWODU
+    ─────────────────────────────────────────────────────────
+    VCC (5V)       →     5V                   CZERWONY
+    GND            →     GND                  CZARNY
+
+    // SPI Interface
+    CS             →     GPIO 15              FIOLETOWY
+    RESET          →     EN (ESP_RST)         ŻÓŁTY
+    DC/RS          →     GPIO 2               POMARAŃCZOWY
+    SDI/MOSI       →     GPIO 23              NIEBIESKI
+    SCK            →     GPIO 18              ZIELONY
+    SDO/MISO       →     NIE PODŁĄCZONY       (nie używany)
+
+    // LED Backlight
+    LED (3.3V)     →     GPIO 32 (PWM)        BIAŁY
+
+    // Touch Interface (XPT2046)
+    T_CLK          →     GPIO 18              ZIELONY (wspólny ze SCK)
+    T_CS           →     GPIO 21              BIAŁY
+    T_DIN          →     GPIO 23              NIEBIESKI (wspólny z MOSI)
+    T_DO           →     GPIO 19              SZARY
+    T_IRQ          →     GPIO 22              FIOLETOWY
+
+
+SCHEMAT POŁĄCZEŃ (diagram):
+----------------------------
+
+    ┌─────────────┐                    ┌──────────────┐
+    │   ESP32-D   │                    │   ILI9488    │
+    │             │                    │   TFT 3.5"   │
+    │      GPIO 15├────────────────────┤ CS           │
+    │      EN/RST ├────────────────────┤ RESET        │
+    │      GPIO 2 ├────────────────────┤ DC/RS        │
+    │      GPIO 23├────────────────────┤ SDI/MOSI     │
+    │      GPIO 18├────────────────────┤ SCK          │
+    │      GPIO 32├────────────────────┤ LED (PWM)    │
+    │       5V    ├────────────────────┤ VCC          │
+    │       GND   ├────────────────────┤ GND          │
+    │             │                    │              │
+    │    TOUCH:   │                    │   XPT2046    │
+    │      GPIO 18├────────────────────┤ T_CLK        │
+    │      GPIO 21├────────────────────┤ T_CS         │
+    │      GPIO 23├────────────────────┤ T_DIN        │
+    │      GPIO 19├────────────────────┤ T_DO         │
+    │      GPIO 22├────────────────────┤ T_IRQ        │
+    └─────────────┘                    └──────────────┘
+
+
+KONFIGURACJA W platformio.ini:
+-------------------------------
+
+[env:esp32dev]
+platform = espressif32@6.9.0
+board = esp32dev
+framework = arduino
+upload_speed = 115200
+monitor_speed = 115200
+board_build.mcu = esp32
+board_build.f_cpu = 240000000L
+board_build.partitions = partitions.csv
+board_build.filesystem = littlefs
+
+lib_deps =
+    bblanchon/ArduinoJson @ ^7.0.0
+    bodmer/TFT_eSPI @ 2.4.79
+    https://github.com/PaulStoffregen/XPT2046_Touchscreen.git
+    knolleary/PubSubClient @ ^2.8
+
+build_flags =
+    -Os
+    -DCORE_DEBUG_LEVEL=0
+    -DARDUINO_RUNNING_CORE=1
+    -DARDUINO_EVENT_RUNNING_CORE=1
+    -DARDUINO_USB_CDC_ON_BOOT=0
+    -DUSE_LITTLEFS=1
+    -DUSER_SETUP_LOADED=1
+    -DILI9488_DRIVER=1
+    -DTFT_MISO=19
+    -DTFT_MOSI=23
+    -DTFT_SCLK=18
+    -DTFT_CS=15
+    -DTFT_DC=2
+    -DTFT_RST=-1
+    -DTFT_WIDTH=480
+    -DTFT_HEIGHT=320
+    -DSPI_FREQUENCY=20000000
+    -DTFT_BL_PIN=32
+    -DTFT_ESPI_TOUCH_DISABLED=0
+    -DSPI_TOUCH_FREQUENCY=2500000
+    -DTOUCH_CS=21
+    -DTOUCH_IRQ=22
+    -DLOAD_GLCD=1
+    -DLOAD_FONT2=1
+    -DSMOOTH_FONT=1
+
+
+KONFIGURACJA W User_Setup.h (dla TFT_eSPI):
+-------------------------------------------
+
+#define USER_SETUP_INFO "ESP32_HAM_CLOCK_ILI9488_SETUP"
+#define ILI9488_DRIVER
+
+#define TFT_WIDTH  480
+#define TFT_HEIGHT 320
+
+#define TFT_MISO 19
+#define TFT_MOSI 23
+#define TFT_SCLK 18
+#define TFT_CS    15
+#define TFT_DC   2
+#define TFT_RST  -1
+#define TFT_BL   32
+
+// Touch pins (XPT2046)
+#define TOUCH_CS 21
+#define TOUCH_IRQ 22
+
+#define LOAD_GLCD
+#define LOAD_FONT2
+#define LOAD_FONT4
+#define SMOOTH_FONT
+
+#define SPI_FREQUENCY  20000000
+#define SPI_READ_FREQUENCY  20000000
+#define SPI_TOUCH_FREQUENCY  2500000
+
+
+PARAMETRY ZASILANIA:
+--------------------
+
+    ESP32-D:          3.3V (wbudowany regulator) lub 5V przez USB
+    ILI9488 TFT:      3.3V (logic), LED 3.3V (można PWM)
+    Pobór prądu:      ~150-250mA (zależy od jasności podświetlenia)
+    Zalecane:         Zasilacz 5V/1A zamiast USB (stabilniejsze)
+
+
+PORADY MONTAŻOWE:
+-----------------
+
+⚠️  WAŻNE - WYMAGANE POŁĄCZENIA:
+   • GPIO 19 (SDO/MISO) podłączone TYLKO DO TOUCH (T_DO) - TFT tego nie używa
+   • TFT potrzebuje: CS, DC, MOSI, SCK + zasilanie
+   • MISO TFT nie jest podłączony
+   • Razem: 5V, GND + 9 GPIO (2, 15, 18, 19, 21, 22, 23, 32) = 11 połączeń
+
+1. Używaj krótkich przewodów (<20cm) dla sygnałów SPI
+2. Dodaj kondensatory 100nF przy pinach zasilania TFT
+3. Jeśli ekran "miga" - zwiększ kondensatory lub użyj zewnętrznego 3.3V
+4. Podświetlenie LED można sterować PWM (jasność 0-255)
+5. Jeśli touch nie działa:
+   - Sprawdź czy GPIO 19 (T_DO) jest podłączony
+   - Sprawdź czy GPIO 21 (T_CS) i GPIO 22 (T_IRQ) są podłączone
+   - Może być potrzebna kalibracja dotyku (w ustawieniach webowych)
+
+
+TESTOWANIE:
+-----------
+
+Po wgraniu firmware:
+1. Ekran powinien pokazać logo lub czarne tło z tekstem
+2. Dotyk powinien reagować (sprawdź w menu)
+3. Jeśli obraz jest odwrócony - zmień w User_Setup.h:
+   #define TFT_INVERSION_ON  (zamiast OFF)
+4. Jeśli kolory są odwrócone (BGR zamiast RGB):
+   #define TFT_RGB_ORDER TFT_BGR
+
+================================================================================
+                    POMOCNE LINKI I DOKUMENTACJA
+================================================================================
+
+    TFT_eSPI library:  https://github.com/Bodmer/TFT_eSPI
+    ILI9488 datasheet: https://www.displayfuture.com/Display/datasheet/controller/ILI9488.pdf
+    ESP32 pinout:      https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/gpio.html
+    
+    Wsparcie:          https://github.com/SP9TNV/ESP32-HAM-CLOCK
+    
+================================================================================
+                    AUTOR: SP9TNV  |  LICENCJA: MIT
+                    73 de SP9TNV
+================================================================================

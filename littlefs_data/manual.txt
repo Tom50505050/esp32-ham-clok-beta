@@ -1,0 +1,226 @@
+ESP32-HAM-CLOCK v1.2b (04.03.2026)
+Original author: Krzysztof Błaszczyk, SP3KON
+Original project: https://github.com/SP3KON/ESP32-HAM-CLOCK
+Modifications in v1.2b:
+- Extended PSK Reporter support with filtering
+- Touch interface for TFT display
+- Additional system information in web interface
+Contact: sp3kon@gmail.com
+License: MIT License - code can be used and modified provided original author attribution is retained
+
+Flashing via browser (ESP Web Tools)
+- Page: https://jason2866.github.io/WebSerial_ESPTool/
+- Chrome or Edge required (WebSerial support).
+- Files are in: build\esp32.esp32.esp32\
+- Target: CYD ESP32-2432S028R (4MB flash, "Default 4MB with spiffs" layout).
+
+Select files and write offsets:
+1. Standard flashing offsets (Flash Map)
+
+bootloader.bin	0x1000	Bootloader.
+partitions.bin	0x8000	Partition table.
+firmware.bin	0x10000	Main application firmware.
+littlefs.bin	0x290000	LittleFS image (offset depends on partition layout).
+
+If all offsets are correct, click PROGRAM.
+
+1) Startup
+- Flash firmware to ESP32.
+- Upload web assets to LittleFS (data/ folder).
+- If no WiFi is configured, device starts AP mode:
+  SSID: ESP32-HAM-CLOCK
+  Password: 1234567890
+
+2) Web Configuration
+- Open /config.
+- WiFi: two SSID/password sets (primary + backup).
+- DX Cluster: host/port + noann/nowwv/nowcy options + "use filters" + filter commands (one line per command).
+- POTA: External POTA API link (default: https://api.pota.app/v1/spots).
+- HAMALERT: telnet host, port, login, password.
+  Create/generate your telnet password in HamAlert first.
+- Your station: callsign, locator, UTC offset, lat/lon.
+  Used by APRS, weather, and distance calculations.
+- QRZ.com: username/password + QRZ status field.
+- OpenWeather: API key (weather_key).
+- KiwiSDR (openwebrx_url): SDR URL used for DX/POTA frequency links
+  (example: http://okno.ddns.net:8073/).
+
+- TFT tab:
+  - brightness,
+  - TFT language (PL/EN),
+  - table size (normal/enlarged),
+  - AUTO-SWITCH + SWITCH-TIME (1-3600 s),
+  - screen order in slots 1-11 (OFF disables slot),
+  - TFT Rotation (0-3),
+  - TFT color inversion,
+  - Touch Rotation (0-3),
+  - manual touch axis mode (none/xy/x/y/both/rot90cw/rot90ccw/xy_both),
+  - reset TFT rotation to default,
+  - reset touch calibration to default.
+
+- APRS-IS:
+  - host, port, callsign, SSID (0-15), passcode,
+  - filter radius (1-50 km),
+  - beacon enable,
+  - APRS symbol (2 chars), comment (ASCII max 43),
+  - beacon interval (1-180 min).
+- APRS beacon: first beacon is sent about 1 minute after startup,
+  next beacons follow configured interval.
+- TX beacon requires valid coordinates and a valid callsign (not NOCALL).
+- APRS login filter format: #filter r/lat/lon/radius
+  using coordinates from "Your station".
+- If coordinates are missing, fallback 52.40, 16.92 is used.
+
+- APRS ALERT (ALERT tab):
+  - APRS callsign list (CSV),
+  - APRS ALERT enable,
+  - minimum repeat interval for same station (seconds),
+  - alert display time on TFT (seconds),
+  - nearby mobile station alerts (-7 and -9),
+  - WX station alerts,
+  - ALERT distance (km),
+  - LED optical alert (GPIO17),
+  - LED duration and blink speed.
+
+- APRS list limits: max 20 stations in web UI and max 10 on TFT.
+- Saving configuration triggers restart.
+
+3) TFT Screens (full list, excluding UnlisHunter)
+- Note: screen order is configurable in TFT tab (slots 1-11). Any slot can be OFF.
+
+- Screen1 HAM CLOCK:
+  - UTC and local time (based on configured UTC offset),
+  - date/day labels based on TFT language,
+  - basic device status information.
+
+- Screen2 DX CLUSTER:
+  - DX table (time, callsign, frequency, band, mode, country/distance),
+  - MODE filter (ALL/CW/SSB/FT8) and BAND filter (ALL/160/80/40/20/17/15/12/10m),
+  - live data from telnet DX Cluster.
+
+- Screen3 APRS-IS:
+  - APRS station list (time, callsign, symbol, comment),
+  - sort modes TIME/CALL/DIST,
+  - distance based on "Your station" coordinates.
+
+- Screen4 APRS RADAR:
+  - radar-style APRS view around your position,
+  - direction and distance visualization,
+  - uses same APRS stream as APRS list screen.
+
+- Screen5 BAND INFO:
+  - HF band information,
+  - day/night propagation hints.
+
+- Screen6 SUN SPOTS:
+  - solar/propagation values,
+  - quick propagation condition indicators.
+
+- Screen7 WEATHER:
+  - current weather for your location,
+  - key data: temperature, humidity, pressure, wind,
+  - text descriptions follow TFT language.
+
+- Screen8 WEATHER FORECAST:
+  - short-term forecast,
+  - additional weather data including PM2.5/PM10,
+  - data source: OpenWeather (valid API key required).
+
+- Screen9 POTA CLUSTER:
+  - POTA spot table from API,
+  - MODE (All/SSB/CW/FT8FT4) and BAND filters,
+  - entries consistent with web backend data.
+
+- Screen10 HAMALERT:
+  - spots from HamAlert telnet,
+  - mode/band filtering,
+  - latest alert/spot entries.
+
+- Screen11 MATRIX:
+  - matrix-style clock screen,
+  - can be used as a simple visual screensaver.
+
+4) TFT Brightness and Language (long press)
+- Long-press center of TFT for about 3 seconds to open live brightness slider.
+- SAVE stores tft_backlight, CLOSE exits without saving.
+- Language button in brightness menu switches TFT language (PL/EN)
+  and forces weather text refresh.
+
+5) Web Panel Tabs (what they show)
+- DXSPOT:
+  DX spot table with MODE/BAND/continent filters;
+  callsign links to QRZ, frequency links to WebSDR/KiwiSDR
+  (automatic USB/LSB selection by bandplan).
+
+- POTA:
+  POTA spot table with MODE/BAND filters;
+  callsign links to QRZ, frequency links to WebSDR/KiwiSDR.
+
+- HAMALERT:
+  HamAlert telnet spot table;
+  MODE/BAND filtering similar to POTA.
+
+- APRS:
+  APRS station list (time, callsign, symbol, distance, comment).
+
+- ALERT:
+  APRS ALERT settings (callsign list, thresholds/timers, nearby/WX, LED).
+
+- TFT:
+  display and touch settings:
+  brightness, language, rotations, color inversion, AUTO-SWITCH, screen order.
+
+- Settings:
+  full device configuration (see point 2).
+
+- Manual:
+  manual preview loaded from /manual.txt.
+
+6) QRZ
+- When QRZ credentials are set, country and distance are enriched for DX/POTA.
+
+7) Possible Problems and Troubleshooting
+- Web panel does not open:
+  - Verify phone/PC is on same WiFi network as device.
+  - If no WiFi config exists, connect to AP:
+    SSID ESP32-HAM-CLOCK, password 1234567890.
+  - Open TFT-shown IP or http://192.168.4.1 (AP mode).
+
+- Web UI loads incorrectly (missing styles/blank pages):
+  - Re-upload LittleFS (data/ folder).
+  - Ensure LittleFS contains: index.html, instrukcja.txt, manual.txt.
+
+- No DX/POTA/HAMALERT data:
+  - Check internet connectivity.
+  - Verify host/port settings.
+  - For HamAlert, verify telnet login/password and account status.
+  - For POTA, verify API URL (default https://api.pota.app/v1/spots).
+
+- No weather data / OpenWeather errors:
+  - Verify weather_key API key.
+  - Verify lat/lon values.
+  - Save config and restart device.
+
+- QRZ enrichment missing:
+  - Verify QRZ XML API username/password.
+  - Verify your QRZ account has XML API access.
+
+- Touch is inverted or misaligned:
+  - Adjust Touch Rotation and touch_swap_mode in TFT tab.
+  - Use touch calibration reset if needed.
+
+- TFT colors are inverted:
+  - Toggle TFT color inversion in TFT tab.
+
+- APRS beacon is not transmitting:
+  - Verify APRS callsign, SSID, passcode.
+  - Ensure beacon option is enabled.
+  - Beacon requires valid coordinates and callsign not equal to NOCALL.
+
+- No APRS stations nearby:
+  - Increase APRS radius (1-50 km).
+  - Verify "Your station" coordinates.
+
+- Settings saved but no visible change:
+  - Click Save and wait for restart.
+  - Force browser refresh without cache (Ctrl+F5).

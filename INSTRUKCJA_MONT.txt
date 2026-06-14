@@ -1,0 +1,345 @@
+================================================================================
+            INSTRUKCJA MONTAŻU - TP4056 + AKUMULATOR 18650 + ESP32
+================================================================================
+
+WERSJA: 1.2b
+DATA: 2026-04-08
+PROJEKT: ESP32-HAM-CLOCK z monitoringiem baterii
+
+================================================================================
+                         AUTOR I LICENCJA
+================================================================================
+
+Autor oryginalnego projektu: Konrad Wiśniewski SP3KON
+Oryginalny projekt: https://github.com/SP3KON/ESP32-HAM-CLOCK
+Modyfikacje w wersji 1.2b:
+- Rozszerzona obsługa PSK Reporter z filtrowaniem
+- Interfejs dotykowy dla ekranu TFT
+- Dodatkowe informacje systemowe w interfejsie web
+
+Licencja: MIT License
+- Możesz używać, modyfikować i rozpowszechniać kod
+- Zachowaj informację o autorze oryginalnym (SP3KON)
+- Pełna treść licencji w pliku CHANGELOG.md
+
+================================================================================
+                         WYKAZ MATERIAŁÓW
+================================================================================
+
+Elementy potrzebne do montażu:
+□ 1x Płytka TP4056 z ochroną DW01A (np. z AliExpress, cena ~3-8zł)
+□ 1x Akumulator Li-Ion 18650 (z płytką PCM, pojemność min 2000mAh)
+□ 2x Rezystor 100kΩ (SMD 0805 lub THT 1/4W)
+□ 1x Kondensator 100nF (SMD 0805 lub THT, opcjonalny)
+□ Przewody połączeniowe (np. z taśmy杜pont lub silikonowe 24AWG)
+□ Lutownica z regulacją temperatury (ok. 300-350°C)
+□ Cyna lutownicza z topnikiem
+□ Klej termiczny lub taśma izolacyjna
+□ Wtyczka/gniazdo do akumulatora 18650 (opcjonalnie)
+
+================================================================================
+                         OPIS PŁYTKI TP4056
+================================================================================
+
+           ┌─────────────────────────────────────┐
+           │         PŁYTKA TP4056             │
+           │                                   │
+           │  ┌─────┐    ┌─────┐   ┌────────┐  │
+           │  │ USB │    │ LED │   │   IC   │  │
+           │  │micro│    │ R+B │   │ TP4056 │  │
+           │  └─────┘    └─────┘   └────────┘  │
+           │                                   │
+           │  B+    OUT+   OUT-   B-          │
+           │  │      │      │      │           │
+           │  ●      ●      ●      ●           │
+           │  │      │      │      │           │
+           │  │      └──────┘      │           │
+           │  │                    │           │
+           └──┼────────────────────┼───────────┘
+              │                    │
+           Bateria+              Bateria-
+
+Opis pinów TP4056:
+• B+    → Plus akumulatora (ładowanie + zasilanie wyjściowe)
+• B-    → Minus akumulatora (wspólna masa)
+• OUT+  → Wyjście plus (równolegle z B+, przez MOSFET)
+• OUT-  → Wyjście minus (równolegle z B-, przez MOSFET)
+
+UWAGA: Na większości płytek TP4056 piny B+/OUT+ i B-/OUT- są połączone
+       wewnętrznie. Możesz użyć dowolnego z nich.
+
+================================================================================
+                         SCHEMAT POŁĄCZEŃ
+================================================================================
+
+                    ┌──────────────────┐
+                    │   TP4056         │
+                    │                  │
+  USB 5V ────────►  │  ┌──────────┐    │
+                    │  │ Ładowanie│    │
+  GND  ──────────►  │  └──────────┘    │
+                    │                  │
+                    │  B+          B-  │
+                    │  │            │  │
+                    └──┼────────────┼──┘
+                       │            │
+                       │            │
+              ┌────────┘            └────────┐
+              │                               │
+              │  ┌──────────┐   ┌─────────┐  │
+              │  │          │   │         │  │
+              └──┤   18650  │   │  18650  ├──┘
+                 │    +     │   │    -    │
+                 └──────────┘   └─────────┘
+                        Akumulator Li-Ion
+
+
+                    DZIELNIK NAPIĘCIA (woltomierz)
+
+                         Zasilanie z B+
+                               │
+                               │ 4.2V max
+                               │
+                              ┌┴┐
+                              │ │ R1 = 100kΩ
+                              │ │ (brąz-czerwony-czarny-złoty)
+                              └┬┘
+                               │  ← PUNKT POMIAROWY (GPIO34)
+                               ├──────────────────┐
+                              ┌┴┐                 │
+                              │ │ R2 = 100kΩ      │
+                              │ │ (brąz-czerwony-czarny-złoty)  C1 (opcjonalny)
+                              └┬┘                 │            ┌─────────┐
+                               │                  └────────────┤  100nF  │
+                               │                               │         │
+                               │                               └────┬────┘
+                               │                                    │
+                               └────────────────────────────────────┴──► GND
+
+
+================================================================================
+                    KROK PO KROKU - INSTRUKCJA LUTOWANIA
+================================================================================
+
+KROK 1: Przygotowanie rezystorów (dzielnik napięcia)
+----------------------------------------------------
+Jeśli używasz rezystorów SMD 0805:
+□ Przygotuj 2 rezystory 100kΩ oznaczone: 104 (kod 3-cyfrowy)
+□ Opcjonalnie przygotuj kondensator 100nF oznaczony: 104
+
+Jeśli używasz rezystorów THT (przewodowych):
+□ Zginij nóżki pod kątem 90° aby ułatwić montaż
+□ Skróć nóżki do ok. 5-7mm
+
+KROK 2: Montaż dzielnika napięcia (polecam na płytce stykowej)
+----------------------------------------------------------------
+Schemat połączenia rezystorów:
+
+     ┌────────────────────────────────────┐
+     │         PŁYTKA STYKOWA             │
+     │                                    │
+     │   [R1 100k]    [R2 100k]          │
+     │    ┌─────┐      ┌─────┐           │
+  B+ ──┤ 1   2 ├──────┤ 1   2 ├──── GND  │
+     │    └──┬──┘      └──┬──┘           │
+     │       │            │               │
+     │       └────────────┤               │
+     │              GPIO34 ◄──────────────┤
+     │                                    │
+     └────────────────────────────────────┘
+
+Lutowanie:
+1. Przyłóż R1 między szynę B+ i szynę środkową
+2. Przyłóż R2 między szynę środkową i szynę GND
+3. Złóż nóżki razem w punkcie środkowym - to będzie GPIO34
+4. Opcjonalnie: przylutuj C1 równolegle do R2 (między GPIO34 a GND)
+
+KROK 3: Połączenie z płytką TP4056
+-----------------------------------
+Przewody do przygotowania:
+• CZERWONY (B+)     → Zasilanie plus (4.2V z akumulatora)
+• CZARNY  (GND)     → Masa wspólna
+• ŻÓŁTY/ZIELONY     → Sygnał GPIO34 z dzielnika
+
+Połączenia:
+┌─────────────────┬─────────────────┬─────────────────────────────┐
+│ Kolor przewodu  │ Od              │ Do                          │
+├─────────────────┼─────────────────┼─────────────────────────────┤
+│ CZERWONY        │ TP4056 B+       │ Szyna B+ na płytce stykowej │
+│ CZARNY          │ TP4056 B-       │ Szyna GND na płytce stykowej│
+│ ŻÓŁTY           │ Punkt środkowy  │ GPIO34 na ESP32            │
+│ CZARNY (drugi)  │ Szyna GND       │ GND na ESP32                │
+└─────────────────┴─────────────────┴─────────────────────────────┘
+
+KROK 4: Podłączenie akumulatora 18650
+--------------------------------------
+WAŻNE: Akumulator MUSI mieć płytkę PCB z zabezpieczeniem!
+
+Opcja A - Gniazdo na akumulator:
+□ Włóż akumulator do gniazda
+□ Gniazdo podłącz do B+ i B- na płytce TP4056
+
+Opcja B - Bezpośrednie lutowanie:
+□ Zidentyfikuj plus (+) i minus (-) na akumulatorze
+□ Zalutuj przewód czerwony do plusa
+□ Zalutuj przewód czarny do minusa
+□ Zaizoluj taśmą izolacyjną lub termokurczliwą
+
+KROK 5: Podłączenie do ESP32
+------------------------------
+Piny na ESP32 (moduł ESP32-2432S028):
+
+┌────────────────────────────────────────┐
+│           GÓRA MODUŁU                  │
+│  (strona z przyciskiem i gniazdem USB) │
+│                                        │
+│    [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ]    │
+│     3V3 GND GPIO34  ...                │
+│      │   │    │                        │
+│      │   │    └─ ŻÓŁTY (dzielnik)      │
+│      │   └────── CZARNY (masa)          │
+│      └────────── CZERWONY (zasilanie)   │
+│                                         │
+│  UWAGA: ESP32 ma 3.3V LDO, więc:        │
+│  - VIN (5V) przyjmie 4.2V bez problemu  │
+│  - GPIO34 to ADC - toleruje 0-3.3V      │
+└────────────────────────────────────────┘
+
+Połączenia ESP32:
+• CZERWONY z B+  →  VIN (lub 5V) na ESP32
+• CZARNY z GND   →  GND na ESP32
+• ŻÓŁTY z dzielnika → GPIO34 na ESP32
+
+================================================================================
+                         WERYFIKACJA POŁĄCZEŃ
+================================================================================
+
+Przed włączeniem sprawdź multimetrem:
+
+1. Ciągłość obwodu GND:
+   Sonda 1: B- na TP4056
+   Sonda 2: GND na ESP32
+   Wynik: 0Ω (brak rezystancji)
+
+2. Napięcie na akumulatorze (bez ładowania):
+   Sonda +: B+ na TP4056
+   Sonda -: B- na TP4056
+   Wynik: 3.0V - 4.2V (zależnie od naładowania)
+
+3. Napięcie na GPIO34:
+   Sonda +: Punkt środkowy dzielnika
+   Sonda -: GND
+   Wynik: Połowa napięcia akumulatora (1.5V - 2.1V)
+
+4. Brak zwarcia:
+   Sprawdź rezystancję między B+ a B-:
+   Wynik: Powinien być duży (kΩ-MΩ), NIE 0Ω!
+
+================================================================================
+                         PIERWSZE URUCHOMIENIE
+================================================================================
+
+1. Podłącz przewód USB do TP4056 (ładowanie zasilania)
+   → Powinna zaświecić się czerwona dioda LED (ładowanie)
+   → Jeśli akumulator naładowany - niebieska dioda
+
+2. Włącz ESP32 przyciskiem RST/EN
+   → Ekran powinien się włączyć
+   → W prawym górnym rogu pojawi się ikona baterii
+
+3. Sprawdź w Serial Monitor (115200 baud):
+   Powinien pojawić się komunikat:
+   [BATTERY] Init: 4.05V (87%) 
+
+4. Odczekaj 30 sekund - powinien się pojawić kolejny log:
+   [BATTERY] 4.05V (87%)
+
+5. Odłącz USB (przejdź na zasilanie bateryjne)
+   → ESP32 powinien działać dalej
+   → Napięcie na dzielniku powinno stopniowo spadać
+
+================================================================================
+                         ROZWIĄZYWANIE PROBLEMÓW
+================================================================================
+
+Problem: ESP32 się nie włącza
+→ Sprawdź napięcie na akumulatorze (min 3.3V)
+→ Sprawdź polaryzację (czy nie masz odwróconego +/-)
+→ Sprawdź czy VIN na ESP32 ma napięcie
+
+Problem: Ikona baterii pokazuje 0% lub niepoprawną wartość
+→ Sprawdź połączenie GPIO34
+→ Sprawdź dzielnik (powinien pokazywać połowę napięcia)
+→ Sprawdź w Serial Monitor czy są logi [BATTERY]
+
+Problem: Dioda na TP4056 nie świeci
+→ Sprawdź czy akumulator jest podłączony poprawnie
+→ Sprawdź czy USB daje 5V
+→ Może akumulator jest już naładowany (wtedy niebieska)
+
+Problem: Krótki czas pracy na baterii
+→ Akumulator może być zużyty / słabej jakości
+→ Sprawdź pobór prądu ESP32 (powinien być ~150-250mA)
+→ Oblicz: czas = pojemność [mAh] / pobór [mA]
+
+================================================================================
+                         BEZPIECZEŃSTWO
+================================================================================
+
+⚠ WAŻNE PRZESTROGI:
+
+1. ZAWSZE używaj akumulatora z płytką PCB (PCM)
+   → Zabezpiecza przed przeładowaniem
+   → Zabezpiecza przed głębokim rozładowaniem
+   → Zabezpiecza przed zwarciem
+
+2. NIGDY nie zwieraj bezpośrednio B+ i B-!
+   → Akumulatory Li-Ion mogą eksplodować przy zwarciu
+   → Używaj bezpieczników jeśli montujesz stałe
+
+3. Nie ładuj w temperaturze poniżej 0°C lub powyżej 45°C
+   → TP4056 nie ma kontroli temperatury
+   → Może uszkodzić akumulator
+
+4. Monitoruj temperaturę podczas lutowania
+   → Nie przegrzewaj akumulatora (max 60°C przez krótko)
+   → Lepiej użyć gniazda niż lutować bezpośrednio
+
+================================================================================
+                         SPECYFIKACJA TECHNICZNA
+================================================================================
+
+Parametry układu po montażu:
+
+Zasilanie:
+• Napięcie wejściowe: 5V USB (do ładowania)
+• Napięcie akumulatora: 4.2V (max) - 3.0V (min)
+• Napięcie na GPIO34: 2.1V (max) - 1.5V (min)
+• Czas ładowania: ~3-5h (dla 2000mAh przy 0.5A)
+
+Pomiar:
+• Rozdzielczość ADC: 12-bit (4096 poziomów)
+• Dokładność: ~±0.1V (przy kalibracji)
+• Interwał pomiaru: co 30 sekund
+• Pobór przez dzielnik: ~20µA (zaniedbywalny)
+
+Ochrona:
+• TP4056: Ogranicza prąd ładowania, kontroluje napięcie 4.2V
+• DW01A: Wyłącza przy <2.4V (głębokie rozładowanie)
+• DW01A: Wyłącza przy >4.3V (przeładowanie)
+• Kod: Ostrzeżenie przy <10% (3.3V)
+
+================================================================================
+                         ZAKOŃCZENIE
+================================================================================
+
+Po poprawnym montażu Twój ESP32-HAM-CLOCK będzie:
+✓ Zasilany z akumulatora 18650 (7-10h pracy)
+✓ Ładowany przez USB (TP4056)
+✓ Wyświetlał poziom baterii na ekranie
+✓ Ostrzegał przy niskim poziomie (diody + logi)
+
+W razie problemów - sprawdź logi w Serial Monitor!
+Baud rate: 115200, linia z [BATTERY] pokazuje stan.
+
+================================================================================
