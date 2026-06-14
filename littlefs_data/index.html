@@ -258,32 +258,74 @@
         .settings-header { padding: 16px 20px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; }
         .settings-header h3 { color: var(--accent-cyan); font-size: 16px; }
         .settings-body { padding: 20px; }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .nav-logo {
+            color: var(--accent-cyan);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .lang-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition-fast);
+        }
+        .lang-link:hover {
+            color: var(--text-primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .lang-link.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .app-title { display: none; }
+        .coffee-link { display: none; }
+        .nav { display: none; }
     </style>
 
 </head>
 <body>
-    <a class="coffee-link" href="https://buycoffee.to/esp32hamclock" target="_blank" rel="noopener noreferrer">Jeśli Ci się podoba to POSTAW KAWĘ</a>
-    <div class="app-title">ESP32-HAM-CLOCK</div>
-    <div class="nav">
-        <button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button>
-        <button class="nav-btn" onclick="showPage('pota')">POTA</button>
-        <button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button>
-        <button class="nav-btn" onclick="showPage('aprs')">APRS</button>
-        <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
-        <button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button>
-        <button class="nav-btn" onclick="showPage('issfreq')">ISS Częstotliwości</button>
-        <button class="nav-btn" onclick="showPage('isstracker')">🛰️ ISS Tracker</button>
-        <button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button>
-        <button class="nav-btn" onclick="showPage('upload')">📤 Upload</button>
-        <button class="nav-btn" onclick="showPage('config')">Ustawienia</button>
-        <button class="nav-btn" onclick="showPage('screensaver')">Wygaszacz</button>
-        <button class="nav-btn" onclick="showPage('manual')">Instrukcja</button>
-        <div class="lang-switch">
-            <a class="lang-link active" href="/index.html">PL</a>
-            <span>|</span>
-            <a class="lang-link" href="/indexEN.html">EN</a>
-        </div>
-    </div>
+    <div class="main-container">
+        <nav class="nav-container">
+            <div class="nav-header">
+                <span class="nav-logo">📡 ESP32-HAM-CLOCK</span>
+                <div class="lang-switch">
+                    <a class="lang-link active" href="/index.html">PL</a>
+                    <span>|</span>
+                    <a class="lang-link" href="/indexEN.html">EN</a>
+                </div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button>
+                <button class="nav-btn" onclick="showPage('pota')">POTA</button>
+                <button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button>
+                <button class="nav-btn" onclick="showPage('aprs')">APRS</button>
+                <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
+                <button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button>
+                <button class="nav-btn" onclick="showPage('issfreq')">ISS Częstotliwości</button>
+                <button class="nav-btn" onclick="showPage('isstracker')">🛰️ ISS Tracker</button>
+                <button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button>
+                <button class="nav-btn" onclick="showPage('upload')">📤 Upload</button>
+                <button class="nav-btn" onclick="showPage('config')">Ustawienia</button>
+                <button class="nav-btn" onclick="showPage('screensaver')">Wygaszacz</button>
+                <button class="nav-btn" onclick="showPage('manual')">Instrukcja</button>
+            </div>
+        </nav>
+        <div class="content-area">
     
     <div id="dxspot-page" class="page active">
         <div class="cyd-container">
@@ -1995,6 +2037,43 @@
         
         .manual-footer { text-align: center; padding: 30px 20px; color: #666; }
         .footer-badge { display: inline-block; background: #2a4a6a; color: #00d4ff; padding: 6px 16px; border-radius: 20px; font-size: 12px; margin-right: 15px; }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .nav-logo {
+            color: var(--accent-cyan);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .lang-switch {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .lang-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition-fast);
+        }
+        .lang-link:hover {
+            color: var(--text-primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .lang-link.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .app-title { display: none; }
+        .coffee-link { display: none; }
+        .nav { display: none; }
     </style>    
     <script>
         let currentMode = "All";
@@ -3257,6 +3336,7 @@
         Obecna wersja oprogramowania ESP32-HAM-CLOCK v1.2 z dnia 04.03.2026.<br>
         W razie pytań proszę o kontakt: sp3kon@gmail.com
     </div>
+</div>
 </body>
 </html>
 
