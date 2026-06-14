@@ -1622,219 +1622,7 @@
             </div>
         </div>
         
-        <script>
-        let selectedFile = null;
-        let currentPath = '/';
-        
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        const uploadPreview = document.getElementById('uploadPreview');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const filePath = document.getElementById('filePath');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const uploadProgress = document.getElementById('uploadProgress');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        const uploadStatus = document.getElementById('uploadStatus');
-        
-        // Click to select file
-        uploadZone.addEventListener('click', () => fileInput.click());
-        
-        // Drag and drop
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
-        
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
-        
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFileSelect(e.dataTransfer.files[0]);
-            }
-        });
-        
-        // File input change
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                handleFileSelect(fileInput.files[0]);
-            }
-        });
-        
-        function handleFileSelect(file) {
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatBytes(file.size);
-            
-            // Set path based on file type
-            if (file.name.endsWith('.html')) {
-                currentPath = '/index.html';
-            } else if (file.name.endsWith('.bmp')) {
-                currentPath = '/' + file.name;
-            } else if (file.name.endsWith('.txt')) {
-                currentPath = '/' + file.name;
-            } else {
-                currentPath = '/' + file.name;
-            }
-            filePath.textContent = 'Ścieżka: ' + currentPath;
-            
-            uploadPreview.style.display = 'block';
-            uploadBtn.disabled = false;
-            uploadStatus.style.display = 'none';
-        }
-        
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-        
-        function uploadFile() {
-            if (!selectedFile) return;
-            
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = '⏳ Trwa wysyłanie...';
-            uploadProgress.style.display = 'block';
-            uploadStatus.style.display = 'none';
-            progressFill.style.width = '0%';
-            progressText.textContent = '0%';
-            
-            const xhr = new XMLHttpRequest();
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressFill.style.width = percent + '%';
-                    progressText.textContent = percent + '%';
-                }
-            });
-            
-            xhr.addEventListener('load', () => {
-                if (xhr.status === 200 || xhr.status === 201) {
-                    uploadStatus.className = 'upload-status success';
-                    uploadStatus.innerHTML = '✅ Sukces! Plik został wgrany.<br><small>Odśwież stronę (Ctrl+F5)</small>';
-                    uploadStatus.style.display = 'block';
-                    uploadBtn.textContent = '✅ Wgrano!';
-                } else {
-                    uploadStatus.className = 'upload-status error';
-                    uploadStatus.textContent = '❌ Błąd: ' + xhr.statusText;
-                    uploadStatus.style.display = 'block';
-                    uploadBtn.disabled = false;
-                    uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
-                }
-            });
-            
-            xhr.addEventListener('error', () => {
-                uploadStatus.className = 'upload-status error';
-                uploadStatus.textContent = '❌ Błąd połączenia z ESP32';
-                uploadStatus.style.display = 'block';
-                uploadBtn.disabled = false;
-                uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
-            });
-            
-            xhr.open('POST', '/update');
-            xhr.send(formData);
-        }
-        
-        
-        // === ISS TRACKER FUNCTIONS ===
-        let issTrackerInterval;
-        
-        function initISSTracker() {
-            loadISSTrackerData();
-            drawRadar();
-            if (issTrackerInterval) clearInterval(issTrackerInterval);
-            issTrackerInterval = setInterval(loadISSTrackerData, 5000);
-        }
-        
-        function loadISSTrackerData() {
-            fetch('/api/iss?t=' + Date.now())
-                .then(r => r.json())
-                .then(data => {
-                    if (data && data.lat !== undefined) {
-                        document.getElementById('iss-lat').textContent = data.lat.toFixed(4) + '°';
-                        document.getElementById('iss-lng').textContent = data.lng.toFixed(4) + '°';
-                        document.getElementById('iss-alt').textContent = data.altitude.toFixed(1) + ' km';
-                        document.getElementById('iss-speed').textContent = data.speed.toFixed(0) + ' km/h';
-                        document.getElementById('iss-az').textContent = data.azimuth.toFixed(1) + '°';
-                        document.getElementById('iss-el').textContent = data.elevation.toFixed(1) + '°';
-                        document.getElementById('iss-dist').textContent = data.distance.toFixed(0) + ' km';
-                        document.getElementById('iss-country').textContent = data.country || 'OCEAN / MORZE';
-                        document.getElementById('iss-status').textContent = 'Ostatnia aktualizacja: ' + new Date().toLocaleTimeString();
-                        updateRadarPosition(data.lat, data.lng);
-                    }
-                })
-                .catch(err => {
-                    console.error('ISS Tracker error:', err);
-                });
-        }
-        
-        function drawRadar() {
-            const canvas = document.getElementById('issRadar');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const centerX = 200;
-            const centerY = 200;
-            const maxRadius = 195;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, 400, 400);
-            
-            // Draw concentric circles
-            ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
-            ctx.lineWidth = 1;
-            for (let i = 1; i <= 5; i++) {
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, (maxRadius / 5) * i, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-            
-            // Draw cross lines
-            ctx.beginPath();
-            ctx.moveTo(centerX, 0);
-            ctx.lineTo(centerX, 400);
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(400, centerY);
-            ctx.stroke();
-            
-            // Draw diagonal lines
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(400, 400);
-            ctx.moveTo(400, 0);
-            ctx.lineTo(0, 400);
-            ctx.stroke();
-            
-            // Draw outer ring
-            ctx.strokeStyle = '#00d4ff';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-        
-        function updateRadarPosition(lat, lng) {
-            const marker = document.getElementById('issMarker');
-            if (!marker) return;
-            // Simplified position calculation (centered for demo)
-            const angle = (lng + 180) / 360 * 360;
-            const dist = (90 - lat) / 90;
-            const x = 200 + Math.cos((angle - 90) * Math.PI / 180) * dist * 150;
-            const y = 200 + Math.sin((angle - 90) * Math.PI / 180) * dist * 150;
-            marker.style.left = x + 'px';
-            marker.style.top = y + 'px';
-        }
 
-    </script>
     </div>
 
         <div id="manual-page" class="page">
@@ -2075,6 +1863,230 @@
         .coffee-link { display: none; }
         .nav { display: none; }
     </style>    
+
+    <div style="margin: 20px auto 10px; max-width: 980px; padding: 10px 16px; color: #b0b0b0; font-size: 12px; text-align: center;">
+        Oprogramowanie zostało zaprojektowane i wykonane przez Konrad Wiśniewski SP3KON (z użyciem AI).<br>
+        Obecna wersja oprogramowania ESP32-HAM-CLOCK v1.2 z dnia 04.03.2026.<br>
+        W razie pytań proszę o kontakt: sp3kon@gmail.com
+    </div>
+</div>
+
+    <!-- Upload Functions -->
+        <script>
+        let selectedFile = null;
+        let currentPath = '/';
+        
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const filePath = document.getElementById('filePath');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const uploadStatus = document.getElementById('uploadStatus');
+        
+        // Click to select file
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFileSelect(fileInput.files[0]);
+            }
+        });
+        
+        function handleFileSelect(file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatBytes(file.size);
+            
+            // Set path based on file type
+            if (file.name.endsWith('.html')) {
+                currentPath = '/index.html';
+            } else if (file.name.endsWith('.bmp')) {
+                currentPath = '/' + file.name;
+            } else if (file.name.endsWith('.txt')) {
+                currentPath = '/' + file.name;
+            } else {
+                currentPath = '/' + file.name;
+            }
+            filePath.textContent = 'Ścieżka: ' + currentPath;
+            
+            uploadPreview.style.display = 'block';
+            uploadBtn.disabled = false;
+            uploadStatus.style.display = 'none';
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function uploadFile() {
+            if (!selectedFile) return;
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = '⏳ Trwa wysyłanie...';
+            uploadProgress.style.display = 'block';
+            uploadStatus.style.display = 'none';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = percent + '%';
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200 || xhr.status === 201) {
+                    uploadStatus.className = 'upload-status success';
+                    uploadStatus.innerHTML = '✅ Sukces! Plik został wgrany.<br><small>Odśwież stronę (Ctrl+F5)</small>';
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.textContent = '✅ Wgrano!';
+                } else {
+                    uploadStatus.className = 'upload-status error';
+                    uploadStatus.textContent = '❌ Błąd: ' + xhr.statusText;
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+                }
+            });
+            
+            xhr.addEventListener('error', () => {
+                uploadStatus.className = 'upload-status error';
+                uploadStatus.textContent = '❌ Błąd połączenia z ESP32';
+                uploadStatus.style.display = 'block';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+            });
+            
+            xhr.open('POST', '/update');
+            xhr.send(formData);
+        }
+        
+        
+        // === ISS TRACKER FUNCTIONS ===
+        let issTrackerInterval;
+        
+        function initISSTracker() {
+            loadISSTrackerData();
+            drawRadar();
+            if (issTrackerInterval) clearInterval(issTrackerInterval);
+            issTrackerInterval = setInterval(loadISSTrackerData, 5000);
+        }
+        
+        function loadISSTrackerData() {
+            fetch('/api/iss?t=' + Date.now())
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.lat !== undefined) {
+                        document.getElementById('iss-lat').textContent = data.lat.toFixed(4) + '°';
+                        document.getElementById('iss-lng').textContent = data.lng.toFixed(4) + '°';
+                        document.getElementById('iss-alt').textContent = data.altitude.toFixed(1) + ' km';
+                        document.getElementById('iss-speed').textContent = data.speed.toFixed(0) + ' km/h';
+                        document.getElementById('iss-az').textContent = data.azimuth.toFixed(1) + '°';
+                        document.getElementById('iss-el').textContent = data.elevation.toFixed(1) + '°';
+                        document.getElementById('iss-dist').textContent = data.distance.toFixed(0) + ' km';
+                        document.getElementById('iss-country').textContent = data.country || 'OCEAN / MORZE';
+                        document.getElementById('iss-status').textContent = 'Ostatnia aktualizacja: ' + new Date().toLocaleTimeString();
+                        updateRadarPosition(data.lat, data.lng);
+                    }
+                })
+                .catch(err => {
+                    console.error('ISS Tracker error:', err);
+                });
+        }
+        
+        function drawRadar() {
+            const canvas = document.getElementById('issRadar');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const centerX = 200;
+            const centerY = 200;
+            const maxRadius = 195;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 400, 400);
+            
+            // Draw concentric circles
+            ctx.strokeStyle = 'rgba(0, 212, 255, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, (maxRadius / 5) * i, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Draw cross lines
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, 400);
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(400, centerY);
+            ctx.stroke();
+            
+            // Draw diagonal lines
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(400, 400);
+            ctx.moveTo(400, 0);
+            ctx.lineTo(0, 400);
+            ctx.stroke();
+            
+            // Draw outer ring
+            ctx.strokeStyle = '#00d4ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        function updateRadarPosition(lat, lng) {
+            const marker = document.getElementById('issMarker');
+            if (!marker) return;
+            // Simplified position calculation (centered for demo)
+            const angle = (lng + 180) / 360 * 360;
+            const dist = (90 - lat) / 90;
+            const x = 200 + Math.cos((angle - 90) * Math.PI / 180) * dist * 150;
+            const y = 200 + Math.sin((angle - 90) * Math.PI / 180) * dist * 150;
+            marker.style.left = x + 'px';
+            marker.style.top = y + 'px';
+        }
+
+    </script>
+
+    <!-- Main Application Functions -->
     <script>
         let currentMode = "All";
         let currentBand = "All";
@@ -3329,12 +3341,6 @@
         });
         readContinentFilters();
     </script>
-    <div style="margin: 20px auto 10px; max-width: 980px; padding: 10px 16px; color: #b0b0b0; font-size: 12px; text-align: center;">
-        Oprogramowanie zostało zaprojektowane i wykonane przez Konrad Wiśniewski SP3KON (z użyciem AI).<br>
-        Obecna wersja oprogramowania ESP32-HAM-CLOCK v1.2 z dnia 04.03.2026.<br>
-        W razie pytań proszę o kontakt: sp3kon@gmail.com
-    </div>
-</div>
 </body>
 </html>
 
