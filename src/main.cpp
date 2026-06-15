@@ -17244,7 +17244,7 @@ void setupWebServer() {
     server->send(200, "text/html", "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Upload</title><style>body{font-family:Arial;background:#1a1a1a;color:#e0e0e0;padding:20px;}button{padding:12px 30px;background:#4a6a4a;border:none;color:#e0e0e0;cursor:pointer;border-radius:5px;font-size:16px;}</style></head><body><h2>Upload index.html</h2><form id='f'><input type='file' id='file' accept='.html'><br><br><button type='submit'>Wgraj</button></form><div id='s'></div><script>document.getElementById('f').addEventListener('submit',function(e){e.preventDefault();const file=document.getElementById('file').files[0];if(!file){alert('Wybierz plik');return;}const fd=new FormData();fd.append('index.html',file);fetch('/api/upload',{method:'POST',body:fd}).then(()=>{document.getElementById('s').innerHTML='<p style=\"color:green\">OK! Odswiez strone glowna (Ctrl+F5)</p>';}).catch(err=>{document.getElementById('s').innerHTML='<p style=\"color:red\">Blad: '+err+'</p>';});});</script></body></html>");
   });
   server->on("/api/upload", HTTP_POST, []() {
-    server->send(200, "application/json", "{\"status\":\"ok\",\"message\":\"upload_done\"}");
+    server->send(200, "application/json", "{\"success\":true,\"message\":\"upload_done\"}");
   }, []() {
     HTTPUpload& upload = server->upload();
     if (upload.status == UPLOAD_FILE_START) {
@@ -17279,6 +17279,35 @@ void setupWebServer() {
     } else if (upload.status == UPLOAD_FILE_END) {
       Serial.printf("Upload finished: %s, size: %d\n", upload.filename.c_str(), upload.totalSize);
     }
+  });
+
+  // API - lista plików instrukcji (.md)
+  server->on("/api/instructions", HTTP_GET, []() {
+    StaticJsonDocument<4096> doc;
+    JsonArray files = doc.createNestedArray("files");
+    
+    if (littleFsReady) {
+      File root = LittleFS.open("/");
+      if (root) {
+        if (root.isDirectory()) {
+          File file = root.openNextFile();
+          while (file) {
+            String name = file.name();
+            if (name.endsWith(".md") && !name.equals("/manual.md")) {
+              JsonObject fileObj = files.createNestedObject();
+              fileObj["name"] = name.substring(1); // usuń "/" z początku
+              fileObj["size"] = file.size();
+            }
+            file = root.openNextFile();
+          }
+        }
+        root.close();
+      }
+    }
+    
+    String output;
+    serializeJson(doc, output);
+    server->send(200, "application/json", output);
   });
   
   // API - pobierz konfigurację
