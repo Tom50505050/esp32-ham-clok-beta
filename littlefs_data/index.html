@@ -1,179 +1,1111 @@
-<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ESP32-HAM-CLOCK</title><style>
+﻿<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ESP32-HAM-CLOCK</title><style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg-primary: #0a0f1a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #00d4ff;
-            --text: #e0e0e0;
-            --text-muted: #8a9aaa;
-        }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 50%, #16213e 100%);
-            background-attachment: fixed;
-            color: var(--text);
-            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #e0e0e0;
             padding: 20px;
         }
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-        .nav-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-            padding: 12px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-        }
-        .nav-btn {
-            padding: 10px 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 12px;
+        .coffee-link {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            z-index: 9999;
+            color: #e0e0e0;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.25s ease;
+            text-decoration: none;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 5px 8px;
+            animation: coffeePulseWeight 1s steps(1, end) infinite;
         }
-        .nav-btn:hover {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--accent);
-            color: var(--text);
+        @keyframes coffeePulseWeight {
+            0%, 49% { font-weight: 500; }
+            50%, 100% { font-weight: 800; }
+        }
+        .coffee-link:hover {
+            background: #3a3a3a;
+        }
+        .app-title {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #e0e0e0;
+            letter-spacing: 1px;
+        }
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .nav-btn {
+            padding: 10px 20px;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
         }
         .nav-btn.active {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 180, 220, 0.2));
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            background: #4a4a4a;
+            border-color: #666;
+        }
+        .nav-btn:hover {
+            background: #3a3a3a;
         }
         .lang-switch {
             margin-left: auto;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 12px;
+            gap: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
         }
         .lang-link {
-            color: var(--text-muted);
+            color: #e0e0e0;
             text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 8px;
+            padding: 4px 6px;
+            border-radius: 4px;
             border: 1px solid transparent;
-            transition: all 0.2s;
         }
-        .lang-link:hover, .lang-link.active {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
+        .lang-link.active {
+            border-color: #666;
+            background: #3a3a3a;
         }
         .page {
             display: none;
         }
         .page.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .cyd-container {
+            background: #2d2d1e;
+            border: 8px solid #1a1a0a;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        #aprs-page .cyd-container {
+            max-width: 864px; /* 720px * 1.2 = 864px (20% szersze) */
         }
         .cyd-screen {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 16px;
-            font-family: 'Courier New', monospace;
-            min-height: 300px;
-            overflow-x: auto;
+            background: #f5f5dc;
             color: #000;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            min-height: 400px;
+            overflow-x: auto;
         }
-        .controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-        .control-group { display: flex; gap: 4px; flex-wrap: wrap; }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            gap: 5px;
+        }
         .btn {
-            padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
+            padding: 8px 15px;
+            background: #4a4a4a;
+            border: 1px solid #666;
+            color: #e0e0e0;
             cursor: pointer;
-            border-radius: 8px;
-            font-size: 12px;
-            transition: all 0.2s;
+            border-radius: 3px;
+            font-size: 14px;
         }
-        .btn:hover { background: rgba(0, 212, 255, 0.2); border-color: var(--accent); }
-        .btn.active { background: rgba(0, 212, 255, 0.3); border-color: var(--accent); color: var(--accent); }
-        .cyd-screen table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
-        .cyd-screen th { background: rgba(0, 212, 255, 0.2); color: #000; padding: 8px; text-align: left; border-bottom: 2px solid #333; }
-        .cyd-screen td { padding: 6px 8px; border-bottom: 1px solid #555; color: #000; }
-        .cyd-screen tr:nth-child(even) { background: rgba(0, 0, 0, 0.05); }
-        .status { margin-top: 10px; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; font-size: 11px; color: var(--text-muted); }
-        .continent-filters { margin-top: 12px; padding: 12px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 12px; font-size: 12px; }
-        .continent-filters .title { margin-bottom: 8px; color: var(--text); font-weight: 500; }
-        .continent-filters .row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .continent-filters label { display: inline-flex; gap: 6px; align-items: center; margin: 0; color: var(--text-muted); cursor: pointer; }
-        .continent-filters input[type="checkbox"] { width: auto; accent-color: var(--accent); }
-        .config-section { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-        .config-section h3 { color: var(--accent); margin: 0 0 12px 0; font-size: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; }
-        .form-group { margin-bottom: 14px; }
-        .form-group:last-child { margin-bottom: 0; }
-        label { display: block; margin-bottom: 6px; color: var(--text); font-weight: 500; font-size: 13px; }
-        .checkbox-label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0; cursor: pointer; }
+        .btn.active {
+            background: #6a6a4a;
+            border-color: #888;
+        }
+        .btn:hover {
+            background: #5a5a4a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+        th {
+            background: #d4d4a4;
+            color: #000;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #000;
+        }
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #aaa;
+        }
+        th, td {
+            word-break: break-word;
+        }
+        tr:nth-child(even) {
+            background: #f0f0d0;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #3a3a2a;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .continent-filters {
+            margin-top: 10px;
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .continent-filters .title {
+            margin-bottom: 8px;
+            color: #e0e0e0;
+        }
+        .continent-filters .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .continent-filters label {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            margin: 0;
+            color: #e0e0e0;
+        }
+        .continent-filters input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            margin: 0;
+            accent-color: #6a6a4a;
+        }
+        .config-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .config-section {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .config-section h3 {
+            color: #e0e0e0;
+            margin: 0 0 15px 0;
+            padding: 0;
+            border: none;
+            font-size: 18px;
+            border-bottom: 2px solid #4a4a4a;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #e0e0e0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
         input, textarea, select {
             width: 100%;
-            padding: 10px 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            border-radius: 10px;
-            font-size: 13px;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 12px rgba(0, 212, 255, 0.2); }
-        textarea { resize: vertical; min-height: 80px; }
-        small { display: block; margin-top: 6px; color: var(--text-muted); font-size: 11px; font-style: italic; }
-        .save-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--accent), #0088aa);
-            border: none;
-            color: #000;
-            cursor: pointer;
-            border-radius: 10px;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 5px;
             font-size: 14px;
-            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #6a6a4a;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        small {
+            display: block;
+            margin-top: 6px;
+            color: #888;
+            font-size: 12px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        h3 {
+            color: #e0e0e0;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+        .save-btn {
+            padding: 12px 30px;
+            background: #4a6a4a;
+            border: none;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
             width: 100%;
-            transition: all 0.25s;
         }
-        .save-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4); }
-        .manual-content { background: rgba(0, 0, 0, 0.4); border-radius: 12px; padding: 16px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
-        h2 { color: var(--accent); margin-bottom: 12px; text-align: center; font-size: 18px; }
-        h3 { color: var(--accent); margin: 16px 0 10px 0; font-size: 14px; }
-        .screen-slot { display: grid; grid-template-columns: 80px 1fr; gap: 8px; align-items: center; margin-bottom: 10px; }
-        .screen-slot label { margin: 0; }
+        .save-btn:hover {
+            background: #5a7a5a;
+        }
+        .manual-container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .iss-telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .iss-card {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .iss-card-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .iss-card-value {
+            color: #00ffcc;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .iss-status {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        /* === ISS FREQUENCIES PREMIUM CYBERPUNK UI === */
+        .iss-freq-container {
+            margin-top: 24px;
+            padding: 0 4px;
+        }
+        
+        /* Header with animated scan line */
+        .iss-freq-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #0a0f1a 0%, #0d1f35 50%, #0a1525 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 
+                0 0 30px rgba(0, 212, 255, 0.15),
+                inset 0 0 60px rgba(0, 212, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .iss-freq-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            animation: headerScan 3s linear infinite;
+        }
+        @keyframes headerScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .iss-freq-header svg {
+            width: 32px;
+            height: 32px;
+            fill: #00d4ff;
+            filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .iss-freq-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            color: #00d4ff;
+            text-shadow: 
+                0 0 10px rgba(0, 212, 255, 0.6),
+                0 0 20px rgba(0, 212, 255, 0.4),
+                0 0 40px rgba(0, 212, 255, 0.2);
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Cards Grid */
+        .iss-freq-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Individual Card */
+        .iss-freq-card {
+            background: linear-gradient(145deg, #121a24 0%, #0a1118 100%);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .iss-freq-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--card-accent), transparent);
+            opacity: 0.8;
+        }
+        .iss-freq-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--card-accent) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .iss-freq-card:hover::after {
+            opacity: 0.03;
+        }
+        .iss-freq-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px var(--card-glow);
+        }
+        
+        /* Card color variants */
+        .iss-freq-card.voice { 
+            --card-accent: #00ff88; 
+            --card-glow: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        .iss-freq-card.packet { 
+            --card-accent: #ff9500; 
+            --card-glow: rgba(255, 149, 0, 0.15);
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+        .iss-freq-card.sstv { 
+            --card-accent: #bf5fff; 
+            --card-glow: rgba(191, 95, 255, 0.15);
+            border: 1px solid rgba(191, 95, 255, 0.2);
+        }
+        .iss-freq-card.direct { 
+            --card-accent: #00d4ff; 
+            --card-glow: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        /* Card Header */
+        .iss-freq-card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .iss-freq-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-accent);
+            box-shadow: 
+                0 0 15px var(--card-glow),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .iss-freq-card-icon::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--card-accent), transparent);
+            opacity: 0.2;
+            z-index: -1;
+        }
+        .iss-freq-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--card-accent);
+            text-shadow: 0 0 10px var(--card-glow);
+            letter-spacing: 1px;
+            font-family: 'Courier New', monospace;
+        }
+        .iss-freq-card-subtitle {
+            font-size: 11px;
+            color: #6a7a8a;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Frequency Display */
+        .iss-freq-display {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .iss-freq-channel {
+            flex: 1;
+            text-align: center;
+            padding: 16px 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .iss-freq-channel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--channel-color), transparent);
+            opacity: 0.5;
+        }
+        .iss-freq-channel-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .iss-freq-channel-label svg {
+            width: 14px;
+            height: 14px;
+        }
+        .iss-freq-channel.rx { 
+            --channel-color: #00ff88;
+        }
+        .iss-freq-channel.rx .iss-freq-channel-label { 
+            color: #00ff88; 
+        }
+        .iss-freq-channel.rx .iss-freq-channel-label svg {
+            fill: #00ff88;
+        }
+        .iss-freq-channel.tx { 
+            --channel-color: #ff6b6b;
+        }
+        .iss-freq-channel.tx .iss-freq-channel-label { 
+            color: #ff6b6b; 
+        }
+        .iss-freq-channel.tx .iss-freq-channel-label svg {
+            fill: #ff6b6b;
+        }
+        .iss-freq-channel.simplex { 
+            --channel-color: #ffd700;
+        }
+        .iss-freq-channel.simplex .iss-freq-channel-label { 
+            color: #ffd700; 
+        }
+        .iss-freq-channel.simplex .iss-freq-channel-label svg {
+            fill: #ffd700;
+        }
+        
+        /* Transceiver-style frequency display */
+        .iss-freq-value {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 
+                0 0 10px rgba(255, 255, 255, 0.5),
+                0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+        .iss-freq-value::before {
+            content: '_';
+            animation: blink 1s step-end infinite;
+            color: var(--channel-color);
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .iss-freq-unit {
+            font-size: 12px;
+            color: #8a9aaa;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+        
+        /* Mode Badges */
+        .iss-freq-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .iss-freq-badge {
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .iss-freq-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .iss-freq-badge:hover::before {
+            left: 100%;
+        }
+        .iss-freq-badge.fm {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        .iss-freq-badge.afsk {
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.2) 0%, rgba(255, 149, 0, 0.1) 100%);
+            color: #ff9500;
+            border: 1px solid rgba(255, 149, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 149, 0, 0.2);
+        }
+        .iss-freq-badge.sstv {
+            background: linear-gradient(135deg, rgba(191, 95, 255, 0.2) 0%, rgba(191, 95, 255, 0.1) 100%);
+            color: #bf5fff;
+            border: 1px solid rgba(191, 95, 255, 0.4);
+            box-shadow: 0 0 10px rgba(191, 95, 255, 0.2);
+        }
+        .iss-freq-badge.tone {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+        .iss-freq-badge.ax25 {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 212, 255, 0.1) 100%);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        /* Footer */
+        .iss-freq-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 20, 40, 0.3) 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            font-size: 12px;
+            color: #6a7a8a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .iss-freq-footer a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .iss-freq-footer a:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .iss-freq-header h3 {
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+            .iss-freq-cards {
+                grid-template-columns: 1fr;
+            }
+            .iss-freq-card {
+                padding: 20px;
+            }
+            .iss-freq-value {
+                font-size: 18px;
+            }
+            .iss-freq-display {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+        
+        .manual-content {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        /* === UPLOAD PAGE STYLES === */
+        .upload-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .upload-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-header h2 {
+            color: #00d4ff;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .upload-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        .upload-zone {
+            background: linear-gradient(145deg, #1a2535 0%, #0f1a28 100%);
+            border: 2px dashed #2a5a8a;
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #00d4ff;
+            background: linear-gradient(145deg, #1a3045 0%, #152535 100%);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+        }
+        .upload-zone-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .upload-zone-text {
+            color: #e0e8f0;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .upload-zone-hint {
+            color: #6a7a8a;
+            font-size: 12px;
+        }
+        .upload-input {
+            display: none;
+        }
+        .upload-preview {
+            background: #1a2535;
+            border: 1px solid #2a4a6a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .upload-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .upload-preview-filename {
+            color: #00d4ff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .upload-preview-size {
+            color: #888;
+            font-size: 12px;
+        }
+        .upload-preview-path {
+            color: #6a7a8a;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0080aa 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #00e8ff 0%, #0099cc 100%);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .upload-progress {
+            margin-top: 20px;
+        }
+        .upload-progress-bar {
+            height: 8px;
+            background: #1a2535;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .upload-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #00ff88 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .upload-progress-text {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+        .upload-status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .upload-status.success {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+        .upload-status.error {
+            background: rgba(255, 100, 100, 0.15);
+            border: 1px solid rgba(255, 100, 100, 0.3);
+            color: #ff6464;
+        }
+        .upload-status.info {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+        }
+        .upload-info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .upload-info-card {
+            background: #1a2535;
+            border: 1px solid #2a4a6a;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        .upload-info-card h4 {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .upload-info-card p {
+            color: #888;
+            font-size: 12px;
+            margin: 0;
+        }
+        .upload-type-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .upload-type-badge {
+            padding: 5px 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 11px;
+        }
+        .screensaver-container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #1a1a2e;
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .screensaver-container h3 {
+            margin: 0 0 20px 0;
+            color: #22c55e;
+            font-size: 24px;
+        }
+        .screensaver-options {
+            margin: 20px 0;
+        }
+        .screensaver-info {
+            background: #0f0f1a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        .screensaver-info p {
+            margin: 8px 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
         @media (max-width: 600px) {
-            body { padding: 12px; }
-            .glass-panel { padding: 14px; margin-bottom: 12px; border-radius: 16px; }
-            .nav-container { padding: 10px; gap: 6px; }
-            .nav-btn { padding: 8px 12px; font-size: 12px; border-radius: 10px; }
-            .cyd-screen { padding: 12px; min-height: 250px; }
-            .btn { padding: 6px 10px; font-size: 11px; }
+            body {
+                padding: 10px;
+            }
+            .app-title {
+                font-size: 22px;
+            }
+            .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            .lang-switch {
+                width: 100%;
+                justify-content: center;
+                margin-top: 6px;
+            }
+            .cyd-container {
+                padding: 12px;
+                border-width: 6px;
+            }
+            .cyd-screen {
+                padding: 10px;
+                min-height: 300px;
+            }
+            .controls {
+                gap: 6px;
+            }
+            .control-group {
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            table {
+                font-size: 12px;
+            }
+            th {
+                padding: 6px 6px;
+            }
+            td {
+                padding: 4px 6px;
+            }
         }
-    </style></head><body><div class="glass-panel nav-container"><button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button><button class="nav-btn" onclick="showPage('pota')">POTA</button><button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button><button class="nav-btn" onclick="showPage('aprs')">APRS</button><button class="nav-btn" onclick="showPage('alert')">ALERT</button><button class="nav-btn" onclick="showPage('psk')">PSK</button><button class="nav-btn" onclick="showPage('hunter')">HUNTER</button><button class="nav-btn" onclick="showPage('iss')">ISS</button><button class="nav-btn" onclick="showPage('tft')">TFT</button><button class="nav-btn" onclick="showPage('upload')">Upload strony startowej</button><button class="nav-btn" onclick="showPage('config')">USTAWIENIA</button><button class="nav-btn" onclick="showPage('screensaver')">WYGASZACZ</button><button class="nav-btn" onclick="showPage('manual')">INSTRUKCJA</button><div class="lang-switch"><a class="lang-link active" href="/index.html">PL</a><span>|</span><a class="lang-link" href="/indexEN.html">EN</a></div></div><!-- ==================== DX SPOT PAGE ==================== --><div id="dxspot-page" class="page active"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">DX Cluster</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Modulacja:</span><button class="btn active" onclick="setMode('All')">ALL</button><button class="btn" onclick="setMode('CW')">CW</button><button class="btn" onclick="setMode('SSB')">SSB</button><button class="btn" onclick="setMode('FT8FT4')">FT8/FT4</button></div><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Pasmo:</span><button class="btn" onclick="setBand('160m')">160m</button><button class="btn" onclick="setBand('80m')">80m</button><button class="btn" onclick="setBand('40m')">40m</button><button class="btn" onclick="setBand('20m')">20m</button><button class="btn" onclick="setBand('17m')">17m</button><button class="btn" onclick="setBand('15m')">15m</button><button class="btn" onclick="setBand('12m')">12m</button><button class="btn" onclick="setBand('10m')">10m</button><button class="btn active" onclick="setBand('All')">All</button></div></div><table id="spots-table"><thead><tr><th>Czas</th><th>Znak</th><th>Częstotliwość</th><th>Mode</th><th>Kraj</th></tr></thead><tbody id="spots-tbody"></tbody></table><div class="status" id="status">Oczekiwanie na dane...</div></div></div><!-- Filtry poniżej "wirtualnego wyświetlacza" (poza cyd-container) --><div class="continent-filters" style="max-width: 600px; margin: 12px auto 0;"><div class="title">Spot from:</div><div class="row"><label><input type="checkbox" id="cont_af" checked>AF</label><label><input type="checkbox" id="cont_an" checked>AN</label><label><input type="checkbox" id="cont_as" checked>AS</label><label><input type="checkbox" id="cont_eu" checked>EU</label><label><input type="checkbox" id="cont_na" checked>NA</label><label><input type="checkbox" id="cont_sa" checked>SA</label><label><input type="checkbox" id="cont_oc" checked>OC</label></div></div></div><div id="aprs-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">APRS</h2><div class="cyd-screen"><table id="aprs-table"><thead><tr><th>Czas</th><th>Callsign</th><th>Symbol</th><th>Odległość</th><th>Komentarz</th></tr></thead><tbody id="aprs-tbody"></tbody></table><div class="status" id="aprs-status">Oczekiwanie na dane APRS...</div></div></div></div><div id="tft-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Ustawienia TFT</h2><div class="config-section"><h3> Podświetlenie TFT</h3><div class="form-group"><label>Jasność (0-100%): <span id="tft_backlight_value">100</span>%</label><input type="range" id="tft_backlight" name="tft_backlight" min="0" max="100" value="100"><small>Ustaw jasność podświetlenia dla wszystkich ekranów</small></div></div><div class="config-section"><h3> Język TFT</h3><div class="form-group"><label>Język interfejsu TFT:</label><select id="tft_lang" name="tft_lang"><option value="pl">Polski</option><option value="en">English</option></select><small>Zmiana języka dotyczy napisów na ekranie TFT (wymaga restartu)</small></div></div><div class="config-section"><h3> Rozmiar Tabel</h3><div class="form-group"><label>Wybierz rozmiar tabel:</label><select id="table_size" name="table_size"><option value="normal">Normalne</option><option value="enlarged">Powiększone</option></select></div></div><div class="config-section"><h3> Kolory Zegara</h3><div class="form-group"><label>Kolor callsignu:</label><select id="callsign_color" name="callsign_color"><option value="65535">Biały (0xFFFF)</option><option value="63488">Czerwony (0xF800)</option><option value="2016">Zielony (0x07E0)</option><option value="31">Niebieski (0x001F)</option><option value="65504">Żółty (0xFFE0)</option><option value="2047">Jasnoniebieski (0x07FF)</option><option value="63519">Magenta (0xF81F)</option><option value="33840">Ciemnoszary (0x8410)</option><option value="63488">Pomarańczowy (0xF800)</option><option value="65504">Cyjan (0x07FF)</option><option value="63519">Różowy (0xF81F)</option><option value="0">Czarny (0x0000)</option><option value="31744">Ciemnoczerwony (0x7C00)</option><option value="1024">Ciemnozielony (0x0400)</option><option value="8">Ciemnoniebieski (0x0008)</option></select><small>Wybierz kolor wyświetlanego callsignu na ekranie zegara</small></div><div class="form-group"><label>Odcień motywu menu (0-255):</label><input type="number" id="menu_hue" name="menu_hue" min="0" max="255" value="20"><small>Odcień motywu menu (20=pomarańczowy domyślny)</small></div></div><div class="config-section"><h3> Ekrany TFT (kolejność)</h3><small>Strona 1 wyświetla się jako pierwsza po włączeniu. Możesz dowolnie ustawić strony 1-12 lub wyłączyć je (OFF).</small><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="tft_auto_switch" name="tft_auto_switch" style="width: auto;"><span>AUTO-SWITCH</span></label><small>Automatycznie przełącza ekran TFT o jeden w prawo.</small></div><div class="form-group"><label>SWITCH-TIME (sekundy):</label><input type="number" id="tft_switch_time_sec" name="tft_switch_time_sec" min="1" max="3600" step="1" value="30"><small>Czas między automatycznymi przełączeniami (1-3600 s).</small></div><div id="screen_slots_container"></div><div class="form-group"><label>Strona 1:</label><select id="screen_slot_1"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 2:</label><select id="screen_slot_2"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 3:</label><select id="screen_slot_3"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 4:</label><select id="screen_slot_4"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 5:</label><select id="screen_slot_5"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 6:</label><select id="screen_slot_6"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 7:</label><select id="screen_slot_7"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 8:</label><select id="screen_slot_8"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 9:</label><select id="screen_slot_9"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 10:</label><select id="screen_slot_10"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 11:</label><select id="screen_slot_11"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 12:</label><select id="screen_slot_12"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div></div><div class="config-section"><h3> Kalibracja TFT</h3><div class="form-group"><label>TFT Rotation (0-3):</label><select id="tft_rotation" name="tft_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót wyświetlacza TFT_eSPI (domyślnie: 1, wymaga restartu)</small></div><div class="form-group"><label>Inwersja kolorów TFT:</label><select id="tft_invert" name="tft_invert"><option value="0">Normalne</option><option value="1">Odwrócone</option></select><small>Ustawia tft.invertDisplay() (domyślnie: włączone jak w User_Setup.h)</small></div><div class="form-group"><label>Touch Rotation (0-3):</label><select id="touch_rotation" name="touch_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót biblioteki XPT2046_Touchscreen (domyślnie: 1)</small></div><div class="form-group"><label>Ręczna zamiana osi:</label><select id="touch_swap_mode" name="touch_swap_mode"><option value="none">Brak (NONE)</option><option value="xy">Zamień osie X↔Y (SWAP XY)</option><option value="x">Odwróć oś X (INVERT X)</option><option value="y">Odwróć oś Y (INVERT Y)</option><option value="both">Odwróć X i Y (INVERT BOTH - obrót 180°)</option><option value="rot90cw">Obrót 90° w prawo (SWAP XY + INVERT X)</option><option value="rot90ccw">Obrót 90° w lewo (SWAP XY + INVERT Y)</option><option value="xy_both">Zamień osie + odwróć oba (SWAP XY + INVERT BOTH)</option></select><small>Ręczna konfiguracja orientacji dotyku (lub użyj kalibracji z przełącznika CALL_TFT)</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślną rotację TFT (DEFAULT)</button><small>Ustawia TFT Rotation na 1 i restartuje urządzenie</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślne (DEFAULT)</button><small>Przywraca domyślne wartości kalibracji dotyku z kodu</small></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ustawienia TFT</button></div></div><div id="alert-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">ALERT</h2><div class="config-section"><h3> APRS ALERT</h3><div class="form-group"><label>Lista poszukiwanych znaków (po przecinku):</label><input type="text" id="aprs_alert" name="aprs_alert" placeholder="SQ3NIK-9, SP3YOR, SP3KON-7"><small>Jedno pole CSV. Maksymalnie 20 pozycji. Przykład: SQ3NIK-9, SP3YOR, SP3KON* (gwiazdka na końcu = dowolny SSID)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_enabled" name="aprs_alert_enabled" style="width: auto;" checked><span>Włącz powiadomienia APRS ALERT</span></label><small>Po wyłączeniu lista pozostaje zapisana, ale alerty nie będą zgłaszane.</small></div><div class="form-group"><label>Minimalny odstęp alertu dla tej samej stacji (sekundy):</label><input type="number" id="aprs_alert_min_sec" name="aprs_alert_min_sec" value="300" min="0" max="86400" step="1"><small>0 = alert przy każdym odebraniu. Zakres: 0-86400 sekund.</small></div><div class="form-group"><label>Czas wyświetlania ALERT na ekranie TFT (sekundy):</label><input type="number" id="aprs_alert_screen_sec" name="aprs_alert_screen_sec" value="5" min="1" max="60" step="1"><small>Zakres: 1-60 sekund. Domyślnie: 5 sekund.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_nearby_enabled" name="aprs_alert_nearby_enabled" style="width: auto;" checked><span>Włącz wykrywanie stacji ruchomych w zasięgu (-7 i -9)</span></label><small>Dotyczy tylko stacji APRS z SSID -7 lub -9 (np. SP3KON-9, SQ3NIK-7).</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_wx_enabled" name="aprs_alert_wx_enabled" style="width: auto;"><span>Włącz powiadomienia ze stacji pogodowych APRS (WX)</span></label><small>Po włączeniu APRS ALERT będzie także wykrywał stacje oznaczone symbolem WX i pokaże okno alertu z dekodowanymi danymi pogody.</small></div><div class="form-group"><label>ALERT_Distance dla stacji ruchomych (km):</label><input type="number" id="aprs_alert_distance_km" name="aprs_alert_distance_km" value="1" min="0.1" max="500" step="0.1"><small>Alert pojawi się dla stacji ruchomych w odległości nie większej niż ta wartość.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="enable_led_alert" name="enable_led_alert" style="width: auto;" checked><span>Włącz optyczny alert LED ( Blue LED - GPIO17) </span></label><small>Wyłącza lub włącza miganie diody LED dla APRS ALERT. Można dolutować buzzer 3v.</small></div><div class="form-group"><label>Czas trwania alertu LED (ms):</label><input type="number" id="led_alert_duration_ms" name="led_alert_duration_ms" value="5000" min="100" max="60000" step="100"><small>Zakres: 100-60000 ms. Domyślnie: 5000 ms.</small></div><div class="form-group"><label>Tempo migania LED (ms):</label><input type="number" id="led_alert_blink_ms" name="led_alert_blink_ms" value="500" min="50" max="5000" step="10"><small>Zakres: 50-5000 ms. Domyślnie: 500 ms.</small></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ALERT</button></div></div><div id="config-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Konfiguracja ESP32-HAM-CLOCK</h2><form id="config-form" autocomplete="off" data-lpignore="true" data-1p-ignore="true"><!-- Sekcja: Połączenie WiFi --><div class="config-section"><h3> Połączenie WiFi</h3><div class="form-group"><label>WiFi SSID:</label><input type="text" id="wifi_ssid" name="wifi_ssid" required><small>Nazwa sieci WiFi, do której ma się połączyć urządzenie</small></div><div class="form-group"><label>WiFi Hasło:</label><input type="password" id="wifi_pass" name="wifi_pass" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do sieci WiFi (pozostaw puste dla otwartych sieci)</small></div><div class="form-group"><label>WiFi SSID (zapasowe):</label><input type="text" id="wifi_ssid2" name="wifi_ssid2" placeholder="opcjonalnie"><small>Drugie SSID używane gdy główne jest niedostępne</small></div><div class="form-group"><label>WiFi Hasło (zapasowe):</label><input type="password" id="wifi_pass2" name="wifi_pass2" placeholder="opcjonalnie" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło dla sieci zapasowej (pozostaw puste dla sieci otwartej)</small></div></div><!-- Sekcja: DX Cluster --><div class="config-section"><h3> DX Cluster</h3><div class="form-group"><label>DX Cluster Host:</label><input type="text" id="cluster_host" name="cluster_host" required><small>Adres serwera DX Cluster (np. dxc.metronet.pl lub dxspots.com)</small></div><div class="form-group"><label>DX Cluster Port:</label><input type="number" id="cluster_port" name="cluster_port" required><small>Port serwera DX Cluster (zwykle 23 dla Telnet)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_noann" name="cluster_noann" style="width: auto;"><span>Wyłącz ogłoszenia (set/noann)</span></label><small>Ukrywa ogłoszenia administracyjne z clustra</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowwv" name="cluster_nowwv" style="width: auto;"><span>Wyłącz WWV (set/nowwv)</span></label><small>Ukrywa komunikaty WWV (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowcy" name="cluster_nowcy" style="width: auto;"><span>Wyłącz WCY (set/nowcy)</span></label><small>Ukrywa komunikaty WCY (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_usefilters" name="cluster_usefilters" style="width: auto;"><span>Użyj filtrów (set/filter)</span></label><small>Włącza zaawansowane filtry spotów (wymaga komend poniżej)</small></div><div class="form-group"><label>Komendy filtrów (jedna na linię):</label><textarea id="cluster_filters" name="cluster_filters" rows="4" placeholder="set/filter k,ve/pass&#10;set/filter dxbm/pass hf&#10;set/filter dxbm/reject 6-cw,6-ssb,6-fm" style="font-family: monospace; font-size: 12px;"></textarea><small>Komendy filtrowania dla CC-Cluster. Przykłady: set/filter k,ve/pass (tylko K i VE), set/filter dxbm/pass hf (tylko HF), set/filter dxbm/reject 6-cw,6-ssb,6-fm (odrzuć 6m)</small></div></div><!-- Sekcja: POTA Cluster (screen7) --><div class="config-section"><h3> POTA Cluster</h3><div class="form-group"><label>External POTA API Link:</label><input type="text" id="pota_api_url" name="pota_api_url" value="https://api.pota.app/v1/spots"><small>Adres z którego backend pobiera spoty POTA (HTTP JSON)</small></div></div><div class="config-section"><h3> HAMALERT</h3><div class="form-group"><label>Telnet Host:</label><input type="text" id="hamalert_host" name="hamalert_host" value="hamalert.org" required><small>Domyślnie: hamalert.org</small></div><div class="form-group"><label>Telnet Port:</label><input type="number" id="hamalert_port" name="hamalert_port" value="7300" min="1" max="65535" required><small>Domyślnie: 7300</small></div><div class="form-group"><label>Login:</label><input type="text" id="hamalert_login" name="hamalert_login" required><small>Login użytkownika HamAlert do logowania Telnet</small></div><div class="form-group"><label>Hasło:</label><input type="password" id="hamalert_password" name="hamalert_password" required autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Pole wymagane do logowania Telnet do HamAlert</small></div></div><!-- Sekcja: Twoja Stacja --><div class="config-section"><h3> Twoja Stacja</h3><div class="form-group"><label>Twój Znak Wywoławczy:</label><input type="text" id="user_callsign" name="user_callsign" placeholder="np. SP3KON"><small>Twój znak wywoławczy używany do logowania do DX Cluster</small></div><div class="form-group"><label>Twój Locator (Maidenhead):</label><input type="text" id="user_locator" name="user_locator" placeholder="np. JO82LK"><small>Lokator Maidenhead (4-6 znaków) używany do obliczania odległości do spotów</small></div><div class="form-group"><label>Strefa czasowa (UTC):</label><input type="number" id="timezone" name="timezone" min="-12" max="14" step="1" value="0"><small>Przesunięcie godzin względem UTC (np. Polska: 1)</small></div><div class="form-group"><label>Szerokość geograficzna (Latitude):</label><input type="number" step="0.000001" id="user_lat" name="user_lat" placeholder="np. 52.4064"><small>Współrzędna szerokości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 52.4064 dla Warszawy</small></div><div class="form-group"><label>Długość geograficzna (Longitude):</label><input type="number" step="0.000001" id="user_lon" name="user_lon" placeholder="np. 16.9252"><small>Współrzędna długości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 16.9252 dla Warszawy</small></div></div><!-- Sekcja: QRZ.com --><div class="config-section"><h3> QRZ.com</h3><div class="form-group"><label>QRZ.com Username (XML API):</label><input type="text" id="qrz_user" name="qrz_user" placeholder="login QRZ"><small>Nazwa użytkownika do API QRZ.com (opcjonalne, dla dodatkowych informacji o znakach)</small></div><div class="form-group"><label>QRZ.com Password (XML API):</label><input type="password" id="qrz_pass" name="qrz_pass" placeholder="hasło QRZ" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do API QRZ.com (opcjonalne)</small></div><div class="form-group"><label>Status QRZ:</label><input type="text" id="qrz_status" name="qrz_status" readonly style="background: #1a1a1a; color: #888;"><small>Status połączenia z QRZ.com (aktualizowany automatycznie)</small></div></div><!-- Sekcja: OpenWeather --><div class="config-section"><h3> OpenWeather</h3><div class="form-group"><label>OpenWeather API Key:</label><input type="password" id="weather_key" name="weather_key" placeholder="klucz API" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Klucz API z openweathermap.org (wymagany do wyświetlania pogody i prognozy na ekranach TFT)</small></div></div><!-- Sekcja: KiwiSDR --><div class="config-section"><h3> KiwiSDR</h3><div class="form-group"><label>KiwiSDR URL:</label><input type="text" id="openwebrx_url" name="openwebrx_url" placeholder=""><small>Wprowadź adres KiwiSDR z którego chcesz nasłuchiwać stacji np. http://okno.ddns.net:8073/</small><small><a href="http://kiwisdr.com/.public/" target="_blank" rel="noopener noreferrer" style="color: #6a6a4a;">Lista dostępnych KiwiSDR: http://kiwisdr.com/.public/</a></small></div></div><!-- Sekcja: APRS-IS --><div class="config-section"><h3> APRS-IS</h3><div class="form-group"><label>APRS-IS Host:</label><input type="text" id="aprs_host" name="aprs_host" placeholder="rotate.aprs2.net"><small>Adres serwera APRS-IS (np. rotate.aprs2.net)</small></div><div class="form-group"><label>APRS-IS Port:</label><input type="number" id="aprs_port" name="aprs_port" placeholder="14580" min="1" max="65535"><small>Port serwera APRS-IS (domyślne 14580)</small></div><div class="form-group"><label>APRS Callsign:</label><input type="text" id="aprs_callsign" name="aprs_callsign" placeholder="sp3kon"><small>Twój znak wywoławczy do logowania do APRS-IS</small></div><div class="form-group"><label>APRS SSID (0-15):</label><select id="aprs_ssid" name="aprs_ssid"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select><small>SSID dopisywany do callsign przy wysyłce beaconu APRS. 0 = bez sufiksu.</small></div><div class="form-group"><label>APRS Passcode:</label><input type="number" id="aprs_passcode" name="aprs_passcode" placeholder="23735" min="0" max="99999"><small>Passcode do logowania do APRS-IS (wygeneruj na aprs.org)</small></div><div class="form-group"><label>Promień filtrowania (km):</label><input type="number" id="aprs_radius" name="aprs_radius" placeholder="50" min="0" max="50"><small>Promień filtrowania stacji APRS w kilometrach (0-50 km). Filtr i wszystkie obliczenia odległości używają współrzędnych GPS z sekcji "Twoja Stacja" (w formacie xx.xxxxxx)</small></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="aprs_beacon" name="aprs_beacon">
+    </style></head><body><a class="coffee-link" href="https://buycoffee.to/esp32hamclock" target="_blank" rel="noopener noreferrer">Jeśli Ci się podoba to POSTAW KAWĘ</a><div class="app-title">ESP32-HAM-CLOCK</div><div class="nav"><button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button><button class="nav-btn" onclick="showPage('pota')">POTA</button><button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button><button class="nav-btn" onclick="showPage('aprs')">APRS</button><button class="nav-btn" onclick="showPage('alert')">ALERT</button><button class="nav-btn" onclick="showPage('psk')">PSK Reporter</button><button class="nav-btn" onclick="showPage('isspasstracking')">ISS</button><button class="nav-btn" onclick="showPage('tft')">Ekran TFT</button><button class="nav-btn" onclick="showPage('upload')">Upload strony startowej</button><button class="nav-btn" onclick="showPage('config')">Ustawienia</button><button class="nav-btn" onclick="showPage('screensaver')">Wygaszacz</button><button class="nav-btn" onclick="showPage('manual')">Instrukcja</button><div class="lang-switch"><a class="lang-link active" href="/index.html">PL</a><span>|</span><a class="lang-link" href="/indexEN.html">EN</a></div></div><div id="dxspot-page" class="page active"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">DX Cluster</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Modulacja:</span><button class="btn active" onclick="setMode('All')">ALL</button><button class="btn" onclick="setMode('CW')">CW</button><button class="btn" onclick="setMode('SSB')">SSB</button><button class="btn" onclick="setMode('FT8FT4')">FT8/FT4</button></div><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Pasmo:</span><button class="btn" onclick="setBand('160m')">160m</button><button class="btn" onclick="setBand('80m')">80m</button><button class="btn" onclick="setBand('40m')">40m</button><button class="btn" onclick="setBand('20m')">20m</button><button class="btn" onclick="setBand('17m')">17m</button><button class="btn" onclick="setBand('15m')">15m</button><button class="btn" onclick="setBand('12m')">12m</button><button class="btn" onclick="setBand('10m')">10m</button><button class="btn active" onclick="setBand('All')">All</button></div></div><table id="spots-table"><thead><tr><th>Czas</th><th>Znak</th><th>Częstotliwość</th><th>Mode</th><th>Kraj</th></tr></thead><tbody id="spots-tbody"></tbody></table><div class="status" id="status">Oczekiwanie na dane...</div></div></div><!-- Filtry poniżej "wirtualnego wyświetlacza" (poza cyd-container) --><div class="continent-filters" style="max-width: 600px; margin: 12px auto 0;"><div class="title">Spot from:</div><div class="row"><label><input type="checkbox" id="cont_af" checked>AF</label><label><input type="checkbox" id="cont_an" checked>AN</label><label><input type="checkbox" id="cont_as" checked>AS</label><label><input type="checkbox" id="cont_eu" checked>EU</label><label><input type="checkbox" id="cont_na" checked>NA</label><label><input type="checkbox" id="cont_sa" checked>SA</label><label><input type="checkbox" id="cont_oc" checked>OC</label></div></div></div><div id="aprs-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">APRS</h2><div class="cyd-screen"><table id="aprs-table"><thead><tr><th>Czas</th><th>Callsign</th><th>Symbol</th><th>Odległość</th><th>Komentarz</th></tr></thead><tbody id="aprs-tbody"></tbody></table><div class="status" id="aprs-status">Oczekiwanie na dane APRS...</div></div></div></div><div id="tft-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Ustawienia TFT</h2><div class="config-section"><h3> Podświetlenie TFT</h3><div class="form-group"><label>Jasność (0-100%): <span id="tft_backlight_value">100</span>%</label><input type="range" id="tft_backlight" name="tft_backlight" min="0" max="100" value="100"><small>Ustaw jasność podświetlenia dla wszystkich ekranów</small></div></div><div class="config-section"><h3> Język TFT</h3><div class="form-group"><label>Język interfejsu TFT:</label><select id="tft_lang" name="tft_lang"><option value="pl">Polski</option><option value="en">English</option></select><small>Zmiana języka dotyczy napisów na ekranie TFT (wymaga restartu)</small></div></div><div class="config-section"><h3> Rozmiar Tabel</h3><div class="form-group"><label>Wybierz rozmiar tabel:</label><select id="table_size" name="table_size"><option value="normal">Normalne</option><option value="enlarged">Powiększone</option></select></div></div><div class="config-section"><h3> Kolory Zegara</h3><div class="form-group"><label>Kolor callsignu:</label><select id="callsign_color" name="callsign_color"><option value="65535">Biały (0xFFFF)</option><option value="63488">Czerwony (0xF800)</option><option value="2016">Zielony (0x07E0)</option><option value="31">Niebieski (0x001F)</option><option value="65504">Żółty (0xFFE0)</option><option value="2047">Jasnoniebieski (0x07FF)</option><option value="63519">Magenta (0xF81F)</option><option value="33840">Ciemnoszary (0x8410)</option><option value="63488">Pomarańczowy (0xF800)</option><option value="65504">Cyjan (0x07FF)</option><option value="63519">Różowy (0xF81F)</option><option value="0">Czarny (0x0000)</option><option value="31744">Ciemnoczerwony (0x7C00)</option><option value="1024">Ciemnozielony (0x0400)</option><option value="8">Ciemnoniebieski (0x0008)</option></select><small>Wybierz kolor wyświetlanego callsignu na ekranie zegara</small></div><div class="form-group"><label>Odcień motywu menu (0-255):</label><input type="number" id="menu_hue" name="menu_hue" min="0" max="255" value="20"><small>Odcień motywu menu (20=pomarańczowy domyślny)</small></div></div><div class="config-section"><h3> Ekrany TFT (kolejność)</h3><small>Strona 1 wyświetla się jako pierwsza po włączeniu. Możesz dowolnie ustawić strony 1-12 lub wyłączyć je (OFF).</small><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="tft_auto_switch" name="tft_auto_switch" style="width: auto;"><span>AUTO-SWITCH</span></label><small>Automatycznie przełącza ekran TFT o jeden w prawo.</small></div><div class="form-group"><label>SWITCH-TIME (sekundy):</label><input type="number" id="tft_switch_time_sec" name="tft_switch_time_sec" min="1" max="3600" step="1" value="30"><small>Czas między automatycznymi przełączeniami (1-3600 s).</small></div><div id="screen_slots_container"></div><div class="form-group"><label>Strona 1:</label><select id="screen_slot_1"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 2:</label><select id="screen_slot_2"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 3:</label><select id="screen_slot_3"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 4:</label><select id="screen_slot_4"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 5:</label><select id="screen_slot_5"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 6:</label><select id="screen_slot_6"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 7:</label><select id="screen_slot_7"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 8:</label><select id="screen_slot_8"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 9:</label><select id="screen_slot_9"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 10:</label><select id="screen_slot_10"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 11:</label><select id="screen_slot_11"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 12:</label><select id="screen_slot_12"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 13:</label><select id="screen_slot_13"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 14:</label><select id="screen_slot_14"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div></div><div class="config-section"><h3> Kalibracja TFT</h3><div class="form-group"><label>TFT Rotation (0-3):</label><select id="tft_rotation" name="tft_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót wyświetlacza TFT_eSPI (domyślnie: 1, wymaga restartu)</small></div><div class="form-group"><label>Inwersja kolorów TFT:</label><select id="tft_invert" name="tft_invert"><option value="0">Normalne</option><option value="1">Odwrócone</option></select><small>Ustawia tft.invertDisplay() (domyślnie: włączone jak w User_Setup.h)</small></div><div class="form-group"><label>Touch Rotation (0-3):</label><select id="touch_rotation" name="touch_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót biblioteki XPT2046_Touchscreen (domyślnie: 1)</small></div><div class="form-group"><label>Ręczna zamiana osi:</label><select id="touch_swap_mode" name="touch_swap_mode"><option value="none">Brak (NONE)</option><option value="xy">Zamień osie X↔Y (SWAP XY)</option><option value="x">Odwróć oś X (INVERT X)</option><option value="y">Odwróć oś Y (INVERT Y)</option><option value="both">Odwróć X i Y (INVERT BOTH - obrót 180°)</option><option value="rot90cw">Obrót 90° w prawo (SWAP XY + INVERT X)</option><option value="rot90ccw">Obrót 90° w lewo (SWAP XY + INVERT Y)</option><option value="xy_both">Zamień osie + odwróć oba (SWAP XY + INVERT BOTH)</option></select><small>Ręczna konfiguracja orientacji dotyku (lub użyj kalibracji z przełącznika CALL_TFT)</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślną rotację TFT (DEFAULT)</button><small>Ustawia TFT Rotation na 1 i restartuje urządzenie</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślne (DEFAULT)</button><small>Przywraca domyślne wartości kalibracji dotyku z kodu</small></div><div class="form-group"><button type="button" class="btn" onclick="resetFactory()" style="background: #800; border-color: #600; color: #fff;">⚠️ RESET FABRYCZNY (USUŃ WSZYSTKO)</button><small>Usuwa wszystkie ustawienia NVS i resetuje do fabrycznych</small><div id="resetStatus" style="margin-top:8px;"></div></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ustawienia TFT</button></div></div><div id="alert-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">ALERT</h2><div class="config-section"><h3> APRS ALERT</h3><div class="form-group"><label>Lista poszukiwanych znaków (po przecinku):</label><input type="text" id="aprs_alert" name="aprs_alert" placeholder="SQ3NIK-9, SP3YOR, SP3KON-7"><small>Jedno pole CSV. Maksymalnie 20 pozycji. Przykład: SQ3NIK-9, SP3YOR, SP3KON* (gwiazdka na końcu = dowolny SSID)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_enabled" name="aprs_alert_enabled" style="width: auto;" checked><span>Włącz powiadomienia APRS ALERT</span></label><small>Po wyłączeniu lista pozostaje zapisana, ale alerty nie będą zgłaszane.</small></div><div class="form-group"><label>Minimalny odstęp alertu dla tej samej stacji (sekundy):</label><input type="number" id="aprs_alert_min_sec" name="aprs_alert_min_sec" value="300" min="0" max="86400" step="1"><small>0 = alert przy każdym odebraniu. Zakres: 0-86400 sekund.</small></div><div class="form-group"><label>Czas wyświetlania ALERT na ekranie TFT (sekundy):</label><input type="number" id="aprs_alert_screen_sec" name="aprs_alert_screen_sec" value="5" min="1" max="60" step="1"><small>Zakres: 1-60 sekund. Domyślnie: 5 sekund.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_nearby_enabled" name="aprs_alert_nearby_enabled" style="width: auto;" checked><span>Włącz wykrywanie stacji ruchomych w zasięgu (-7 i -9)</span></label><small>Dotyczy tylko stacji APRS z SSID -7 lub -9 (np. SP3KON-9, SQ3NIK-7).</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_wx_enabled" name="aprs_alert_wx_enabled" style="width: auto;"><span>Włącz powiadomienia ze stacji pogodowych APRS (WX)</span></label><small>Po włączeniu APRS ALERT będzie także wykrywał stacje oznaczone symbolem WX i pokaże okno alertu z dekodowanymi danymi pogody.</small></div><div class="form-group"><label>ALERT_Distance dla stacji ruchomych (km):</label><input type="number" id="aprs_alert_distance_km" name="aprs_alert_distance_km" value="1" min="0.1" max="500" step="0.1"><small>Alert pojawi się dla stacji ruchomych w odległości nie większej niż ta wartość.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="enable_led_alert" name="enable_led_alert" style="width: auto;" checked><span>Włącz optyczny alert LED ( Blue LED - GPIO17) </span></label><small>Wyłącza lub włącza miganie diody LED dla APRS ALERT. Można dolutować buzzer 3v.</small></div><div class="form-group"><label>Czas trwania alertu LED (ms):</label><input type="number" id="led_alert_duration_ms" name="led_alert_duration_ms" value="5000" min="100" max="60000" step="100"><small>Zakres: 100-60000 ms. Domyślnie: 5000 ms.</small></div><div class="form-group"><label>Tempo migania LED (ms):</label><input type="number" id="led_alert_blink_ms" name="led_alert_blink_ms" value="500" min="50" max="5000" step="10"><small>Zakres: 50-5000 ms. Domyślnie: 500 ms.</small></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ALERT</button></div></div><div id="config-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Konfiguracja ESP32-HAM-CLOCK</h2><form id="config-form" autocomplete="off" data-lpignore="true" data-1p-ignore="true"><!-- Sekcja: Połączenie WiFi --><div class="config-section"><h3>📶 Połączenie WiFi</h3><div class="form-group"><label>WiFi SSID:</label><input type="text" id="wifi_ssid" name="wifi_ssid" required><small>Nazwa sieci WiFi, do której ma się połączyć urządzenie</small></div><div class="form-group"><label>WiFi Hasło:</label><input type="password" id="wifi_pass" name="wifi_pass" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do sieci WiFi (pozostaw puste dla otwartych sieci)</small></div><div class="form-group"><label>WiFi SSID (zapasowe):</label><input type="text" id="wifi_ssid2" name="wifi_ssid2" placeholder="opcjonalnie"><small>Drugie SSID używane gdy główne jest niedostępne</small></div><div class="form-group"><label>WiFi Hasło (zapasowe):</label><input type="password" id="wifi_pass2" name="wifi_pass2" placeholder="opcjonalnie" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło dla sieci zapasowej (pozostaw puste dla sieci otwartej)</small></div></div><!-- Sekcja: DX Cluster --><div class="config-section"><h3>📻 DX Cluster</h3><div class="form-group"><label>DX Cluster Host:</label><input type="text" id="cluster_host" name="cluster_host" required><small>Adres serwera DX Cluster (np. dxc.metronet.pl lub dxspots.com)</small></div><div class="form-group"><label>DX Cluster Port:</label><input type="number" id="cluster_port" name="cluster_port" required><small>Port serwera DX Cluster (zwykle 23 dla Telnet)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_noann" name="cluster_noann" style="width: auto;"><span>Wyłącz ogłoszenia (set/noann)</span></label><small>Ukrywa ogłoszenia administracyjne z clustra</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowwv" name="cluster_nowwv" style="width: auto;"><span>Wyłącz WWV (set/nowwv)</span></label><small>Ukrywa komunikaty WWV (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowcy" name="cluster_nowcy" style="width: auto;"><span>Wyłącz WCY (set/nowcy)</span></label><small>Ukrywa komunikaty WCY (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_usefilters" name="cluster_usefilters" style="width: auto;"><span>Użyj filtrów (set/filter)</span></label><small>Włącza zaawansowane filtry spotów (wymaga komend poniżej)</small></div><div class="form-group"><label>Komendy filtrów (jedna na linię):</label><textarea id="cluster_filters" name="cluster_filters" rows="4" placeholder="set/filter k,ve/pass&#10;set/filter dxbm/pass hf&#10;set/filter dxbm/reject 6-cw,6-ssb,6-fm" style="font-family: monospace; font-size: 12px;"></textarea><small>Komendy filtrowania dla CC-Cluster. Przykłady: set/filter k,ve/pass (tylko K i VE), set/filter dxbm/pass hf (tylko HF), set/filter dxbm/reject 6-cw,6-ssb,6-fm (odrzuć 6m)</small></div></div><!-- Sekcja: POTA Cluster (screen7) --><div class="config-section"><h3> POTA Cluster</h3><div class="form-group"><label>External POTA API Link:</label><input type="text" id="pota_api_url" name="pota_api_url" value="https://api.pota.app/v1/spots"><small>Adres z którego backend pobiera spoty POTA (HTTP JSON)</small></div></div><div class="config-section"><h3> HAMALERT</h3><div class="form-group"><label>Telnet Host:</label><input type="text" id="hamalert_host" name="hamalert_host" value="hamalert.org" required><small>Domyślnie: hamalert.org</small></div><div class="form-group"><label>Telnet Port:</label><input type="number" id="hamalert_port" name="hamalert_port" value="7300" min="1" max="65535" required><small>Domyślnie: 7300</small></div><div class="form-group"><label>Login:</label><input type="text" id="hamalert_login" name="hamalert_login" required><small>Login użytkownika HamAlert do logowania Telnet</small></div><div class="form-group"><label>Hasło:</label><input type="password" id="hamalert_password" name="hamalert_password" required autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Pole wymagane do logowania Telnet do HamAlert</small></div></div><!-- Sekcja: Twoja Stacja --><div class="config-section"><h3> Twoja Stacja</h3><div class="form-group"><label>Twój Znak Wywoławczy:</label><input type="text" id="user_callsign" name="user_callsign" placeholder="np. SP3KON"><small>Twój znak wywoławczy używany do logowania do DX Cluster</small></div><div class="form-group"><label>Twój Locator (Maidenhead):</label><input type="text" id="user_locator" name="user_locator" placeholder="np. JO82LK"><small>Lokator Maidenhead (4-6 znaków) używany do obliczania odległości do spotów</small></div><div class="form-group"><label>Strefa czasowa (UTC):</label><input type="number" id="timezone" name="timezone" min="-12" max="14" step="1" value="0"><small>Przesunięcie godzin względem UTC (np. Polska: 1)</small></div><div class="form-group"><label>Szerokość geograficzna (Latitude):</label><input type="number" step="0.000001" id="user_lat" name="user_lat" placeholder="np. 52.4064"><small>Współrzędna szerokości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 52.4064 dla Warszawy</small></div><div class="form-group"><label>Długość geograficzna (Longitude):</label><input type="number" step="0.000001" id="user_lon" name="user_lon" placeholder="np. 16.9252"><small>Współrzędna długości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 16.9252 dla Warszawy</small></div></div><!-- Sekcja: QRZ.com --><div class="config-section"><h3> QRZ.com</h3><div class="form-group"><label>QRZ.com Username (XML API):</label><input type="text" id="qrz_user" name="qrz_user" placeholder="login QRZ"><small>Nazwa użytkownika do API QRZ.com (opcjonalne, dla dodatkowych informacji o znakach)</small></div><div class="form-group"><label>QRZ.com Password (XML API):</label><input type="password" id="qrz_pass" name="qrz_pass" placeholder="hasło QRZ" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do API QRZ.com (opcjonalne)</small></div><div class="form-group"><label>Status QRZ:</label><input type="text" id="qrz_status" name="qrz_status" readonly style="background: #1a1a1a; color: #888;"><small>Status połączenia z QRZ.com (aktualizowany automatycznie)</small></div></div><!-- Sekcja: OpenWeather --><div class="config-section"><h3>️ OpenWeather</h3><div class="form-group"><label>OpenWeather API Key:</label><input type="password" id="weather_key" name="weather_key" placeholder="klucz API" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Klucz API z openweathermap.org (wymagany do wyświetlania pogody i prognozy na ekranach TFT)</small></div></div><!-- Sekcja: KiwiSDR --><div class="config-section"><h3> KiwiSDR</h3><div class="form-group"><label>KiwiSDR URL:</label><input type="text" id="openwebrx_url" name="openwebrx_url" placeholder=""><small>Wprowadź adres KiwiSDR z którego chcesz nasłuchiwać stacji np. http://okno.ddns.net:8073/</small><small><a href="http://kiwisdr.com/.public/" target="_blank" rel="noopener noreferrer" style="color: #6a6a4a;">Lista dostępnych KiwiSDR: http://kiwisdr.com/.public/</a></small></div></div><!-- Sekcja: APRS-IS --><div class="config-section"><h3>📻 APRS-IS</h3><div class="form-group"><label>APRS-IS Host:</label><input type="text" id="aprs_host" name="aprs_host" placeholder="rotate.aprs2.net"><small>Adres serwera APRS-IS (np. rotate.aprs2.net)</small></div><div class="form-group"><label>APRS-IS Port:</label><input type="number" id="aprs_port" name="aprs_port" placeholder="14580" min="1" max="65535"><small>Port serwera APRS-IS (domyślne 14580)</small></div><div class="form-group"><label>APRS Callsign:</label><input type="text" id="aprs_callsign" name="aprs_callsign" placeholder="sp3kon"><small>Twój znak wywoławczy do logowania do APRS-IS</small></div><div class="form-group"><label>APRS SSID (0-15):</label><select id="aprs_ssid" name="aprs_ssid"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="14">14</option><option value="15">15</option></select><small>SSID dopisywany do callsign przy wysyłce beaconu APRS. 0 = bez sufiksu.</small></div><div class="form-group"><label>APRS Passcode:</label><input type="number" id="aprs_passcode" name="aprs_passcode" placeholder="23735" min="0" max="99999"><small>Passcode do logowania do APRS-IS (wygeneruj na aprs.org)</small></div><div class="form-group"><label>Promień filtrowania (km):</label><input type="number" id="aprs_radius" name="aprs_radius" placeholder="50" min="0" max="50"><small>Promień filtrowania stacji APRS w kilometrach (0-50 km). Filtr i wszystkie obliczenia odległości używają współrzędnych GPS z sekcji "Twoja Stacja" (w formacie xx.xxxxxx)</small></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="aprs_beacon" name="aprs_beacon">
                             Wysyłaj beacon do APRS-IS
-                        </label><small>Okresowo wyśle Twoją pozycję (TCPIP*). Wymaga ustawionych współrzędnych.</small></div><div class="form-group"><label>Symbol APRS (2 znaki):</label><input type="text" id="aprs_symbol" name="aprs_symbol" maxlength="2" placeholder="/-"><small>Pierwszy znak to tabela (np. / lub \), drugi to symbol (np. -). Używany w beaconie.</small></div><div class="form-group"><label>Komentarz APRS:</label><input type="text" id="aprs_comment" name="aprs_comment" maxlength="43" placeholder="Mój komentarz"><small>Maks. 43 znaki ASCII. Używane w każdym beaconie; pierwszy i co piąty jest linkiem do projektu ESP32-HAM-CLOCK.</small></div><div class="form-group"><label>Wysyłaj z odstępem (minuty):</label><input type="number" id="aprs_interval_min" name="aprs_interval_min" min="1" max="180" value="29" placeholder="29"><small>Odstęp między kolejnymi beaconami po pierwszym (który idzie po 1 minucie). Zakres 1-180 min.</small></div></div><button type="submit" class="save-btn"> Zapisz Konfigurację</button></form></div></div><div id="screensaver-page" class="page"><div class="screensaver-container"><h3> Wygaszacz ekranu (Matrix)</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label style="display: flex; align-items: center; gap: 10px; justify-content: flex-start;"><input type="checkbox" id="screen_saver_enabled" name="screen_saver_enabled" style="width: auto;"><span>Włącz wygaszacz ekranu</span></label><small>Po czasie bezczynności uruchamia efekt Matrix na ekranie.</small></div><div class="form-group" style="text-align: left;"><label>Timeout wygaszacza (minuty):</label><input type="number" id="screen_saver_timeout_min" name="screen_saver_timeout_min" min="1" max="60" step="1" value="5"><small>Czas bezczynności przed włączeniem wygaszacza (1-60 min).</small></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-primary" onclick="saveScreenSaverConfig()"> Zapisz ustawienia wygaszacza</button><div id="screensaver-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div id="psk-page" class="page"><div class="psk-container" style="max-width: 800px; margin: 0 auto; padding: 20px;"><h3> PSK Reporter</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label>Znak do monitorowania:</label><input type="text" id="psk_receiver" name="psk_receiver" maxlength="15" placeholder="np. SP9ABC"><small>Twoj znak lub znak stacji do monitorowania.</small></div><div class="form-group" style="text-align: left;"><label>Max spotów:</label><input type="number" id="psk_maxspots" name="psk_maxspots" min="10" max="100" step="1" value="50"><small>Liczba spotów do wyświetlenia (10-100).</small></div><div class="form-group" style="text-align: left;"><label>Okres czasowy (godziny):</label><input type="number" id="psk_hours" name="psk_hours" min="1" max="24" step="1" value="6"><small>Ile godzin wstecz pobierać spoty (1-24).</small></div><div class="form-group" style="text-align: left;"><label>Pasmo (opcjonalnie):</label><select id="psk_band" name="psk_band"><option value="">Wszystkie</option><option value="160m">160m</option><option value="80m">80m</option><option value="40m">40m</option><option value="30m">30m</option><option value="20m">20m</option><option value="17m">17m</option><option value="15m">15m</option><option value="12m">12m</option><option value="10m">10m</option><option value="6m">6m</option></select><small>Filtruj spoty według pasma.</small></div><div class="form-group" style="text-align: left;"><label>Tryby (opcjonalne):</label><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;"><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_all" name="psk_mode_all" style="width: auto; margin: 0;"><span><strong>Wszystkie</strong></span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft8" name="psk_mode_ft8" style="width: auto; margin: 0;"><span>FT8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft4" name="psk_mode_ft4" style="width: auto; margin: 0;"><span>FT4</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_cw" name="psk_mode_cw" style="width: auto; margin: 0;"><span>CW</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_js8" name="psk_mode_js8" style="width: auto; margin: 0;"><span>JS8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_rtty" name="psk_mode_rtty" style="width: auto; margin: 0;"><span>RTTY</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_psk" name="psk_mode_psk" style="width: auto; margin: 0;"><span>PSK31</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_mfsk" name="psk_mode_mfsk" style="width: auto; margin: 0;"><span>MFSK</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_olivia" name="psk_mode_olivia" style="width: auto; margin: 0;"><span>Olivia</span></label></div><small style="margin-top: 8px; display: block;">Zaznacz jeden lub więcej trybów do filtrowania.</small></div><div class="form-group" style="text-align: left;"><label>URL PSK Reporter (opcjonalnie):</label><input type="text" id="psk_url" name="psk_url" maxlength="200" placeholder="https://..."><small>Własny URL do API PSK Reporter.</small></div><hr style="margin: 30px 0;"><h4> HTTP Monitoring</h4><div class="form-group" style="text-align: left;"><label>Znak do monitoringu HTTP:</label><input type="text" id="psk_monitor_callsign" name="psk_monitor_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Znak do sprawdzania w raportach HTTP.</small></div><div class="form-group" style="text-align: left;"><label>Dni raportu:</label><input type="number" id="psk_report_days" name="psk_report_days" min="0" max="62" step="1" value="30"><small>Liczba dni w raporcie (0-62).</small></div><div class="form-group" style="text-align: left;"><label>Auto-odświeżanie (minuty):</label><input type="number" id="psk_auto_refresh" name="psk_auto_refresh" min="0" max="60" step="1" value="5"><small>Co ile minut odświeżać dane (0 = wyłączone).</small></div><hr style="margin: 30px 0;"><h4> MQTT (alternatywny tryb)</h4><div class="form-group" style="text-align: left;"><label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="psk_mqtt_enabled" name="psk_mqtt_enabled" style="width: auto; margin: 0;"><span><strong>Użyj MQTT zamiast HTTP</strong></span></label><small>Zaznacz aby używać MQTT do odbierania spotów w czasie rzeczywistym.</small></div><div id="mqtt_fields" style="display: none;"><div class="form-group" style="text-align: left;"><label>MQTT Serwer:</label><input type="text" id="psk_mqtt_server" name="psk_mqtt_server" value="mqtt.pskreporter.info"><small>Adres serwera MQTT.</small></div><div class="form-group" style="text-align: left;"><label>MQTT Port:</label><input type="number" id="psk_mqtt_port" name="psk_mqtt_port" min="1" max="65535" value="1883"><small>Port MQTT (domyślnie 1883).</small></div><div class="form-group" style="text-align: left;"><label>MQTT Callsign (filter):</label><input type="text" id="psk_mqtt_callsign" name="psk_mqtt_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Opcjonalny filtr - pokazuje spoty dla tego znaku (4 pierwsze znaki lokatora).</small></div></div><div style="margin-top: 30px; text-align: center;"><button class="btn btn-primary" onclick="savePSKConfig()"> Zapisz ustawienia PSK Reporter</button><div id="psk-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div class="controls" style="margin-top: 12px;"><button class="btn" onclick="searchQrz()"> Szukaj</button><button class="btn" onclick="clearQrzSearch()"> Wyczyść</button></div><div id="qrz-result" style="margin-top: 16px;"></div></div><div class="glass-panel" style="margin-top: 16px;"><h3 style="color: #00d4ff;"> Ostatnio wyszukiwane</h3><div id="qrz-history" class="qrz-history"><p style="color: #666; font-size: 12px;">Brak historii wyszukiwań</p></div></div></div></div><div id="manual-page" class="page"><div class="manual-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> Instrukcja</h2><div id="instruction-selector" class="instruction-selector"><button class="btn active" onclick="loadInstruction('default')"> Domyślna</button></div><div class="manual-content" id="manual-content">Ładowanie instrukcji...</div></div></div><!-- ==================== HUNTER PAGE ==================== --><div id="hunter-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">️ Unlis Hunter</h2><div class="cyd-screen"><div id="hunter-status" class="status">Ładowanie danych HUNTER...</div><div id="hunter-data"></div></div></div></div><!-- ==================== ISS PAGE ==================== --><div id="iss-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">ISS - Międzynarodowa Stacja Kosmiczna</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><button class="btn active" onclick="setIssView('frequencies')" id="iss-btn-frequencies">CZĘSTOTLIWOŚCI</button><button class="btn" onclick="setIssView('passes')" id="iss-btn-passes">PRZELOTY</button></div></div><div id="iss-frequencies" class="iss-section"><div class="iss-freq-card"><div class="iss-freq-title"> Voice Repeater</div><div class="iss-freq-detail">RX: 437.800 MHz | TX: 145.990 MHz</div><div class="iss-freq-badge">CTCSS 67.0 Hz</div></div><div class="iss-freq-card"><div class="iss-freq-title"> APRS Digipeater</div><div class="iss-freq-detail">145.825 MHz Simplex</div><div class="iss-freq-badge">AFSK 1200</div></div><div class="iss-freq-card"><div class="iss-freq-title"> SSTV Downlink</div><div class="iss-freq-detail">RX: 145.800 MHz</div><div class="iss-freq-badge">SSTV</div></div><div class="iss-freq-card"><div class="iss-freq-title"> Voice Direct EU</div><div class="iss-freq-detail">RX: 145.800 | TX: 145.200 MHz</div><div class="iss-freq-badge">FM</div></div></div><div id="iss-passes" class="iss-section" style="display:none;"><div id="iss-passes-data">Ładowanie danych o przelotach...</div></div><div id="iss-tracking" class="iss-section" style="display:none;"></div><div id="iss-status" class="status">Oczekiwanie na dane ISS...</div></div></div></div><!-- ==================== UPLOAD PAGE ==================== --><div id="upload-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">Upload BMP - Obrazek startowy</h2><div class="glass-panel"><p style="color: #888; margin-bottom: 16px;">Wybierz plik BMP aby ustawic jako obrazek startowy wyswietlany przy starcie zegarka.</p><div class="upload-zone" id="upload-zone"><div class="upload-icon" style="font-size:32px;">[ ]</div><div class="upload-text">Kliknij aby wybrac plik BMP</div><input type="file" id="file-input" accept=".bmp" style="display:none;"></div><div class="upload-hint"><span>Akceptowane: tylko pliki .bmp (zalecany rozmiar: 320x480)</span></div><div id="upload-progress" class="upload-progress" style="display:none;"><div class="progress-bar"><div id="progress-fill"></div></div><div id="upload-status"></div></div><div id="upload-log" class="upload-log"></div><div id="upload-result" style="margin-top: 16px;"></div><div class="controls" style="margin-top:16px;"><button class="btn" onclick="clearUploadLog()">Wyczysc log</button></div></div></div></div><script>
+                        </label><small>Okresowo wyśle Twoją pozycję (TCPIP*). Wymaga ustawionych współrzędnych.</small></div><div class="form-group"><label>Symbol APRS (2 znaki):</label><input type="text" id="aprs_symbol" name="aprs_symbol" maxlength="2" placeholder="/-"><small>Pierwszy znak to tabela (np. / lub \), drugi to symbol (np. -). Używany w beaconie.</small></div><div class="form-group"><label>Komentarz APRS:</label><input type="text" id="aprs_comment" name="aprs_comment" maxlength="43" placeholder="Mój komentarz"><small>Maks. 43 znaki ASCII. Używane w każdym beaconie; pierwszy i co piąty jest linkiem do projektu ESP32-HAM-CLOCK.</small></div><div class="form-group"><label>Wysyłaj z odstępem (minuty):</label><input type="number" id="aprs_interval_min" name="aprs_interval_min" min="1" max="180" value="29" placeholder="29"><small>Odstęp między kolejnymi beaconami po pierwszym (który idzie po 1 minucie). Zakres 1-180 min.</small></div></div><button type="submit" class="save-btn"> Zapisz Konfigurację</button></form></div></div><div id="screensaver-page" class="page"><div class="screensaver-container"><h3> Wygaszacz ekranu (Matrix)</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label style="display: flex; align-items: center; gap: 10px; justify-content: flex-start;"><input type="checkbox" id="screen_saver_enabled" name="screen_saver_enabled" style="width: auto;"><span>Włącz wygaszacz ekranu</span></label><small>Po czasie bezczynności uruchamia efekt Matrix na ekranie.</small></div><div class="form-group" style="text-align: left;"><label>Timeout wygaszacza (minuty):</label><input type="number" id="screen_saver_timeout_min" name="screen_saver_timeout_min" min="1" max="60" step="1" value="5"><small>Czas bezczynności przed włączeniem wygaszacza (1-60 min).</small></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-primary" onclick="saveScreenSaverConfig()"> Zapisz ustawienia wygaszacza</button><div id="screensaver-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div id="psk-page" class="page"><div class="psk-container" style="max-width: 800px; margin: 0 auto; padding: 20px;"><h3> PSK Reporter</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label>Znak do monitorowania:</label><input type="text" id="psk_receiver" name="psk_receiver" maxlength="15" placeholder="np. SP9ABC"><small>Twoj znak lub znak stacji do monitorowania.</small></div><div class="form-group" style="text-align: left;"><label>Max spotów:</label><input type="number" id="psk_maxspots" name="psk_maxspots" min="10" max="100" step="1" value="50"><small>Liczba spotów do wyświetlenia (10-100).</small></div><div class="form-group" style="text-align: left;"><label>Okres czasowy (godziny):</label><input type="number" id="psk_hours" name="psk_hours" min="1" max="24" step="1" value="6"><small>Ile godzin wstecz pobierać spoty (1-24).</small></div><div class="form-group" style="text-align: left;"><label>Pasmo (opcjonalnie):</label><select id="psk_band" name="psk_band"><option value="">Wszystkie</option><option value="160m">160m</option><option value="80m">80m</option><option value="40m">40m</option><option value="30m">30m</option><option value="20m">20m</option><option value="17m">17m</option><option value="15m">15m</option><option value="12m">12m</option><option value="10m">10m</option><option value="6m">6m</option></select><small>Filtruj spoty według pasma.</small></div><div class="form-group" style="text-align: left;"><label>Tryby (opcjonalne):</label><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;"><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_all" name="psk_mode_all" style="width: auto; margin: 0;"><span><strong>Wszystkie</strong></span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft8" name="psk_mode_ft8" style="width: auto; margin: 0;"><span>FT8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft4" name="psk_mode_ft4" style="width: auto; margin: 0;"><span>FT4</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_cw" name="psk_mode_cw" style="width: auto; margin: 0;"><span>CW</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_js8" name="psk_mode_js8" style="width: auto; margin: 0;"><span>JS8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_rtty" name="psk_mode_rtty" style="width: auto; margin: 0;"><span>RTTY</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_psk" name="psk_mode_psk" style="width: auto; margin: 0;"><span>PSK31</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_mfsk" name="psk_mode_mfsk" style="width: auto; margin: 0;"><span>MFSK</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_olivia" name="psk_mode_olivia" style="width: auto; margin: 0;"><span>Olivia</span></label></div><small style="margin-top: 8px; display: block;">Zaznacz jeden lub więcej trybów do filtrowania.</small></div><div class="form-group" style="text-align: left;"><label>URL PSK Reporter (opcjonalnie):</label><input type="text" id="psk_url" name="psk_url" maxlength="200" placeholder="https://..."><small>Własny URL do API PSK Reporter.</small></div><hr style="margin: 30px 0;"><h4> HTTP Monitoring</h4><div class="form-group" style="text-align: left;"><label>Znak do monitoringu HTTP:</label><input type="text" id="psk_monitor_callsign" name="psk_monitor_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Znak do sprawdzania w raportach HTTP.</small></div><div class="form-group" style="text-align: left;"><label>Dni raportu:</label><input type="number" id="psk_report_days" name="psk_report_days" min="0" max="62" step="1" value="30"><small>Liczba dni w raporcie (0-62).</small></div><div class="form-group" style="text-align: left;"><label>Auto-odświeżanie (minuty):</label><input type="number" id="psk_auto_refresh" name="psk_auto_refresh" min="0" max="60" step="1" value="5"><small>Co ile minut odświeżać dane (0 = wyłączone).</small></div><hr style="margin: 30px 0;"><h4> MQTT (alternatywny tryb)</h4><div class="form-group" style="text-align: left;"><label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="psk_mqtt_enabled" name="psk_mqtt_enabled" style="width: auto; margin: 0;"><span><strong>Użyj MQTT zamiast HTTP</strong></span></label><small>Zaznacz aby używać MQTT do odbierania spotów w czasie rzeczywistym.</small></div><div id="mqtt_fields" style="display: none;"><div class="form-group" style="text-align: left;"><label>MQTT Serwer:</label><input type="text" id="psk_mqtt_server" name="psk_mqtt_server" value="mqtt.pskreporter.info"><small>Adres serwera MQTT.</small></div><div class="form-group" style="text-align: left;"><label>MQTT Port:</label><input type="number" id="psk_mqtt_port" name="psk_mqtt_port" min="1" max="65535" value="1883"><small>Port MQTT (domyślnie 1883).</small></div><div class="form-group" style="text-align: left;"><label>MQTT Callsign (filter):</label><input type="text" id="psk_mqtt_callsign" name="psk_mqtt_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Opcjonalny filtr - pokazuje spoty dla tego znaku (4 pierwsze znaki lokatora).</small></div></div><div style="margin-top: 30px; text-align: center;"><button class="btn btn-primary" onclick="savePSKConfig()"> Zapisz ustawienia PSK Reporter</button><div id="psk-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div id="iss-page" class="page"><div class="cyd-container"><h2 style="text-align: center; color: var(--text-color, #ffd700); margin-top: 10px;">ISS Pass Tracker</h2><div class="iss-telemetry-grid"><div class="iss-card"><div class="iss-card-label">Aktualnie nad krajem:</div><div class="iss-card-value" id="iss-country">Ładowanie...</div></div><div class="iss-card"><div class="iss-card-label">Szerokość geograficzna:</div><div class="iss-card-value" id="iss-lat">--</div></div><div class="iss-card"><div class="iss-card-label">Długość geograficzna:</div><div class="iss-card-value" id="iss-lng">--</div></div><div class="iss-card"><div class="iss-card-label">Wysokość:</div><div class="iss-card-value" id="iss-altitude">-- km</div></div><div class="iss-card"><div class="iss-card-label">Prędkość:</div><div class="iss-card-value" id="iss-speed">-- km/h</div></div><div class="iss-card"><div class="iss-card-label">Azymut:</div><div class="iss-card-value" id="iss-azimuth">--°</div></div><div class="iss-card"><div class="iss-card-label">Wysokość kątowa:</div><div class="iss-card-value" id="iss-elevation">--°</div></div><div class="iss-card"><div class="iss-card-label">Odległość:</div><div class="iss-card-value" id="iss-distance">-- km</div></div></div><div class="iss-status" id="iss-status">Oczekiwanie na dane ISS...</div><!-- ISS Amateur Radio Frequencies - Premium UI --><div class="iss-freq-container"><div class="iss-freq-header"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg><h3>CZĘSTOTLIWOŚCI ARISS</h3><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div><div class="iss-freq-cards"><!-- Voice Repeater --><div class="iss-freq-card voice"><div class="iss-freq-card-header"><div class="iss-freq-card-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="#00ff88"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div><div><div class="iss-freq-card-title">VOICE REPEATER</div><div class="iss-freq-card-subtitle">Cross-band Repeater</div></div></div><div class="iss-freq-display"><div class="iss-freq-channel rx"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" transform="rotate(90 12 12)"/></svg>
+                                    RX
+                                </div><div class="iss-freq-value">437.800<span class="iss-freq-unit">MHz</span></div></div><div class="iss-freq-channel tx"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24"><path d="M4 11h9.17l-5.59-5.59L12 2l8 8-8 8-1.41-1.41L13.17 13H4v-2z" transform="rotate(-90 12 12)"/></svg>
+                                    TX
+                                </div><div class="iss-freq-value">145.990<span class="iss-freq-unit">MHz</span></div></div></div><div class="iss-freq-badges"><span class="iss-freq-badge fm">FM</span><span class="iss-freq-badge tone">TONE 67.0 Hz</span></div></div><!-- APRS / Packet --><div class="iss-freq-card packet"><div class="iss-freq-card-header"><div class="iss-freq-card-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="#ff9500"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></div><div><div class="iss-freq-card-title">APRS DIGIPEATER</div><div class="iss-freq-card-subtitle">Packet Radio</div></div></div><div class="iss-freq-display"><div class="iss-freq-channel simplex"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                    SIMPLEX
+                                </div><div class="iss-freq-value">145.825<span class="iss-freq-unit">MHz</span></div></div></div><div class="iss-freq-badges"><span class="iss-freq-badge fm">FM</span><span class="iss-freq-badge afsk">AFSK 1200</span><span class="iss-freq-badge ax25">AX.25</span></div></div><!-- SSTV --><div class="iss-freq-card sstv"><div class="iss-freq-card-header"><div class="iss-freq-card-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="#bf5fff"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM9 8h2v8H9zm4 0h2v8h-2zm-8 4h2v4H5z"/></svg></div><div><div class="iss-freq-card-title">SSTV</div><div class="iss-freq-card-subtitle">Slow Scan Television</div></div></div><div class="iss-freq-display"><div class="iss-freq-channel rx"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" transform="rotate(90 12 12)"/></svg>
+                                    RX
+                                </div><div class="iss-freq-value">145.800<span class="iss-freq-unit">MHz</span></div></div></div><div class="iss-freq-badges"><span class="iss-freq-badge fm">FM</span><span class="iss-freq-badge sstv">PD120</span></div></div><!-- Voice Direct --><div class="iss-freq-card direct"><div class="iss-freq-card-header"><div class="iss-freq-card-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="#00d4ff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/></svg></div><div><div class="iss-freq-card-title">VOICE DIRECT</div><div class="iss-freq-card-subtitle">Astronaut Contacts - Europe</div></div></div><div class="iss-freq-display"><div class="iss-freq-channel rx"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" transform="rotate(90 12 12)"/></svg>
+                                    RX
+                                </div><div class="iss-freq-value">145.800<span class="iss-freq-unit">MHz</span></div></div><div class="iss-freq-channel tx"><div class="iss-freq-channel-label"><svg viewBox="0 0 24 24"><path d="M4 11h9.17l-5.59-5.59L12 2l8 8-8 8-1.41-1.41L13.17 13H4v-2z" transform="rotate(-90 12 12)"/></svg>
+                                    TX
+                                </div><div class="iss-freq-value">145.200<span class="iss-freq-unit">MHz</span></div></div></div><div class="iss-freq-badges"><span class="iss-freq-badge fm">FM</span><span class="iss-freq-badge tone">REGION 1 EU</span></div></div></div><div class="iss-freq-footer"><svg viewBox="0 0 24 24" width="16" height="16" fill="#00d4ff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    Dane: <a href="https://www.ariss.org" target="_blank">ARISS</a> (Amateur Radio on the International Space Station)
+                </div></div></div></div><div id="upload-page" class="page"><div class="upload-container"><div class="upload-header"><h2> Wireless File Upload</h2><p>Prześlij pliki bezpośrednio do pamięci ESP32 przez WiFi</p></div><div class="upload-zone" id="uploadZone"><div class="upload-zone-icon"></div><div class="upload-zone-text">Przeciągnij plik tutaj lub kliknij, aby wybrać</div><div class="upload-zone-hint">Wspierane formaty: .html, .css, .js, .bmp, .txt</div><input type="file" accept=".bmp"></div><div class="upload-preview" id="uploadPreview" style="display: none;"><div class="upload-preview-header"><span class="upload-preview-filename" id="fileName">-</span><span class="upload-preview-size" id="fileSize">-</span></div><div class="upload-preview-path" id="filePath">Ścieżka: /</div></div><button class="upload-btn" id="uploadBtn" disabled onclick="uploadFile()">
+                ⬆️ Wgraj plik do ESP32
+            </button><div class="upload-progress" id="uploadProgress" style="display: none;"><div class="upload-progress-bar"><div class="upload-progress-fill" id="progressFill"></div></div><div class="upload-progress-text" id="progressText">0%</div></div><div class="upload-status" id="uploadStatus" style="display: none;"></div><div class="upload-info-cards"><div class="upload-info-card"><h4> index.html</h4><p>Główny plik interfejsu WWW</p></div><div class="upload-info-card"><h4> .css / .js</h4><p>Style i skrypty</p></div><div class="upload-info-card"><h4> .bmp</h4><p>Obrazy splash i mapy</p></div></div><div class="upload-type-badges"><span class="upload-type-badge">.html</span><span class="upload-type-badge">.css</span><span class="upload-type-badge">.js</span><span class="upload-type-badge">.bmp</span><span class="upload-type-badge">.txt</span></div></div><script>
+        let selectedFile = null;
+        let currentPath = '/';
+        
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const filePath = document.getElementById('filePath');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const uploadStatus = document.getElementById('uploadStatus');
+        
+        // Click to select file
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // File input change
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFileSelect(fileInput.files[0]);
+            }
+        });
+        
+        function handleFileSelect(file) {
+            selectedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatBytes(file.size);
+            
+            // Set path based on file type
+            if (file.name.endsWith('.html')) {
+                currentPath = '/index.html';
+            } else if (file.name.endsWith('.bmp')) {
+                currentPath = '/' + file.name;
+            } else if (file.name.endsWith('.txt')) {
+                currentPath = '/' + file.name;
+            } else {
+                currentPath = '/' + file.name;
+            }
+            filePath.textContent = 'Ścieżka: ' + currentPath;
+            
+            uploadPreview.style.display = 'block';
+            uploadBtn.disabled = false;
+            uploadStatus.style.display = 'none';
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function uploadFile() {
+            if (!selectedFile) return;
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = ' Trwa wysyłanie...';
+            uploadProgress.style.display = 'block';
+            uploadStatus.style.display = 'none';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = percent + '%';
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200 || xhr.status === 201) {
+                    uploadStatus.className = 'upload-status success';
+                    uploadStatus.innerHTML = ' Sukces! Plik został wgrany.<br><small>Odśwież stronę (Ctrl+F5)</small>';
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.textContent = ' Wgrano!';
+                } else {
+                    uploadStatus.className = 'upload-status error';
+                    uploadStatus.textContent = ' Błąd: ' + xhr.statusText;
+                    uploadStatus.style.display = 'block';
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+                }
+            });
+            
+            xhr.addEventListener('error', () => {
+                uploadStatus.className = 'upload-status error';
+                uploadStatus.textContent = ' Błąd połączenia z ESP32';
+                uploadStatus.style.display = 'block';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '⬆️ Wgraj plik do ESP32';
+            });
+            
+            xhr.open('POST', '/api/upload');
+            xhr.send(formData);
+        }
+        </script></div><div id="manual-page" class="page"><div class="manual-container"><div class="manual-content"><h3>ESP32 HAM-CLOCK — Podręcznik Montażu i Wgrywania v1.4a</h3><h4>Opis Projektu</h4><p>ESP32-HAM-CLOCK to zaawansowany monitor radiostacji dedykowany dla krótkofalowców. Urządzenie integruje w jednym ekranie:</p><ul><li><b>DX Cluster:</b> Śledzenie spotów DX w czasie rzeczywistym</li><li><b>POTA Spots:</b> Monitorowanie aktywności POTA (Parks on the Air)</li><li><b>HamAlert:</b> Alerty o aktywności radiowej</li><li><b>APRS-IS:</b> System pozycjonowania radiowego</li><li><b>ISS Tracking:</b> Śledzenie stacji kosmicznej ISS</li></ul><h4>Instrukcja Montażu Sprzętu</h4><p>Projekt bazuje na module ESP32 (np. ESP32 Dev Module / ESP32 WROOM) oraz dedykowanym wyświetlaczu TFT ILI9488 o rozdzielczości 480x320.</p><p><b>Konfiguracja Wyświetlacza:</b></p><ul><li>Interfejs graficzny urządzenia został programowo dostosowany (skalowanie 1.5x) do pełnego pokrycia obszaru 480x320 pikseli</li><li>Wymagana jest poprawna konfiguracja pinów SPI (MOSI, SCLK, CS, DC, RST) w pliku <code>User_Setup.h</code> wewnątrz katalogu biblioteki TFT_eSPI w środowisku Arduino</li></ul><h4>Instrukcja Wgrywania Projektu (Firmware i Dane)</h4><p><b>Krok 1 — Środowisko:</b></p><p>Wymagane jest zainstalowanie bibliotek:</p><ul><li>ArduinoJson (wersja 7.x)</li><li>TFT_eSPI</li><li>WiFiManager</li><li>SGP4 (dla obliczeń orbitalnych ISS)</li></ul><p><b>Krok 2 — Konfiguracja Pamięci:</b></p><p>Ze względu na rozmiar firmware (ponad 1.3 MB), przed kompilacją w Arduino IDE NALEŻY wejść w Narzędzia -> Partition Scheme i zmienić schemat na <b>"Huge APP (3MB No OTA/1MB SPIFFS)"</b>. W przeciwnym wypadku kompilacja zakończy się błędem braku miejsca.</p><p><b>Krok 3 — Wgrywanie Frontendu do LittleFS:</b></p><p>Pliki interfejsu (w tym index.html oraz foldery z ikonami pogody) muszą zostać wgrane do pamięci flash procesora. Należy użyć narzędzia ESP32 LittleFS Data Upload w Arduino IDE, aby wysłać zawartość folderu data.</p><h4>Wbudowany Panel Awaryjny (Funkcja Fallback)</h4><p>Urządzenie posiada awaryjny, podstawowy panel HTML zapisany bezpośrednio w pamięci programu (firmware). Jeśli pamięć LittleFS zostanie sformatowana lub zabraknie w niej pliku index.html, zegar i tak uruchomi prostą stronę WWW, umożliwiając:</p><ul><li>Korzystanie z API konfiguracyjnego</li><li>Podgląd statusu urządzenia</li><li>Wykonanie bezprzewodowej aktualizacji oprogramowania (OTA)</li></ul><h4>Obsługa i Pętla Stron</h4><p>W zakładce <b>"Ekran TFT"</b> możesz konfigurować kolejność wyświetlania ekranów na fizycznym wyświetlaczu. Dostępnych jest 14 slotów ekranowych (Strona 1-14), które można dowolnie włączać, wyłączać i zmieniać ich kolejność.</p><p><b>Nowe opcje ekranów:</b></p><ul><li><b>Strona 14 - ISS - Śledzenie Stacji Kosmicznej:</b> Panel śledzenia stacji ISS w czasie rzeczywistym</li></ul><p>Funkcja <b>AUTO-SWITCH</b> pozwala na automatyczne przełączanie ekranów co określony czas (SWITCH-TIME).</p><h4>Śledzenie Stacji ISS</h4><p>Panel śledzenia ISS wyświetla dane telemetryczne stacji kosmicznej w czasie rzeczywistym:</p><ul><li><b>Pozycja geograficzna:</b> Szerokość i długość geograficzna ISS</li><li><b>Wysokość i prędkość:</b> Aktualna wysokość orbity i prędkość orbitalna</li><li><b>Kraj pod satelitą:</b> Dynamicznie wyświetlana nazwa państwa nad którym znajduje się ISS lub "Ocean / Brak lądu" gdy stacja leci nad wodami międzynarodowymi</li><li><b>Azymut i Elevacja:</b> Kąt azymutu i wysokości kątowej względem Twojej lokalizacji</li><li><b>Odległość:</b> Aktualna odległość od Twojej lokalizacji</li></ul><p>Dane telemetryczne są odświeżane automatycznie co kilka sekund podczas gdy jesteś na zakładce ISS.</p><h4>Zapis konfiguracji</h4><p>Wszystkie zmiany w konfiguracji są zapisywane w pamięci Preferences ESP32. Aby zapisać ustawienia, kliknij przycisk "Zapisz" w odpowiedniej zakładce. Urządzenie może wymagać restartu dla niektórych zmian (np. zmiana języka TFT).</p><p><i>Wskazówka: Jeśli wprowadzasz zmiany w instrukcjach i konfiguracji, kliknij "Zapisz", a oprogramowanie układowe bezpiecznie zaktualizuje pamięć Preferences w ESP32.</i></p></div></div></div><script>
         let currentMode = "All";
         let currentBand = "All";
         let allSpots = [];
@@ -234,6 +1166,37 @@
             manualLoaded = true;
         };
 
+        const loadISSTelemetry = () => {
+            fetch('/api/iss?t=' + new Date().getTime())
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.lat !== undefined) {
+                        document.getElementById('iss-lat').textContent = data.lat.toFixed(4) + '°';
+                        document.getElementById('iss-lng').textContent = data.lng.toFixed(4) + '°';
+                        document.getElementById('iss-altitude').textContent = data.altitude.toFixed(1) + ' km';
+                        document.getElementById('iss-speed').textContent = data.speed.toFixed(0) + ' km/h';
+                        document.getElementById('iss-azimuth').textContent = data.azimuth.toFixed(1) + '°';
+                        document.getElementById('iss-elevation').textContent = data.elevation.toFixed(1) + '°';
+                        document.getElementById('iss-distance').textContent = data.distance.toFixed(0) + ' km';
+                        document.getElementById('iss-country').textContent = data.country || 'OCEAN / MORZE';
+                        document.getElementById('iss-status').textContent = 'Dane ISS zaktualizowane: ' + new Date().toLocaleTimeString();
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('iss-status').textContent = 'Błąd ładowania danych ISS';
+                    console.error('ISS telemetry error:', err);
+                });
+        };
+
+        // Auto-refresh ISS telemetry every 5 seconds when on ISS page
+        if (window.issTimer) clearInterval(window.issTimer);
+        window.issTimer = setInterval(() => {
+            const issPage = document.getElementById('iss-page');
+            if (issPage && issPage.classList.contains('active')) {
+                loadISSTelemetry();
+            }
+        }, 5000);
+
         const showPage = (page) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => {
@@ -255,6 +1218,8 @@
                 loadHamalert();
             } else if (page === "manual") {
                 loadManual();
+            } else if (page === "iss") {
+                loadISSTelemetry();
             }
         }
         
@@ -400,11 +1365,11 @@
             document.getElementById('status').textContent = "Wyświetlono " + filtered.length + " spotów";
         }
         
-        const screenOptionsDefault = ["hamclock","dxcluster","aprsis","aprsradar","bandinfo","sunspots","weather","weatherforecast","pota","hamalert","pskmap","iss","unlishunter","matrix","off"];
+        const screenOptionsDefault = ["hamclock","dxcluster","aprsis","aprsradar","bandinfo","sunspots","weather","weatherforecast","pota","hamalert","pskmap","unlishunter","matrix","isspasstracking","off"];
 
         const applyScreenOrderToUI = (order) => {
             const arr = Array.isArray(order) && order.length ? order : screenOptionsDefault;
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 14; i++) {
                 const sel = document.getElementById(`screen_slot_${i+1}`);
                 if (!sel) continue;
                 sel.value = arr[i] || screenOptionsDefault[i] || "off";
@@ -413,7 +1378,7 @@
 
         const readScreenOrderFromUI = () => {
             const arr = [];
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 14; i++) {
                 const sel = document.getElementById(`screen_slot_${i+1}`);
                 arr.push(sel ? sel.value : "off");
             }
@@ -1046,6 +2011,23 @@
             .catch(() => alert("Błąd resetowania kalibracji"));
         };
 
+        const resetFactory = () => {
+            if (!confirm('⚠️ UWAGA! Czy na pewno chcesz wykonać RESET FABRYCZNY?\n\nTo usunie WSZYSTKIE ustawienia (WiFi, APRS, ekrany, itp.)!\n\nUrządzenie zrestartuje się z domyślnymi ustawieniami.')) {
+                return;
+            }
+            document.getElementById('resetStatus').innerHTML = '<span style="color:#f00;"> Trwa czyszczenie pamięci NVS i restart...</span>';
+            fetch('/api/reset_nvs', {
+                method: 'POST'
+            })
+            .then(r => r.text())
+            .then(data => {
+                document.getElementById('resetStatus').innerHTML = '<span style="color:#0a0;"> ' + data + '</span>';
+            })
+            .catch(() => {
+                document.getElementById('resetStatus').innerHTML = '<span style="color:#f00;"> Błąd resetu fabrycznego</span>';
+            });
+        };
+
         const saveConfig = () => {
             setOpenWebRxBaseFromInput();
             const payload = collectConfigPayload();
@@ -1282,403 +2264,11 @@
             }
         });
         readContinentFilters();
-        
-        // ==================== ISS Functions ====================
-        let currentIssView = 'frequencies';
-        
-        function setIssView(view) {
-            currentIssView = view;
-            document.querySelectorAll('.iss-section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('#iss-page .btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('iss-' + view).style.display = 'block';
-            document.getElementById('iss-btn-' + view).classList.add('active');
-        }
-        
-        function loadISS() {
-            fetch('/api/iss')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.lat) document.getElementById('iss-lat').textContent = data.lat.toFixed(4) + '°';
-                    if (data.lon) document.getElementById('iss-lon').textContent = data.lon.toFixed(4) + '°';
-                    if (data.alt) document.getElementById('iss-alt').textContent = (data.alt * 1000).toFixed(0) + ' m';
-                    if (data.vel) document.getElementById('iss-vel').textContent = data.vel.toFixed(2) + ' km/s';
-                    if (data.country) document.getElementById('iss-country').textContent = data.country;
-                    if (data.azimuth) document.getElementById('iss-az').textContent = data.azimuth.toFixed(1) + '°';
-                    if (data.elevation !== undefined) document.getElementById('iss-el').textContent = data.elevation.toFixed(1) + '°';
-                    document.getElementById('iss-status').textContent = 'Ostatnia aktualizacja: ' + new Date().toLocaleTimeString();
-                })
-                .catch(e => {
-                    document.getElementById('iss-status').textContent = 'Błąd ładowania ISS: ' + e.message;
-                });
-        }
-        
-        setInterval(loadISS, 2000);
-        loadISS();
-        
-        // ==================== Hunter Functions ====================
-        function loadHunter() {
-            fetch('/api/hunter')
-                .then(r => r.json())
-                .then(data => {
-                    let html = '<table><thead><tr><th>Znak</th><th>Status</th><th>Czas</th></tr></thead><tbody>';
-                    if (data.stations && data.stations.length > 0) {
-                        data.stations.forEach(s => {
-                            html += '<tr><td>' + s.callsign + '</td><td>' + s.status + '</td><td>' + s.time + '</td></tr>';
-                        });
-                    } else {
-                        html += '<tr><td colspan="3">Brak danych</td></tr>';
-                    }
-                    html += '</tbody></table>';
-                    document.getElementById('hunter-data').innerHTML = html;
-                    document.getElementById('hunter-status').textContent = 'Aktywne stacje: ' + (data.count || 0);
-                })
-                .catch(e => {
-                    document.getElementById('hunter-status').textContent = 'Błąd: ' + e.message;
-                });
-        }
-        
-        setInterval(loadHunter, 5000);
-        
-        // ==================== Upload Functions ====================
-        const uploadZone = document.getElementById('upload-zone');
-        const fileInput = document.getElementById('file-input');
-        const uploadProgress = document.getElementById('upload-progress');
-        const progressFill = document.getElementById('progress-fill');
-        const uploadStatus = document.getElementById('upload-status');
-        const uploadLog = document.getElementById('upload-log');
-        const uploadResult = document.getElementById('upload-result');
-        
-        // Obsluga klikniecia na strefe upload
-        if (uploadZone) {
-            uploadZone.addEventListener('click', () => fileInput && fileInput.click());
-        }
-        
-        // Tylko BMP
-        if (fileInput) {
-            fileInput.addEventListener('change', () => { 
-                if (fileInput.files.length) uploadBmpFile(fileInput.files[0]); 
-            });
-        }
-        
-        function uploadBmpFile(file) {
-            // Walidacja - tylko BMP
-            if (!file.name.toLowerCase().endsWith('.bmp')) {
-                alert('Tylko pliki BMP sa akceptowane!');
-                fileInput.value = '';
-                return;
-            }
-            
-            uploadResult.innerHTML = '';
-            uploadProgress.style.display = 'block';
-            uploadStatus.textContent = 'Wgrywanie: ' + file.name;
-            addUploadLog('Rozpoczecie uploadu: ' + file.name + ' (' + file.size + ' bajtow)');
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            fetch('/api/upload/bmp', { method: 'POST', body: formData })
-                .then(r => r.json())
-                .then(data => {
-                    progressFill.style.width = '100%';
-                    if (data.success) {
-                        addUploadLog('Sukces: ' + file.name + ' zapisany jako ' + (data.filename || 'splash.bmp'));
-                        uploadResult.innerHTML = '<div style="color:#4CAF50;padding:12px;background:rgba(76,175,80,0.2);border-radius:8px;">OK - Obrazek zapisany!</div>';
-                    } else {
-                        addUploadLog('Blad: ' + (data.message || 'Nieznany blad'));
-                        uploadResult.innerHTML = '<div style="color:#f44336;padding:12px;background:rgba(244,67,54,0.2);border-radius:8px;">Blad: ' + (data.message || 'Nie удалось') + '</div>';
-                    }
-                    setTimeout(() => { uploadProgress.style.display = 'none'; progressFill.style.width = '0'; }, 3000);
-                })
-                .catch(e => {
-                    addUploadLog('Blad polaczenia: ' + e.message);
-                    uploadResult.innerHTML = '<div style="color:#f44336;padding:12px;background:rgba(244,67,54,0.2);border-radius:8px;">Blad: ' + e.message + '</div>';
-                    setTimeout(() => { uploadProgress.style.display = 'none'; progressFill.style.width = '0'; }, 3000);
-                });
-            
-            fileInput.value = '';
-        }
-        
-        function addUploadLog(msg) {
-            if (uploadLog) {
-                const line = document.createElement('div');
-                line.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
-                uploadLog.appendChild(line);
-                uploadLog.scrollTop = uploadLog.scrollHeight;
-            }
-        }
-        
-        function clearUploadLog() {
-            if (uploadLog) uploadLog.innerHTML = '';
-            if (uploadResult) uploadResult.innerHTML = '';
-        }
-        
-        // ==================== INSTRUCTION LIST ====================
-        let instructionFiles = [];
-        
-        function loadInstructionList() {
-            fetch('/api/instructions')
-                .then(r => r.json())
-                .then(data => {
-                    instructionFiles = data.files || [];
-                    renderInstructionSelector();
-                })
-                .catch(() => {
-                    instructionFiles = [];
-                    renderInstructionSelector();
-                });
-        }
-        
-        function renderInstructionSelector() {
-            const selector = document.getElementById('instruction-selector');
-            if (!selector) return;
-            
-            let html = '<div class="instruction-tabs">';
-            html += '<button class="btn ' + (selectedInstruction === 'default' ? 'active' : '') + '" onclick="loadInstruction(\'default\')"> Domyślna</button>';
-            
-            instructionFiles.forEach(f => {
-                const name = f.name.replace('.md', '').replace('_', ' ').replace('-', ' ');
-                html += '<button class="btn ' + (selectedInstruction === f.name ? 'active' : '') + '" onclick="loadInstruction(\'' + f.name + '\')"> ' + name + '</button>';
-            });
-            
-            html += '</div>';
-            selector.innerHTML = html;
-        }
-        
-        let selectedInstruction = 'default';
-        
-        function loadInstruction(filename) {
-            selectedInstruction = filename;
-            const content = document.getElementById('manual-content');
-            
-            if (filename === 'default') {
-                fetch('/manual.md')
-                    .then(r => r.text())
-                    .then(text => { content.innerHTML = simpleMarkdown(text); })
-                    .catch(() => { content.innerHTML = '<p>Brak domyślnej instrukcji. Wgraj plik .md przez zakładkę Upload.</p>'; });
-            } else {
-                fetch('/' + filename)
-                    .then(r => r.text())
-                    .then(text => { content.innerHTML = simpleMarkdown(text); })
-                    .catch(() => { content.innerHTML = '<p>Błąd ładowania instrukcji.</p>'; });
-            }
-            
-            renderInstructionSelector();
-        }
-        
-        function simpleMarkdown(text) {
-            // Prosty konwerter Markdown -> HTML
-            let html = text
-                // Nagłówki
-                .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-                // Pogrubienie i kursywa
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                // Listy
-                .replace(/^- (.+)$/gm, '<li>$1</li>')
-                .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-                // Kod
-                .replace(/`(.+?)`/g, '<code>$1</code>')
-                .replace(/```(\w+)?\n([\s\S]+?)```/g, '<pre><code>$2</code></pre>')
-                // Linki
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
-                // Bloki notatek
-                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-                // Tabele (proste)
-                .replace(/\|(.+)\|/g, (match) => {
-                    const cells = match.split('|').filter(c => c.trim());
-                    if (cells.some(c => /^-+$/.test(c.trim()))) return '';
-                    return '<tr>' + cells.map(c => '<td>' + c.trim() + '</td>').join('') + '</tr>';
-                })
-                // Linie
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/^(?!<[hpoulbh])/gm, '');
-            
-            return '<p>' + html + '</p>';
-        }
-        
-        // Inicjalizacja instrukcji przy starcie
-        loadInstructionList();
-        
-        // ==================== QRZ Functions ====================
-        let qrzHistory = JSON.parse(localStorage.getItem('qrz_history') || '[]');
-        
-        function searchQrz() {
-            const callsign = document.getElementById('qrz-search-input').value.trim().toUpperCase();
-            if (!callsign) {
-                alert('Wpisz znak do wyszukania!');
-                return;
-            }
-            
-            const resultDiv = document.getElementById('qrz-result');
-            resultDiv.innerHTML = '<p style="color:#00d4ff;"> Szukam: ' + callsign + '...</p>';
-            
-            // Pobierz dane z API ESP32 (które pobiera z QRZ.com)
-            fetch('/api/qrz?callsign=' + encodeURIComponent(callsign))
-                .then(r => r.json())
-                .then(data => {
-                    if (data.error) {
-                        resultDiv.innerHTML = '<div class="glass-panel" style="background:rgba(255,0,0,0.1);"><p style="color:#ff6b6b;"> ' + data.error + '</p><small>Sprawdź czy masz ustawione dane logowania QRZ.com w Ustawieniach</small></div>';
-                    } else {
-                        resultDiv.innerHTML = renderQrzResult(data);
-                        addToQrzHistory(callsign);
-                    }
-                })
-                .catch(e => {
-                    // Fallback - otwórz QRZ.com w nowej karcie
-                    resultDiv.innerHTML = '<div class="glass-panel"><p> Otwieram QRZ.com...</p><p><a href="https://www.qrz.com/db/' + callsign + '" target="_blank" class="btn">Otwórz QRZ.com dla ' + callsign + '</a></p></div>';
-                    addToQrzHistory(callsign);
-                });
-        }
-        
-        function renderQrzResult(data) {
-            return '<div class="glass-panel">' +
-                '<h3 style="color:#00d4ff;margin-bottom:12px;"> ' + (data.callsign || 'Nieznany') + '</h3>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
-                '<div><strong>Imię:</strong> ' + (data.name || '-') + '</div>' +
-                '<div><strong>Nazwisko:</strong> ' + (data.addr_name || '-') + '</div>' +
-                '<div><strong>QTH:</strong> ' + (data.addr_city || '-') + '</div>' +
-                '<div><strong>Kraj:</strong> ' + (data.country || '-') + '</div>' +
-                '<div><strong>Lokator:</strong> ' + (data.grid || '-') + '</div>' +
-                '<div><strong>QSL:</strong> ' + (data.qsl || '-') + '</div>' +
-                '</div>' +
-                '<div style="margin-top:12px;"><a href="https://www.qrz.com/db/' + (data.callsign || '') + '" target="_blank" class="btn"> Otwórz na QRZ.com</a></div>' +
-                '</div>';
-        }
-        
-        function addToQrzHistory(callsign) {
-            qrzHistory = qrzHistory.filter(c => c !== callsign);
-            qrzHistory.unshift(callsign);
-            if (qrzHistory.length > 10) qrzHistory.pop();
-            localStorage.setItem('qrz_history', JSON.stringify(qrzHistory));
-            renderQrzHistory();
-        }
-        
-        function renderQrzHistory() {
-            const histDiv = document.getElementById('qrz-history');
-            if (qrzHistory.length === 0) {
-                histDiv.innerHTML = '<p style="color:#666;font-size:12px;">Brak historii wyszukiwań</p>';
-            } else {
-                histDiv.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
-                    qrzHistory.map(c => '<button class="btn" onclick="document.getElementById(\'qrz-search-input\').value=\'' + c + '\';searchQrz();">' + c + '</button>').join('') +
-                    '</div>';
-            }
-        }
-        
-        function clearQrzSearch() {
-            document.getElementById('qrz-search-input').value = '';
-            document.getElementById('qrz-result').innerHTML = '';
-        }
-        
-        // Inicjalizacja historii QRZ
-        renderQrzHistory();
-        
-        // Obsługa Enter w polu wyszukiwania
-        document.getElementById('qrz-search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') searchQrz();
-        });
-        
     </script><div style="margin: 20px auto 10px; max-width: 980px; padding: 10px 16px; color: #b0b0b0; font-size: 12px; text-align: center;">
-        Oprogramowanie zaprojektowane przez Konrad Wiśniewski SP3KON<br>
-        ESP32-HAM-CLOCK v1.4a | W razie pytań: sp3kon@gmail.com
-    </div><style>
-        /* ISS Frequency Cards */
-        .iss-freq-card {
-            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,150,200,0.1));
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .iss-freq-title { color: #00d4ff; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .iss-freq-detail { color: #e0e0e0; font-size: 14px; margin-bottom: 6px; }
-        .iss-freq-badge {
-            display: inline-block;
-            background: rgba(0,212,255,0.25);
-            color: #00d4ff;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-        /* Upload Zone */
-        .upload-zone {
-            border: 2px dashed rgba(0,212,255,0.4);
-            border-radius: 16px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .upload-zone:hover { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
-        .upload-icon { font-size: 48px; margin-bottom: 12px; }
-        .upload-text { color: var(--text-muted); font-size: 14px; }
-        .upload-hint {
-            background: rgba(0,212,255,0.1);
-            border: 1px solid rgba(0,212,255,0.3);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin: 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            color: var(--text);
-        }
-        .upload-hint-icon { font-size: 18px; }
-        /* Upload Extension Buttons */
-        .upload-ext-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .upload-ext-btn { 
-            padding: 10px 14px; 
-            font-size: 12px; 
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .upload-ext-btn:hover { 
-            background: rgba(0,212,255,0.2); 
-            border-color: #00d4ff; 
-        }
-        .upload-ext-btn.active { 
-            background: rgba(0,212,255,0.3); 
-            border-color: #00d4ff; 
-            color: #00d4ff;
-            box-shadow: 0 0 10px rgba(0,212,255,0.3);
-        }
-        .upload-progress { margin: 16px 0; }
-        .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-        .progress-bar > div { height: 100%; background: linear-gradient(90deg, #00d4ff, #0088aa); transition: width 0.3s; width: 0; }
-        .upload-log { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
-        .upload-log > div { color: #8a9aaa; margin-bottom: 4px; }
-        /* ISS Table */
-        .iss-section table { width: 100%; }
-        .iss-section th { background: rgba(0,212,255,0.2); color: #000; padding: 8px; }
-        .iss-section td { padding: 8px; border-bottom: 1px solid #333; }
-        /* Instruction Selector */
-        .instruction-selector { margin-bottom: 16px; }
-        .instruction-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-        .instruction-tabs .btn { flex: 0 0 auto; }
-        /* Manual Content - Markdown Styles */
-        .manual-content { line-height: 1.7; }
-        .manual-content h1 { color: #00d4ff; font-size: 22px; margin: 20px 0 12px; border-bottom: 1px solid rgba(0,212,255,0.3); padding-bottom: 8px; }
-        .manual-content h2 { color: #00d4ff; font-size: 18px; margin: 18px 0 10px; }
-        .manual-content h3 { color: #e0e0e0; font-size: 15px; margin: 14px 0 8px; }
-        .manual-content p { margin-bottom: 12px; color: #ccc; }
-        .manual-content ul, .manual-content ol { margin: 10px 0 10px 20px; color: #ccc; }
-        .manual-content li { margin-bottom: 6px; }
-        .manual-content code { background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ffd700; }
-        .manual-content pre { background: rgba(0,0,0,0.5); padding: 14px; border-radius: 8px; overflow-x: auto; margin: 12px 0; border: 1px solid rgba(0,212,255,0.2); }
-        .manual-content pre code { background: none; padding: 0; }
-        .manual-content blockquote { background: rgba(0,212,255,0.1); border-left: 4px solid #00d4ff; padding: 10px 16px; margin: 12px 0; border-radius: 0 8px 8px 0; color: #8a9aaa; }
-        .manual-content a { color: #00d4ff; text-decoration: none; }
-        .manual-content a:hover { text-decoration: underline; }
-        .manual-content table { width: 100%; border-collapse: collapse; margin: 12px 0; }
-        .manual-content table th { background: rgba(0,212,255,0.2); padding: 8px; text-align: left; }
-        .manual-content table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .manual-content table tr:nth-child(even) { background: rgba(0,0,0,0.2); }
-        .manual-content strong { color: #fff; }
-        .manual-container { display: flex; flex-direction: column; }
-        .manual-container > h2 { flex-shrink: 0; }
-        .manual-container > .instruction-selector { flex-shrink: 0; }
-        .manual-container > .manual-content { flex: 1; min-height: 0; overflow-y: auto; max-height: calc(100vh - 250px); padding: 16px; background: rgba(0,0,0,0.4); border-radius: 12px; }
-    </style></body></html>
+        Oprogramowanie zostało zaprojektowane i wykonane przez Konrad Wiśniewski SP3KON (z użyciem AI).<br>
+        Obecna wersja oprogramowania ESP32-HAM-CLOCK v1.2 z dnia 04.03.2026.<br>
+        W razie pytań proszę o kontakt: sp3kon@gmail.com
+    </div></body></html>
+
+
+
