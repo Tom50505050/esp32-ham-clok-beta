@@ -288,7 +288,7 @@
             <h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Ustawienia TFT</h2>
 
             <div class="config-section">
-                <h3>💡 Podświetlenie TFT</h3>
+                <h3> Podświetlenie TFT</h3>
                 <div class="form-group">
                     <label>Jasność (0-100%): <span id="tft_backlight_value">100</span>%</label>
                     <input type="range" id="tft_backlight" name="tft_backlight" min="0" max="100" value="100">
@@ -297,7 +297,7 @@
             </div>
 
             <div class="config-section">
-                <h3>🌐 Język TFT</h3>
+                <h3> Język TFT</h3>
                 <div class="form-group">
                     <label>Język interfejsu TFT:</label>
                     <select id="tft_lang" name="tft_lang">
@@ -309,7 +309,7 @@
             </div>
 
             <div class="config-section">
-                <h3>📋 Rozmiar Tabel</h3>
+                <h3> Rozmiar Tabel</h3>
                 <div class="form-group">
                     <label>Wybierz rozmiar tabel:</label>
                     <select id="table_size" name="table_size">
@@ -320,7 +320,7 @@
             </div>
 
             <div class="config-section">
-                <h3>🎨 Kolory Zegara</h3>
+                <h3> Kolory Zegara</h3>
                 <div class="form-group">
                     <label>Kolor callsignu:</label>
                     <select id="callsign_color" name="callsign_color">
@@ -350,7 +350,7 @@
             </div>
 
             <div class="config-section">
-                <h3>🖥️ Ekrany TFT (kolejność)</h3>
+                <h3> Ekrany TFT (kolejność)</h3>
                 <small>Strona 1 wyświetla się jako pierwsza po włączeniu. Możesz dowolnie ustawić strony 1-12 lub wyłączyć je (OFF).</small>
                 <div class="form-group">
                     <label style="display: flex; align-items: center; gap: 10px;">
@@ -609,7 +609,7 @@
             </div>
 
             <div class="config-section">
-                <h3>🎯 Kalibracja TFT</h3>
+                <h3> Kalibracja TFT</h3>
                 <div class="form-group">
                     <label>TFT Rotation (0-3):</label>
                     <select id="tft_rotation" name="tft_rotation">
@@ -653,16 +653,16 @@
                     <small>Ręczna konfiguracja orientacji dotyku (lub użyj kalibracji z przełącznika CALL_TFT)</small>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;">🔄 Przywróć domyślną rotację TFT (DEFAULT)</button>
+                    <button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślną rotację TFT (DEFAULT)</button>
                     <small>Ustawia TFT Rotation na 1 i restartuje urządzenie</small>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;">🔄 Przywróć domyślne (DEFAULT)</button>
+                    <button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślne (DEFAULT)</button>
                     <small>Przywraca domyślne wartości kalibracji dotyku z kodu</small>
                 </div>
             </div>
 
-            <button type="button" class="save-btn" onclick="saveConfig()">💾 Zapisz ustawienia TFT</button>
+            <button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ustawienia TFT</button>
         </div>
     </div>
 
@@ -670,7 +670,7 @@
         <div class="config-form">
             <h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">ALERT</h2>
             <div class="config-section">
-                <h3>🚨 APRS ALERT</h3>
+                <h3> APRS ALERT</h3>
                 <div class="form-group">
                     <label>Lista poszukiwanych znaków (po przecinku):</label>
                     <input type="text" id="aprs_alert" name="aprs_alert" placeholder="SQ3NIK-9, SP3YOR, SP3KON-7">
@@ -730,7 +730,7 @@
                     <small>Zakres: 50-5000 ms. Domyślnie: 500 ms.</small>
                 </div>
             </div>
-            <button type="button" class="save-btn" onclick="saveConfig()">💾 Zapisz ALERT</button>
+            <button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ALERT</button>
         </div>
     </div>
     
@@ -741,7 +741,7 @@
                 
                 <!-- Sekcja: Połączenie WiFi -->
                 <div class="config-section">
-                    <h3>📶 Połączenie WiFi</h3>
+                    <h3> Połączenie WiFi</h3>
                     <div class="form-group">
                         <label>WiFi SSID:</label>
                         <input type="text" id="wifi_ssid" name="wifi_ssid" required>
@@ -768,7 +768,7 @@
                 
                 <!-- Sekcja: DX Cluster -->
                 <div class="config-section">
-                    <h3>📻 DX Cluster</h3>
+                    <h3> DX Cluster</h3>
                     <div class="form-group">
                         <label>DX Cluster Host:</label>
                         <input type="text" id="cluster_host" name="cluster_host" required>
@@ -821,7 +821,7 @@
 
                 <!-- Sekcja: POTA Cluster (screen7) -->
                 <div class="config-section">
-                    <h3>🏕️ POTA Cluster</h3>
+                    <h3> POTA Cluster</h3>
                     <div class="form-group">
                         <label>External POTA API Link:</label>
                         <input type="text" id="pota_api_url" name="pota_api_url" value="https://api.pota.app/v1/spots">
@@ -830,7 +830,7 @@
                 </div>
 
                 <div class="config-section">
-                    <h3>🛰️ HAMALERT</h3>
+                    <h3> HAMALERT</h3>
                     <div class="form-group">
                         <label>Telnet Host:</label>
                         <input type="text" id="hamalert_host" name="hamalert_host" value="hamalert.org" required>
@@ -855,7 +855,7 @@
                 
                 <!-- Sekcja: Twoja Stacja -->
                 <div class="config-section">
-                    <h3>📡 Twoja Stacja</h3>
+                    <h3> Twoja Stacja</h3>
                     <div class="form-group">
                         <label>Twój Znak Wywoławczy:</label>
                         <input type="text" id="user_callsign" name="user_callsign" placeholder="np. SP3KON">
@@ -885,7 +885,7 @@
                 
                 <!-- Sekcja: QRZ.com -->
                 <div class="config-section">
-                    <h3>🔍 QRZ.com</h3>
+                    <h3> QRZ.com</h3>
                     <div class="form-group">
                         <label>QRZ.com Username (XML API):</label>
                         <input type="text" id="qrz_user" name="qrz_user" placeholder="login QRZ">
@@ -905,7 +905,7 @@
                 
                 <!-- Sekcja: OpenWeather -->
                 <div class="config-section">
-                    <h3>🌤️ OpenWeather</h3>
+                    <h3> OpenWeather</h3>
                     <div class="form-group">
                         <label>OpenWeather API Key:</label>
                         <input type="password" id="weather_key" name="weather_key" placeholder="klucz API" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
@@ -915,7 +915,7 @@
                 
                 <!-- Sekcja: KiwiSDR -->
                 <div class="config-section">
-                    <h3>📡 KiwiSDR</h3>
+                    <h3> KiwiSDR</h3>
                     <div class="form-group">
                         <label>KiwiSDR URL:</label>
                         <input type="text" id="openwebrx_url" name="openwebrx_url" placeholder="">
@@ -926,7 +926,7 @@
                 
                 <!-- Sekcja: APRS-IS -->
                 <div class="config-section">
-                    <h3>📻 APRS-IS</h3>
+                    <h3> APRS-IS</h3>
                     <div class="form-group">
                         <label>APRS-IS Host:</label>
                         <input type="text" id="aprs_host" name="aprs_host" placeholder="rotate.aprs2.net">
@@ -998,14 +998,14 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="save-btn">💾 Zapisz Konfigurację</button>
+                <button type="submit" class="save-btn"> Zapisz Konfigurację</button>
             </form>
         </div>
     </div>
 
     <div id="screensaver-page" class="page">
         <div class="screensaver-container">
-            <h3>💤 Wygaszacz ekranu (Matrix)</h3>
+            <h3> Wygaszacz ekranu (Matrix)</h3>
             <div class="form-group" style="text-align: left; margin-top: 20px;">
                 <label style="display: flex; align-items: center; gap: 10px; justify-content: flex-start;">
                     <input type="checkbox" id="screen_saver_enabled" name="screen_saver_enabled" style="width: auto;">
@@ -1019,7 +1019,7 @@
                 <small>Czas bezczynności przed włączeniem wygaszacza (1-60 min).</small>
             </div>
             <div style="margin-top: 20px; text-align: center;">
-                <button class="btn btn-primary" onclick="saveScreenSaverConfig()">💾 Zapisz ustawienia wygaszacza</button>
+                <button class="btn btn-primary" onclick="saveScreenSaverConfig()"> Zapisz ustawienia wygaszacza</button>
                 <div id="screensaver-save-status" style="margin-top: 10px; font-size: 14px;"></div>
             </div>
         </div>
@@ -1027,7 +1027,7 @@
 
     <div id="psk-page" class="page">
         <div class="psk-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-            <h3>📡 PSK Reporter</h3>
+            <h3> PSK Reporter</h3>
             
             <div class="form-group" style="text-align: left; margin-top: 20px;">
                 <label>Znak do monitorowania:</label>
@@ -1116,7 +1116,7 @@
             
             <hr style="margin: 30px 0;">
             
-            <h4>🔔 HTTP Monitoring</h4>
+            <h4> HTTP Monitoring</h4>
             
             <div class="form-group" style="text-align: left;">
                 <label>Znak do monitoringu HTTP:</label>
@@ -1138,7 +1138,7 @@
 
             <hr style="margin: 30px 0;">
 
-            <h4>📡 MQTT (alternatywny tryb)</h4>
+            <h4> MQTT (alternatywny tryb)</h4>
 
             <div class="form-group" style="text-align: left;">
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
@@ -1169,7 +1169,7 @@
             </div>
 
             <div style="margin-top: 30px; text-align: center;">
-                <button class="btn btn-primary" onclick="savePSKConfig()">💾 Zapisz ustawienia PSK Reporter</button>
+                <button class="btn btn-primary" onclick="savePSKConfig()"> Zapisz ustawienia PSK Reporter</button>
                 <div id="psk-save-status" style="margin-top: 10px; font-size: 14px;"></div>
             </div>
         </div>
@@ -1177,7 +1177,7 @@
 <!-- ==================== QRZ PAGE ==================== -->
     <div id="qrz-page" class="page">
         <div class="cyd-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">📋 Szukaj znak - QRZ.com</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> Szukaj znak - QRZ.com</h2>
             <div class="glass-panel">
                 <div class="form-group">
                     <label>Wpisz znak do wyszukania:</label>
@@ -1185,13 +1185,13 @@
                     <small>Wyszukiwanie przez QRZ.com (wymaga danych logowania w Ustawieniach)</small>
                 </div>
                 <div class="controls" style="margin-top: 12px;">
-                    <button class="btn" onclick="searchQrz()">🔍 Szukaj</button>
-                    <button class="btn" onclick="clearQrzSearch()">🗑️ Wyczyść</button>
+                    <button class="btn" onclick="searchQrz()"> Szukaj</button>
+                    <button class="btn" onclick="clearQrzSearch()"> Wyczyść</button>
                 </div>
                 <div id="qrz-result" style="margin-top: 16px;"></div>
             </div>
             <div class="glass-panel" style="margin-top: 16px;">
-                <h3 style="color: #00d4ff;">📌 Ostatnio wyszukiwane</h3>
+                <h3 style="color: #00d4ff;"> Ostatnio wyszukiwane</h3>
                 <div id="qrz-history" class="qrz-history">
                     <p style="color: #666; font-size: 12px;">Brak historii wyszukiwań</p>
                 </div>
@@ -1201,9 +1201,9 @@
 
     <div id="manual-page" class="page">
         <div class="manual-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">📖 Instrukcja</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> Instrukcja</h2>
             <div id="instruction-selector" class="instruction-selector">
-                <button class="btn active" onclick="loadInstruction('default')">📄 Domyślna</button>
+                <button class="btn active" onclick="loadInstruction('default')"> Domyślna</button>
             </div>
             <div class="manual-content" id="manual-content">Ładowanie instrukcji...</div>
         </div>
@@ -1212,7 +1212,7 @@
     <!-- ==================== HUNTER PAGE ==================== -->
     <div id="hunter-page" class="page">
         <div class="cyd-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">🕵️ Unlis Hunter</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">️ Unlis Hunter</h2>
             <div class="cyd-screen">
                 <div id="hunter-status" class="status">Ładowanie danych HUNTER...</div>
                 <div id="hunter-data"></div>
@@ -1223,7 +1223,7 @@
     <!-- ==================== ISS PAGE ==================== -->
     <div id="iss-page" class="page">
         <div class="cyd-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">🛰️ ISS - Międzynarodowa Stacja Kosmiczna</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> ISS - Międzynarodowa Stacja Kosmiczna</h2>
             <div class="cyd-screen">
                 <div class="controls">
                     <div class="control-group">
@@ -1253,22 +1253,22 @@
                 </div>
                 <div id="iss-frequencies" class="iss-section" style="display:none;">
                     <div class="iss-freq-card">
-                        <div class="iss-freq-title">🔁 Voice Repeater</div>
+                        <div class="iss-freq-title"> Voice Repeater</div>
                         <div class="iss-freq-detail">RX: 437.800 MHz | TX: 145.990 MHz</div>
                         <div class="iss-freq-badge">CTCSS 67.0 Hz</div>
                     </div>
                     <div class="iss-freq-card">
-                        <div class="iss-freq-title">📦 APRS Digipeater</div>
+                        <div class="iss-freq-title"> APRS Digipeater</div>
                         <div class="iss-freq-detail">145.825 MHz Simplex</div>
                         <div class="iss-freq-badge">AFSK 1200</div>
                     </div>
                     <div class="iss-freq-card">
-                        <div class="iss-freq-title">🖼️ SSTV Downlink</div>
+                        <div class="iss-freq-title"> SSTV Downlink</div>
                         <div class="iss-freq-detail">RX: 145.800 MHz</div>
                         <div class="iss-freq-badge">SSTV</div>
                     </div>
                     <div class="iss-freq-card">
-                        <div class="iss-freq-title">🎙️ Voice Direct EU</div>
+                        <div class="iss-freq-title"> Voice Direct EU</div>
                         <div class="iss-freq-detail">RX: 145.800 | TX: 145.200 MHz</div>
                         <div class="iss-freq-badge">FM</div>
                     </div>
@@ -2658,11 +2658,11 @@
             if (!selector) return;
             
             let html = '<div class="instruction-tabs">';
-            html += '<button class="btn ' + (selectedInstruction === 'default' ? 'active' : '') + '" onclick="loadInstruction(\'default\')">📄 Domyślna</button>';
+            html += '<button class="btn ' + (selectedInstruction === 'default' ? 'active' : '') + '" onclick="loadInstruction(\'default\')"> Domyślna</button>';
             
             instructionFiles.forEach(f => {
                 const name = f.name.replace('.md', '').replace('_', ' ').replace('-', ' ');
-                html += '<button class="btn ' + (selectedInstruction === f.name ? 'active' : '') + '" onclick="loadInstruction(\'' + f.name + '\')">📄 ' + name + '</button>';
+                html += '<button class="btn ' + (selectedInstruction === f.name ? 'active' : '') + '" onclick="loadInstruction(\'' + f.name + '\')"> ' + name + '</button>';
             });
             
             html += '</div>';
@@ -2737,14 +2737,14 @@
             }
             
             const resultDiv = document.getElementById('qrz-result');
-            resultDiv.innerHTML = '<p style="color:#00d4ff;">🔍 Szukam: ' + callsign + '...</p>';
+            resultDiv.innerHTML = '<p style="color:#00d4ff;"> Szukam: ' + callsign + '...</p>';
             
             // Pobierz dane z API ESP32 (które pobiera z QRZ.com)
             fetch('/api/qrz?callsign=' + encodeURIComponent(callsign))
                 .then(r => r.json())
                 .then(data => {
                     if (data.error) {
-                        resultDiv.innerHTML = '<div class="glass-panel" style="background:rgba(255,0,0,0.1);"><p style="color:#ff6b6b;">❌ ' + data.error + '</p><small>Sprawdź czy masz ustawione dane logowania QRZ.com w Ustawieniach</small></div>';
+                        resultDiv.innerHTML = '<div class="glass-panel" style="background:rgba(255,0,0,0.1);"><p style="color:#ff6b6b;"> ' + data.error + '</p><small>Sprawdź czy masz ustawione dane logowania QRZ.com w Ustawieniach</small></div>';
                     } else {
                         resultDiv.innerHTML = renderQrzResult(data);
                         addToQrzHistory(callsign);
@@ -2752,14 +2752,14 @@
                 })
                 .catch(e => {
                     // Fallback - otwórz QRZ.com w nowej karcie
-                    resultDiv.innerHTML = '<div class="glass-panel"><p>🌐 Otwieram QRZ.com...</p><p><a href="https://www.qrz.com/db/' + callsign + '" target="_blank" class="btn">Otwórz QRZ.com dla ' + callsign + '</a></p></div>';
+                    resultDiv.innerHTML = '<div class="glass-panel"><p> Otwieram QRZ.com...</p><p><a href="https://www.qrz.com/db/' + callsign + '" target="_blank" class="btn">Otwórz QRZ.com dla ' + callsign + '</a></p></div>';
                     addToQrzHistory(callsign);
                 });
         }
         
         function renderQrzResult(data) {
             return '<div class="glass-panel">' +
-                '<h3 style="color:#00d4ff;margin-bottom:12px;">📋 ' + (data.callsign || 'Nieznany') + '</h3>' +
+                '<h3 style="color:#00d4ff;margin-bottom:12px;"> ' + (data.callsign || 'Nieznany') + '</h3>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
                 '<div><strong>Imię:</strong> ' + (data.name || '-') + '</div>' +
                 '<div><strong>Nazwisko:</strong> ' + (data.addr_name || '-') + '</div>' +
@@ -2768,7 +2768,7 @@
                 '<div><strong>Lokator:</strong> ' + (data.grid || '-') + '</div>' +
                 '<div><strong>QSL:</strong> ' + (data.qsl || '-') + '</div>' +
                 '</div>' +
-                '<div style="margin-top:12px;"><a href="https://www.qrz.com/db/' + (data.callsign || '') + '" target="_blank" class="btn">🌐 Otwórz na QRZ.com</a></div>' +
+                '<div style="margin-top:12px;"><a href="https://www.qrz.com/db/' + (data.callsign || '') + '" target="_blank" class="btn"> Otwórz na QRZ.com</a></div>' +
                 '</div>';
         }
         
