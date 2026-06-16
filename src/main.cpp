@@ -17243,6 +17243,46 @@ void setupWebServer() {
   server->on("/upload_form", HTTP_GET, []() {
     server->send(200, "text/html", "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Upload</title><style>body{font-family:Arial;background:#1a1a1a;color:#e0e0e0;padding:20px;}button{padding:12px 30px;background:#4a6a4a;border:none;color:#e0e0e0;cursor:pointer;border-radius:5px;font-size:16px;}</style></head><body><h2>Upload index.html</h2><form id='f'><input type='file' id='file' accept='.html'><br><br><button type='submit'>Wgraj</button></form><div id='s'></div><script>document.getElementById('f').addEventListener('submit',function(e){e.preventDefault();const file=document.getElementById('file').files[0];if(!file){alert('Wybierz plik');return;}const fd=new FormData();fd.append('index.html',file);fetch('/api/upload',{method:'POST',body:fd}).then(()=>{document.getElementById('s').innerHTML='<p style=\"color:green\">OK! Odswiez strone glowna (Ctrl+F5)</p>';}).catch(err=>{document.getElementById('s').innerHTML='<p style=\"color:red\">Blad: '+err+'</p>';});});</script></body></html>");
   });
+  
+  // API - Upload BMP dla obrazka startowego (splash.bmp)
+  server->on("/api/upload/bmp", HTTP_POST, []() {
+    server->send(200, "application/json", "{\"success\":true,\"filename\":\"splash.bmp\"}");
+  }, []() {
+    HTTPUpload& upload = server->upload();
+    if (upload.status == UPLOAD_FILE_START) {
+      String filename = upload.filename;
+      if (!filename.endsWith(".bmp") && !filename.endsWith(".BMP")) {
+        Serial.println("[BMP UPLOAD] Only BMP files allowed!");
+        return;
+      }
+      if (!littleFsReady) {
+        Serial.println("[BMP UPLOAD] LittleFS not ready");
+        return;
+      }
+      // Zapisz jako splash.bmp
+      if (LittleFS.exists("/splash.bmp")) {
+        LittleFS.remove("/splash.bmp");
+      }
+      File f = LittleFS.open("/splash.bmp", "w");
+      if (!f) {
+        Serial.println("[BMP UPLOAD] Failed to open splash.bmp");
+        return;
+      }
+      f.close();
+      Serial.printf("[BMP UPLOAD] Starting: %s -> splash.bmp\n", filename.c_str());
+    } else if (upload.status == UPLOAD_FILE_WRITE) {
+      if (littleFsReady) {
+        File f = LittleFS.open("/splash.bmp", "a");
+        if (f) {
+          f.write(upload.buf, upload.currentSize);
+          f.close();
+        }
+      }
+    } else if (upload.status == UPLOAD_FILE_END) {
+      Serial.printf("[BMP UPLOAD] Done: %d bytes saved as splash.bmp\n", upload.totalSize);
+    }
+  });
+
   server->on("/api/upload", HTTP_POST, []() {
     server->send(200, "application/json", "{\"success\":true,\"message\":\"upload_done\"}");
   }, []() {

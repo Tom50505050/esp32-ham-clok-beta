@@ -188,14 +188,14 @@
         <button class="nav-btn" onclick="showPage('aprs')">APRS</button>
         <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
         <button class="nav-btn" onclick="showPage('psk')">PSK</button>
-        <button class="nav-btn" onclick="showPage('qrz')">📋 QRZ</button>
-        <button class="nav-btn" onclick="showPage('hunter')">🔍 HUNTER</button>
-        <button class="nav-btn" onclick="showPage('iss')">🛰️ ISS</button>
-        <button class="nav-btn" onclick="showPage('tft')">🖥️ TFT</button>
-        <button class="nav-btn" onclick="showPage('upload')">📤 UPLOAD</button>
-        <button class="nav-btn" onclick="showPage('config')">⚙️ USTAWIENIA</button>
-        <button class="nav-btn" onclick="showPage('screensaver')">🌙 WYGA.</button>
-        <button class="nav-btn" onclick="showPage('manual')">📖 INFO</button>
+        <button class="nav-btn" onclick="showPage('qrz')">QRZ</button>
+        <button class="nav-btn" onclick="showPage('hunter')">HUNTER</button>
+        <button class="nav-btn" onclick="showPage('iss')">ISS</button>
+        <button class="nav-btn" onclick="showPage('tft')">TFT</button>
+        <button class="nav-btn" onclick="showPage('upload')">UPLOAD BMP</button>
+        <button class="nav-btn" onclick="showPage('config')">USTAWIENIA</button>
+        <button class="nav-btn" onclick="showPage('screensaver')">WYGASZACZ</button>
+        <button class="nav-btn" onclick="showPage('manual')">INSTRUKCJA</button>
         <div class="lang-switch">
             <a class="lang-link active" href="/index.html">PL</a>
             <span>|</span>
@@ -1284,36 +1284,25 @@
     <!-- ==================== UPLOAD PAGE ==================== -->
     <div id="upload-page" class="page">
         <div class="cyd-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">📤 Upload plików</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">Upload BMP - Obrazek startowy</h2>
             <div class="glass-panel">
-                <h3 style="color: #00d4ff; margin-bottom: 12px;">Szybki wybór pliku:</h3>
-                <div class="upload-ext-buttons">
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.html')">📄 .html</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.css')">🎨 .css</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.js')">⚡ .js</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.bmp')">🖼️ .bmp</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.png')">🖼️ .png</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.txt')">📝 .txt</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.md')">📖 .md</button>
-                    <button class="btn upload-ext-btn" onclick="selectExtension('.bin')">💾 .bin</button>
-                    <button class="btn upload-ext-btn active" onclick="selectExtension('.html,.css,.js,.bmp,.txt,.md')">📦 Wszystkie</button>
-                </div>
+                <p style="color: #888; margin-bottom: 16px;">Wybierz plik BMP aby ustawic jako obrazek startowy wyswietlany przy starcie zegarka.</p>
                 <div class="upload-zone" id="upload-zone">
-                    <div class="upload-icon">📁</div>
-                    <div class="upload-text">Przeciągnij pliki tutaj lub kliknij aby wybrać</div>
-                    <input type="file" id="file-input" multiple accept=".html,.css,.js,.bmp,.txt,.md" style="display:none;">
+                    <div class="upload-icon" style="font-size:32px;">[ ]</div>
+                    <div class="upload-text">Kliknij aby wybrac plik BMP</div>
+                    <input type="file" id="file-input" accept=".bmp" style="display:none;">
                 </div>
                 <div class="upload-hint">
-                    <span class="upload-hint-icon">💡</span>
-                    <span><strong>Pliki .md</strong> automatycznie pojawią się w zakładce <strong>Instrukcja</strong></span>
+                    <span>Akceptowane: tylko pliki .bmp (zalecany rozmiar: 320x480)</span>
                 </div>
                 <div id="upload-progress" class="upload-progress" style="display:none;">
                     <div class="progress-bar"><div id="progress-fill"></div></div>
                     <div id="upload-status"></div>
                 </div>
                 <div id="upload-log" class="upload-log"></div>
+                <div id="upload-result" style="margin-top: 16px;"></div>
                 <div class="controls" style="margin-top:16px;">
-                    <button class="btn" onclick="clearUploadLog()">🗑️ Wyczyść log</button>
+                    <button class="btn" onclick="clearUploadLog()">Wyczysc log</button>
                 </div>
             </div>
         </div>
@@ -2582,65 +2571,56 @@
         const progressFill = document.getElementById('progress-fill');
         const uploadStatus = document.getElementById('upload-status');
         const uploadLog = document.getElementById('upload-log');
+        const uploadResult = document.getElementById('upload-result');
         
-        // Funkcja wyboru rozszerzenia pliku
-        function selectExtension(ext) {
-            if (fileInput) {
-                fileInput.accept = ext;
-                fileInput.click();
-            }
-            // Zmień aktywny przycisk
-            document.querySelectorAll('.upload-ext-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-        
+        // Obsluga klikniecia na strefe upload
         if (uploadZone) {
             uploadZone.addEventListener('click', () => fileInput && fileInput.click());
-            uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = '#00d4ff'; });
-            uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.style.borderColor = '';
-                if (fileInput) fileInput.files = e.dataTransfer.files;
-                if (fileInput && fileInput.files.length) uploadFiles(fileInput.files);
-            });
         }
         
+        // Tylko BMP
         if (fileInput) {
-            fileInput.addEventListener('change', () => { if (fileInput.files.length) uploadFiles(fileInput.files); });
+            fileInput.addEventListener('change', () => { 
+                if (fileInput.files.length) uploadBmpFile(fileInput.files[0]); 
+            });
         }
         
-        function uploadFiles(files) {
+        function uploadBmpFile(file) {
+            // Walidacja - tylko BMP
+            if (!file.name.toLowerCase().endsWith('.bmp')) {
+                alert('Tylko pliki BMP sa akceptowane!');
+                fileInput.value = '';
+                return;
+            }
+            
+            uploadResult.innerHTML = '';
             uploadProgress.style.display = 'block';
-            let uploaded = 0;
-            Array.from(files).forEach((file, i) => {
-                const formData = new FormData();
-                formData.append('file', file);
-                fetch('/api/upload', { method: 'POST', body: formData })
-                    .then(r => r.json())
-                    .then(data => {
-                        uploaded++;
-                        const pct = Math.round((uploaded / files.length) * 100);
-                        progressFill.style.width = pct + '%';
-                        uploadStatus.textContent = 'Wgrywanie: ' + file.name + ' (' + uploaded + '/' + files.length + ')';
-                        addUploadLog((data.success ? '✓' : '✗') + ' ' + file.name + ': ' + (data.message || ''));
-                        
-                        // Jeśli wgrano plik .md, odśwież listę instrukcji
-                        if (data.success && file.name.toLowerCase().endsWith('.md')) {
-                            loadInstructionList();
-                            addUploadLog('📄 Plik .md dodany do Instrukcji');
-                        }
-                        
-                        if (uploaded === files.length) {
-                            uploadStatus.textContent = 'Zakończono!';
-                            setTimeout(() => { uploadProgress.style.display = 'none'; progressFill.style.width = '0'; }, 2000);
-                        }
-                    })
-                    .catch(e => {
-                        uploaded++;
-                        addUploadLog('✗ Błąd: ' + file.name + ' - ' + e.message);
-                    });
-            });
+            uploadStatus.textContent = 'Wgrywanie: ' + file.name;
+            addUploadLog('Rozpoczecie uploadu: ' + file.name + ' (' + file.size + ' bajtow)');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/api/upload/bmp', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    progressFill.style.width = '100%';
+                    if (data.success) {
+                        addUploadLog('Sukces: ' + file.name + ' zapisany jako ' + (data.filename || 'splash.bmp'));
+                        uploadResult.innerHTML = '<div style="color:#4CAF50;padding:12px;background:rgba(76,175,80,0.2);border-radius:8px;">OK - Obrazek zapisany!</div>';
+                    } else {
+                        addUploadLog('Blad: ' + (data.message || 'Nieznany blad'));
+                        uploadResult.innerHTML = '<div style="color:#f44336;padding:12px;background:rgba(244,67,54,0.2);border-radius:8px;">Blad: ' + (data.message || 'Nie удалось') + '</div>';
+                    }
+                    setTimeout(() => { uploadProgress.style.display = 'none'; progressFill.style.width = '0'; }, 3000);
+                })
+                .catch(e => {
+                    addUploadLog('Blad polaczenia: ' + e.message);
+                    uploadResult.innerHTML = '<div style="color:#f44336;padding:12px;background:rgba(244,67,54,0.2);border-radius:8px;">Blad: ' + e.message + '</div>';
+                    setTimeout(() => { uploadProgress.style.display = 'none'; progressFill.style.width = '0'; }, 3000);
+                });
+            
+            fileInput.value = '';
         }
         
         function addUploadLog(msg) {
@@ -2654,6 +2634,7 @@
         
         function clearUploadLog() {
             if (uploadLog) uploadLog.innerHTML = '';
+            if (uploadResult) uploadResult.innerHTML = '';
         }
         
         // ==================== INSTRUCTION LIST ====================
