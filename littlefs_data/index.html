@@ -1213,35 +1213,15 @@
     <!-- ==================== ISS PAGE ==================== -->
     <div id="iss-page" class="page">
         <div class="cyd-container">
-            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> ISS - Międzynarodowa Stacja Kosmiczna</h2>
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">ISS - Międzynarodowa Stacja Kosmiczna</h2>
             <div class="cyd-screen">
                 <div class="controls">
                     <div class="control-group">
-                        <button class="btn" onclick="setIssView('tracking')" id="iss-btn-tracking">ŚLEDZENIE</button>
-                        <button class="btn" onclick="setIssView('frequencies')" id="iss-btn-frequencies">CZĘSTOTLIWOŚCI</button>
+                        <button class="btn active" onclick="setIssView('frequencies')" id="iss-btn-frequencies">CZĘSTOTLIWOŚCI</button>
                         <button class="btn" onclick="setIssView('passes')" id="iss-btn-passes">PRZELOTY</button>
                     </div>
                 </div>
-                <div id="iss-tracking" class="iss-section">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Parametr</th>
-                                <th>Wartość</th>
-                            </tr>
-                        </thead>
-                        <tbody id="iss-tbody">
-                            <tr><td>Szerokość</td><td id="iss-lat">--</td></tr>
-                            <tr><td>Długość</td><td id="iss-lon">--</td></tr>
-                            <tr><td>Wysokość</td><td id="iss-alt">--</td></tr>
-                            <tr><td>Prędkość</td><td id="iss-vel">--</td></tr>
-                            <tr><td>Kraj</td><td id="iss-country">--</td></tr>
-                            <tr><td>Azymut</td><td id="iss-az">--</td></tr>
-                            <tr><td>Elewacja</td><td id="iss-el">--</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="iss-frequencies" class="iss-section" style="display:none;">
+                <div id="iss-frequencies" class="iss-section">
                     <div class="iss-freq-card">
                         <div class="iss-freq-title"> Voice Repeater</div>
                         <div class="iss-freq-detail">RX: 437.800 MHz | TX: 145.990 MHz</div>
@@ -1266,6 +1246,7 @@
                 <div id="iss-passes" class="iss-section" style="display:none;">
                     <div id="iss-passes-data">Ładowanie danych o przelotach...</div>
                 </div>
+                <div id="iss-tracking" class="iss-section" style="display:none;"></div>
                 <div id="iss-status" class="status">Oczekiwanie na dane ISS...</div>
             </div>
         </div>
@@ -2499,7 +2480,7 @@
         readContinentFilters();
         
         // ==================== ISS Functions ====================
-        let currentIssView = 'tracking';
+        let currentIssView = 'frequencies';
         
         function setIssView(view) {
             currentIssView = view;
