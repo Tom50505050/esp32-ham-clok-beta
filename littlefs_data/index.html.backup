@@ -1,4 +1,10 @@
-<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ESP32-HAM-CLOCK</title><style>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-HAM-CLOCK</title>
+        <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #0a0f1a;
@@ -171,9 +177,1109 @@
             .cyd-screen { padding: 12px; min-height: 250px; }
             .btn { padding: 6px 10px; font-size: 11px; }
         }
-    </style></head><body><div class="glass-panel nav-container"><button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button><button class="nav-btn" onclick="showPage('pota')">POTA</button><button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button><button class="nav-btn" onclick="showPage('aprs')">APRS</button><button class="nav-btn" onclick="showPage('alert')">ALERT</button><button class="nav-btn" onclick="showPage('psk')">PSK</button><button class="nav-btn" onclick="showPage('hunter')">HUNTER</button><button class="nav-btn" onclick="showPage('iss')">ISS</button><button class="nav-btn" onclick="showPage('tft')">TFT</button><button class="nav-btn" onclick="showPage('upload')">Upload strony startowej</button><button class="nav-btn" onclick="showPage('config')">USTAWIENIA</button><button class="nav-btn" onclick="showPage('screensaver')">WYGASZACZ</button><button class="nav-btn" onclick="showPage('manual')">INSTRUKCJA</button><div class="lang-switch"><a class="lang-link active" href="/index.html">PL</a><span>|</span><a class="lang-link" href="/indexEN.html">EN</a></div></div><!-- ==================== DX SPOT PAGE ==================== --><div id="dxspot-page" class="page active"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">DX Cluster</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Modulacja:</span><button class="btn active" onclick="setMode('All')">ALL</button><button class="btn" onclick="setMode('CW')">CW</button><button class="btn" onclick="setMode('SSB')">SSB</button><button class="btn" onclick="setMode('FT8FT4')">FT8/FT4</button></div><div class="control-group"><span style="margin-right: 10px; line-height: 35px;">Pasmo:</span><button class="btn" onclick="setBand('160m')">160m</button><button class="btn" onclick="setBand('80m')">80m</button><button class="btn" onclick="setBand('40m')">40m</button><button class="btn" onclick="setBand('20m')">20m</button><button class="btn" onclick="setBand('17m')">17m</button><button class="btn" onclick="setBand('15m')">15m</button><button class="btn" onclick="setBand('12m')">12m</button><button class="btn" onclick="setBand('10m')">10m</button><button class="btn active" onclick="setBand('All')">All</button></div></div><table id="spots-table"><thead><tr><th>Czas</th><th>Znak</th><th>Częstotliwość</th><th>Mode</th><th>Kraj</th></tr></thead><tbody id="spots-tbody"></tbody></table><div class="status" id="status">Oczekiwanie na dane...</div></div></div><!-- Filtry poniżej "wirtualnego wyświetlacza" (poza cyd-container) --><div class="continent-filters" style="max-width: 600px; margin: 12px auto 0;"><div class="title">Spot from:</div><div class="row"><label><input type="checkbox" id="cont_af" checked>AF</label><label><input type="checkbox" id="cont_an" checked>AN</label><label><input type="checkbox" id="cont_as" checked>AS</label><label><input type="checkbox" id="cont_eu" checked>EU</label><label><input type="checkbox" id="cont_na" checked>NA</label><label><input type="checkbox" id="cont_sa" checked>SA</label><label><input type="checkbox" id="cont_oc" checked>OC</label></div></div></div><div id="aprs-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">APRS</h2><div class="cyd-screen"><table id="aprs-table"><thead><tr><th>Czas</th><th>Callsign</th><th>Symbol</th><th>Odległość</th><th>Komentarz</th></tr></thead><tbody id="aprs-tbody"></tbody></table><div class="status" id="aprs-status">Oczekiwanie na dane APRS...</div></div></div></div><div id="tft-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Ustawienia TFT</h2><div class="config-section"><h3> Podświetlenie TFT</h3><div class="form-group"><label>Jasność (0-100%): <span id="tft_backlight_value">100</span>%</label><input type="range" id="tft_backlight" name="tft_backlight" min="0" max="100" value="100"><small>Ustaw jasność podświetlenia dla wszystkich ekranów</small></div></div><div class="config-section"><h3> Język TFT</h3><div class="form-group"><label>Język interfejsu TFT:</label><select id="tft_lang" name="tft_lang"><option value="pl">Polski</option><option value="en">English</option></select><small>Zmiana języka dotyczy napisów na ekranie TFT (wymaga restartu)</small></div></div><div class="config-section"><h3> Rozmiar Tabel</h3><div class="form-group"><label>Wybierz rozmiar tabel:</label><select id="table_size" name="table_size"><option value="normal">Normalne</option><option value="enlarged">Powiększone</option></select></div></div><div class="config-section"><h3> Kolory Zegara</h3><div class="form-group"><label>Kolor callsignu:</label><select id="callsign_color" name="callsign_color"><option value="65535">Biały (0xFFFF)</option><option value="63488">Czerwony (0xF800)</option><option value="2016">Zielony (0x07E0)</option><option value="31">Niebieski (0x001F)</option><option value="65504">Żółty (0xFFE0)</option><option value="2047">Jasnoniebieski (0x07FF)</option><option value="63519">Magenta (0xF81F)</option><option value="33840">Ciemnoszary (0x8410)</option><option value="63488">Pomarańczowy (0xF800)</option><option value="65504">Cyjan (0x07FF)</option><option value="63519">Różowy (0xF81F)</option><option value="0">Czarny (0x0000)</option><option value="31744">Ciemnoczerwony (0x7C00)</option><option value="1024">Ciemnozielony (0x0400)</option><option value="8">Ciemnoniebieski (0x0008)</option></select><small>Wybierz kolor wyświetlanego callsignu na ekranie zegara</small></div><div class="form-group"><label>Odcień motywu menu (0-255):</label><input type="number" id="menu_hue" name="menu_hue" min="0" max="255" value="20"><small>Odcień motywu menu (20=pomarańczowy domyślny)</small></div></div><div class="config-section"><h3> Ekrany TFT (kolejność)</h3><small>Strona 1 wyświetla się jako pierwsza po włączeniu. Możesz dowolnie ustawić strony 1-12 lub wyłączyć je (OFF).</small><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="tft_auto_switch" name="tft_auto_switch" style="width: auto;"><span>AUTO-SWITCH</span></label><small>Automatycznie przełącza ekran TFT o jeden w prawo.</small></div><div class="form-group"><label>SWITCH-TIME (sekundy):</label><input type="number" id="tft_switch_time_sec" name="tft_switch_time_sec" min="1" max="3600" step="1" value="30"><small>Czas między automatycznymi przełączeniami (1-3600 s).</small></div><div id="screen_slots_container"></div><div class="form-group"><label>Strona 1:</label><select id="screen_slot_1"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 2:</label><select id="screen_slot_2"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 3:</label><select id="screen_slot_3"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 4:</label><select id="screen_slot_4"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 5:</label><select id="screen_slot_5"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 6:</label><select id="screen_slot_6"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 7:</label><select id="screen_slot_7"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 8:</label><select id="screen_slot_8"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 9:</label><select id="screen_slot_9"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 10:</label><select id="screen_slot_10"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 11:</label><select id="screen_slot_11"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div><div class="form-group"><label>Strona 12:</label><select id="screen_slot_12"><option value="hamclock">HAM CLOCK</option><option value="dxcluster">DX CLUSTER</option><option value="aprsis">APRS-IS</option><option value="aprsradar">APRS RADAR</option><option value="bandinfo">BAND INFO</option><option value="sunspots">SUN SPOTS</option><option value="weather">WEATHER</option><option value="weatherforecast">WEATHER FORECAST</option><option value="pota">POTA</option><option value="hamalert">HAMALERT</option><option value="pskmap">PSK MAP</option><option value="iss">ISS</option><option value="iss">ISS</option><option value="unlishunter">UNLIS HUNTER</option><option value="matrix">MATRIX</option><option value="isspasstracking">ISS PASS TRACKING</option><option value="off">OFF</option></select></div></div><div class="config-section"><h3> Kalibracja TFT</h3><div class="form-group"><label>TFT Rotation (0-3):</label><select id="tft_rotation" name="tft_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót wyświetlacza TFT_eSPI (domyślnie: 1, wymaga restartu)</small></div><div class="form-group"><label>Inwersja kolorów TFT:</label><select id="tft_invert" name="tft_invert"><option value="0">Normalne</option><option value="1">Odwrócone</option></select><small>Ustawia tft.invertDisplay() (domyślnie: włączone jak w User_Setup.h)</small></div><div class="form-group"><label>Touch Rotation (0-3):</label><select id="touch_rotation" name="touch_rotation"><option value="0">0 - Portrait (pionowy)</option><option value="1">1 - Landscape 90° (krajobraz w prawo)</option><option value="2">2 - Portrait 180° (pionowy odwrócony)</option><option value="3">3 - Landscape 270° (krajobraz w lewo)</option></select><small>Obrót biblioteki XPT2046_Touchscreen (domyślnie: 1)</small></div><div class="form-group"><label>Ręczna zamiana osi:</label><select id="touch_swap_mode" name="touch_swap_mode"><option value="none">Brak (NONE)</option><option value="xy">Zamień osie X↔Y (SWAP XY)</option><option value="x">Odwróć oś X (INVERT X)</option><option value="y">Odwróć oś Y (INVERT Y)</option><option value="both">Odwróć X i Y (INVERT BOTH - obrót 180°)</option><option value="rot90cw">Obrót 90° w prawo (SWAP XY + INVERT X)</option><option value="rot90ccw">Obrót 90° w lewo (SWAP XY + INVERT Y)</option><option value="xy_both">Zamień osie + odwróć oba (SWAP XY + INVERT BOTH)</option></select><small>Ręczna konfiguracja orientacji dotyku (lub użyj kalibracji z przełącznika CALL_TFT)</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślną rotację TFT (DEFAULT)</button><small>Ustawia TFT Rotation na 1 i restartuje urządzenie</small></div><div class="form-group"><button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślne (DEFAULT)</button><small>Przywraca domyślne wartości kalibracji dotyku z kodu</small></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ustawienia TFT</button></div></div><div id="alert-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">ALERT</h2><div class="config-section"><h3> APRS ALERT</h3><div class="form-group"><label>Lista poszukiwanych znaków (po przecinku):</label><input type="text" id="aprs_alert" name="aprs_alert" placeholder="SQ3NIK-9, SP3YOR, SP3KON-7"><small>Jedno pole CSV. Maksymalnie 20 pozycji. Przykład: SQ3NIK-9, SP3YOR, SP3KON* (gwiazdka na końcu = dowolny SSID)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_enabled" name="aprs_alert_enabled" style="width: auto;" checked><span>Włącz powiadomienia APRS ALERT</span></label><small>Po wyłączeniu lista pozostaje zapisana, ale alerty nie będą zgłaszane.</small></div><div class="form-group"><label>Minimalny odstęp alertu dla tej samej stacji (sekundy):</label><input type="number" id="aprs_alert_min_sec" name="aprs_alert_min_sec" value="300" min="0" max="86400" step="1"><small>0 = alert przy każdym odebraniu. Zakres: 0-86400 sekund.</small></div><div class="form-group"><label>Czas wyświetlania ALERT na ekranie TFT (sekundy):</label><input type="number" id="aprs_alert_screen_sec" name="aprs_alert_screen_sec" value="5" min="1" max="60" step="1"><small>Zakres: 1-60 sekund. Domyślnie: 5 sekund.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_nearby_enabled" name="aprs_alert_nearby_enabled" style="width: auto;" checked><span>Włącz wykrywanie stacji ruchomych w zasięgu (-7 i -9)</span></label><small>Dotyczy tylko stacji APRS z SSID -7 lub -9 (np. SP3KON-9, SQ3NIK-7).</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="aprs_alert_wx_enabled" name="aprs_alert_wx_enabled" style="width: auto;"><span>Włącz powiadomienia ze stacji pogodowych APRS (WX)</span></label><small>Po włączeniu APRS ALERT będzie także wykrywał stacje oznaczone symbolem WX i pokaże okno alertu z dekodowanymi danymi pogody.</small></div><div class="form-group"><label>ALERT_Distance dla stacji ruchomych (km):</label><input type="number" id="aprs_alert_distance_km" name="aprs_alert_distance_km" value="1" min="0.1" max="500" step="0.1"><small>Alert pojawi się dla stacji ruchomych w odległości nie większej niż ta wartość.</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="enable_led_alert" name="enable_led_alert" style="width: auto;" checked><span>Włącz optyczny alert LED ( Blue LED - GPIO17) </span></label><small>Wyłącza lub włącza miganie diody LED dla APRS ALERT. Można dolutować buzzer 3v.</small></div><div class="form-group"><label>Czas trwania alertu LED (ms):</label><input type="number" id="led_alert_duration_ms" name="led_alert_duration_ms" value="5000" min="100" max="60000" step="100"><small>Zakres: 100-60000 ms. Domyślnie: 5000 ms.</small></div><div class="form-group"><label>Tempo migania LED (ms):</label><input type="number" id="led_alert_blink_ms" name="led_alert_blink_ms" value="500" min="50" max="5000" step="10"><small>Zakres: 50-5000 ms. Domyślnie: 500 ms.</small></div></div><button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ALERT</button></div></div><div id="config-page" class="page"><div class="config-form"><h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Konfiguracja ESP32-HAM-CLOCK</h2><form id="config-form" autocomplete="off" data-lpignore="true" data-1p-ignore="true"><!-- Sekcja: Połączenie WiFi --><div class="config-section"><h3> Połączenie WiFi</h3><div class="form-group"><label>WiFi SSID:</label><input type="text" id="wifi_ssid" name="wifi_ssid" required><small>Nazwa sieci WiFi, do której ma się połączyć urządzenie</small></div><div class="form-group"><label>WiFi Hasło:</label><input type="password" id="wifi_pass" name="wifi_pass" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do sieci WiFi (pozostaw puste dla otwartych sieci)</small></div><div class="form-group"><label>WiFi SSID (zapasowe):</label><input type="text" id="wifi_ssid2" name="wifi_ssid2" placeholder="opcjonalnie"><small>Drugie SSID używane gdy główne jest niedostępne</small></div><div class="form-group"><label>WiFi Hasło (zapasowe):</label><input type="password" id="wifi_pass2" name="wifi_pass2" placeholder="opcjonalnie" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło dla sieci zapasowej (pozostaw puste dla sieci otwartej)</small></div></div><!-- Sekcja: DX Cluster --><div class="config-section"><h3> DX Cluster</h3><div class="form-group"><label>DX Cluster Host:</label><input type="text" id="cluster_host" name="cluster_host" required><small>Adres serwera DX Cluster (np. dxc.metronet.pl lub dxspots.com)</small></div><div class="form-group"><label>DX Cluster Port:</label><input type="number" id="cluster_port" name="cluster_port" required><small>Port serwera DX Cluster (zwykle 23 dla Telnet)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_noann" name="cluster_noann" style="width: auto;"><span>Wyłącz ogłoszenia (set/noann)</span></label><small>Ukrywa ogłoszenia administracyjne z clustra</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowwv" name="cluster_nowwv" style="width: auto;"><span>Wyłącz WWV (set/nowwv)</span></label><small>Ukrywa komunikaty WWV (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_nowcy" name="cluster_nowcy" style="width: auto;"><span>Wyłącz WCY (set/nowcy)</span></label><small>Ukrywa komunikaty WCY (zegary atomowe)</small></div><div class="form-group"><label style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="cluster_usefilters" name="cluster_usefilters" style="width: auto;"><span>Użyj filtrów (set/filter)</span></label><small>Włącza zaawansowane filtry spotów (wymaga komend poniżej)</small></div><div class="form-group"><label>Komendy filtrów (jedna na linię):</label><textarea id="cluster_filters" name="cluster_filters" rows="4" placeholder="set/filter k,ve/pass&#10;set/filter dxbm/pass hf&#10;set/filter dxbm/reject 6-cw,6-ssb,6-fm" style="font-family: monospace; font-size: 12px;"></textarea><small>Komendy filtrowania dla CC-Cluster. Przykłady: set/filter k,ve/pass (tylko K i VE), set/filter dxbm/pass hf (tylko HF), set/filter dxbm/reject 6-cw,6-ssb,6-fm (odrzuć 6m)</small></div></div><!-- Sekcja: POTA Cluster (screen7) --><div class="config-section"><h3> POTA Cluster</h3><div class="form-group"><label>External POTA API Link:</label><input type="text" id="pota_api_url" name="pota_api_url" value="https://api.pota.app/v1/spots"><small>Adres z którego backend pobiera spoty POTA (HTTP JSON)</small></div></div><div class="config-section"><h3> HAMALERT</h3><div class="form-group"><label>Telnet Host:</label><input type="text" id="hamalert_host" name="hamalert_host" value="hamalert.org" required><small>Domyślnie: hamalert.org</small></div><div class="form-group"><label>Telnet Port:</label><input type="number" id="hamalert_port" name="hamalert_port" value="7300" min="1" max="65535" required><small>Domyślnie: 7300</small></div><div class="form-group"><label>Login:</label><input type="text" id="hamalert_login" name="hamalert_login" required><small>Login użytkownika HamAlert do logowania Telnet</small></div><div class="form-group"><label>Hasło:</label><input type="password" id="hamalert_password" name="hamalert_password" required autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Pole wymagane do logowania Telnet do HamAlert</small></div></div><!-- Sekcja: Twoja Stacja --><div class="config-section"><h3> Twoja Stacja</h3><div class="form-group"><label>Twój Znak Wywoławczy:</label><input type="text" id="user_callsign" name="user_callsign" placeholder="np. SP3KON"><small>Twój znak wywoławczy używany do logowania do DX Cluster</small></div><div class="form-group"><label>Twój Locator (Maidenhead):</label><input type="text" id="user_locator" name="user_locator" placeholder="np. JO82LK"><small>Lokator Maidenhead (4-6 znaków) używany do obliczania odległości do spotów</small></div><div class="form-group"><label>Strefa czasowa (UTC):</label><input type="number" id="timezone" name="timezone" min="-12" max="14" step="1" value="0"><small>Przesunięcie godzin względem UTC (np. Polska: 1)</small></div><div class="form-group"><label>Szerokość geograficzna (Latitude):</label><input type="number" step="0.000001" id="user_lat" name="user_lat" placeholder="np. 52.4064"><small>Współrzędna szerokości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 52.4064 dla Warszawy</small></div><div class="form-group"><label>Długość geograficzna (Longitude):</label><input type="number" step="0.000001" id="user_lon" name="user_lon" placeholder="np. 16.9252"><small>Współrzędna długości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 16.9252 dla Warszawy</small></div></div><!-- Sekcja: QRZ.com --><div class="config-section"><h3> QRZ.com</h3><div class="form-group"><label>QRZ.com Username (XML API):</label><input type="text" id="qrz_user" name="qrz_user" placeholder="login QRZ"><small>Nazwa użytkownika do API QRZ.com (opcjonalne, dla dodatkowych informacji o znakach)</small></div><div class="form-group"><label>QRZ.com Password (XML API):</label><input type="password" id="qrz_pass" name="qrz_pass" placeholder="hasło QRZ" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Hasło do API QRZ.com (opcjonalne)</small></div><div class="form-group"><label>Status QRZ:</label><input type="text" id="qrz_status" name="qrz_status" readonly style="background: #1a1a1a; color: #888;"><small>Status połączenia z QRZ.com (aktualizowany automatycznie)</small></div></div><!-- Sekcja: OpenWeather --><div class="config-section"><h3> OpenWeather</h3><div class="form-group"><label>OpenWeather API Key:</label><input type="password" id="weather_key" name="weather_key" placeholder="klucz API" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false"><small>Klucz API z openweathermap.org (wymagany do wyświetlania pogody i prognozy na ekranach TFT)</small></div></div><!-- Sekcja: KiwiSDR --><div class="config-section"><h3> KiwiSDR</h3><div class="form-group"><label>KiwiSDR URL:</label><input type="text" id="openwebrx_url" name="openwebrx_url" placeholder=""><small>Wprowadź adres KiwiSDR z którego chcesz nasłuchiwać stacji np. http://okno.ddns.net:8073/</small><small><a href="http://kiwisdr.com/.public/" target="_blank" rel="noopener noreferrer" style="color: #6a6a4a;">Lista dostępnych KiwiSDR: http://kiwisdr.com/.public/</a></small></div></div><!-- Sekcja: APRS-IS --><div class="config-section"><h3> APRS-IS</h3><div class="form-group"><label>APRS-IS Host:</label><input type="text" id="aprs_host" name="aprs_host" placeholder="rotate.aprs2.net"><small>Adres serwera APRS-IS (np. rotate.aprs2.net)</small></div><div class="form-group"><label>APRS-IS Port:</label><input type="number" id="aprs_port" name="aprs_port" placeholder="14580" min="1" max="65535"><small>Port serwera APRS-IS (domyślne 14580)</small></div><div class="form-group"><label>APRS Callsign:</label><input type="text" id="aprs_callsign" name="aprs_callsign" placeholder="sp3kon"><small>Twój znak wywoławczy do logowania do APRS-IS</small></div><div class="form-group"><label>APRS SSID (0-15):</label><select id="aprs_ssid" name="aprs_ssid"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option></select><small>SSID dopisywany do callsign przy wysyłce beaconu APRS. 0 = bez sufiksu.</small></div><div class="form-group"><label>APRS Passcode:</label><input type="number" id="aprs_passcode" name="aprs_passcode" placeholder="23735" min="0" max="99999"><small>Passcode do logowania do APRS-IS (wygeneruj na aprs.org)</small></div><div class="form-group"><label>Promień filtrowania (km):</label><input type="number" id="aprs_radius" name="aprs_radius" placeholder="50" min="0" max="50"><small>Promień filtrowania stacji APRS w kilometrach (0-50 km). Filtr i wszystkie obliczenia odległości używają współrzędnych GPS z sekcji "Twoja Stacja" (w formacie xx.xxxxxx)</small></div><div class="form-group"><label class="checkbox-label"><input type="checkbox" id="aprs_beacon" name="aprs_beacon">
+    </style>
+
+</head>
+<body>
+    <div class="glass-panel nav-container">
+        <button class="nav-btn active" onclick="showPage('dxspot')">DXSPOT</button>
+        <button class="nav-btn" onclick="showPage('pota')">POTA</button>
+        <button class="nav-btn" onclick="showPage('hamalert')">HAMALERT</button>
+        <button class="nav-btn" onclick="showPage('aprs')">APRS</button>
+        <button class="nav-btn" onclick="showPage('alert')">ALERT</button>
+        <button class="nav-btn" onclick="showPage('psk')">PSK</button>
+        
+        <button class="nav-btn" onclick="showPage('hunter')">HUNTER</button>
+        <button class="nav-btn" onclick="showPage('iss')">ISS</button>
+        <button class="nav-btn" onclick="showPage('tft')">TFT</button>
+        <button class="nav-btn" onclick="showPage('upload')">UPLOAD BMP</button>
+        <button class="nav-btn" onclick="showPage('config')">USTAWIENIA</button>
+        <button class="nav-btn" onclick="showPage('screensaver')">WYGASZACZ</button>
+        <button class="nav-btn" onclick="showPage('manual')">INSTRUKCJA</button>
+        <div class="lang-switch">
+            <a class="lang-link active" href="/index.html">PL</a>
+            <span>|</span>
+            <a class="lang-link" href="/indexEN.html">EN</a>
+        </div>
+    </div>
+
+    <!-- ==================== DX SPOT PAGE ==================== -->
+    <div id="dxspot-page" class="page active">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">DX Cluster</h2>
+            <div class="cyd-screen">
+                <div class="controls">
+                    <div class="control-group">
+                        <span style="margin-right: 10px; line-height: 35px;">Modulacja:</span>
+                        <button class="btn active" onclick="setMode('All')">ALL</button>
+                        <button class="btn" onclick="setMode('CW')">CW</button>
+                        <button class="btn" onclick="setMode('SSB')">SSB</button>
+                        <button class="btn" onclick="setMode('FT8FT4')">FT8/FT4</button>
+                    </div>
+                    <div class="control-group">
+                        <span style="margin-right: 10px; line-height: 35px;">Pasmo:</span>
+                        <button class="btn" onclick="setBand('160m')">160m</button>
+                        <button class="btn" onclick="setBand('80m')">80m</button>
+                        <button class="btn" onclick="setBand('40m')">40m</button>
+                        <button class="btn" onclick="setBand('20m')">20m</button>
+                        <button class="btn" onclick="setBand('17m')">17m</button>
+                        <button class="btn" onclick="setBand('15m')">15m</button>
+                        <button class="btn" onclick="setBand('12m')">12m</button>
+                        <button class="btn" onclick="setBand('10m')">10m</button>
+                        <button class="btn active" onclick="setBand('All')">All</button>
+                    </div>
+                </div>
+                <table id="spots-table">
+                    <thead>
+                        <tr>
+                            <th>Czas</th>
+                            <th>Znak</th>
+                            <th>Częstotliwość</th>
+                            <th>Mode</th>
+                            <th>Kraj</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spots-tbody">
+                    </tbody>
+                </table>
+                <div class="status" id="status">Oczekiwanie na dane...</div>
+            </div>
+        </div>
+        
+        <!-- Filtry poniżej "wirtualnego wyświetlacza" (poza cyd-container) -->
+        <div class="continent-filters" style="max-width: 600px; margin: 12px auto 0;">
+            <div class="title">Spot from:</div>
+            <div class="row">
+                <label><input type="checkbox" id="cont_af" checked>AF</label>
+                <label><input type="checkbox" id="cont_an" checked>AN</label>
+                <label><input type="checkbox" id="cont_as" checked>AS</label>
+                <label><input type="checkbox" id="cont_eu" checked>EU</label>
+                <label><input type="checkbox" id="cont_na" checked>NA</label>
+                <label><input type="checkbox" id="cont_sa" checked>SA</label>
+                <label><input type="checkbox" id="cont_oc" checked>OC</label>
+            </div>
+        </div>
+    </div>
+    
+    <div id="aprs-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">APRS</h2>
+            <div class="cyd-screen">
+                <table id="aprs-table">
+                    <thead>
+                        <tr>
+                            <th>Czas</th>
+                            <th>Callsign</th>
+                            <th>Symbol</th>
+                            <th>Odległość</th>
+                            <th>Komentarz</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aprs-tbody">
+                    </tbody>
+                </table>
+                <div class="status" id="aprs-status">Oczekiwanie na dane APRS...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tft-page" class="page">
+        <div class="config-form">
+            <h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Ustawienia TFT</h2>
+
+            <div class="config-section">
+                <h3> Podświetlenie TFT</h3>
+                <div class="form-group">
+                    <label>Jasność (0-100%): <span id="tft_backlight_value">100</span>%</label>
+                    <input type="range" id="tft_backlight" name="tft_backlight" min="0" max="100" value="100">
+                    <small>Ustaw jasność podświetlenia dla wszystkich ekranów</small>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3> Język TFT</h3>
+                <div class="form-group">
+                    <label>Język interfejsu TFT:</label>
+                    <select id="tft_lang" name="tft_lang">
+                        <option value="pl">Polski</option>
+                        <option value="en">English</option>
+                    </select>
+                    <small>Zmiana języka dotyczy napisów na ekranie TFT (wymaga restartu)</small>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3> Rozmiar Tabel</h3>
+                <div class="form-group">
+                    <label>Wybierz rozmiar tabel:</label>
+                    <select id="table_size" name="table_size">
+                        <option value="normal">Normalne</option>
+                        <option value="enlarged">Powiększone</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3> Kolory Zegara</h3>
+                <div class="form-group">
+                    <label>Kolor callsignu:</label>
+                    <select id="callsign_color" name="callsign_color">
+                        <option value="65535">Biały (0xFFFF)</option>
+                        <option value="63488">Czerwony (0xF800)</option>
+                        <option value="2016">Zielony (0x07E0)</option>
+                        <option value="31">Niebieski (0x001F)</option>
+                        <option value="65504">Żółty (0xFFE0)</option>
+                        <option value="2047">Jasnoniebieski (0x07FF)</option>
+                        <option value="63519">Magenta (0xF81F)</option>
+                        <option value="33840">Ciemnoszary (0x8410)</option>
+                        <option value="63488">Pomarańczowy (0xF800)</option>
+                        <option value="65504">Cyjan (0x07FF)</option>
+                        <option value="63519">Różowy (0xF81F)</option>
+                        <option value="0">Czarny (0x0000)</option>
+                        <option value="31744">Ciemnoczerwony (0x7C00)</option>
+                        <option value="1024">Ciemnozielony (0x0400)</option>
+                        <option value="8">Ciemnoniebieski (0x0008)</option>
+                    </select>
+                    <small>Wybierz kolor wyświetlanego callsignu na ekranie zegara</small>
+                </div>
+                <div class="form-group">
+                    <label>Odcień motywu menu (0-255):</label>
+                    <input type="number" id="menu_hue" name="menu_hue" min="0" max="255" value="20">
+                    <small>Odcień motywu menu (20=pomarańczowy domyślny)</small>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3> Ekrany TFT (kolejność)</h3>
+                <small>Strona 1 wyświetla się jako pierwsza po włączeniu. Możesz dowolnie ustawić strony 1-12 lub wyłączyć je (OFF).</small>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="tft_auto_switch" name="tft_auto_switch" style="width: auto;">
+                        <span>AUTO-SWITCH</span>
+                    </label>
+                    <small>Automatycznie przełącza ekran TFT o jeden w prawo.</small>
+                </div>
+                <div class="form-group">
+                    <label>SWITCH-TIME (sekundy):</label>
+                    <input type="number" id="tft_switch_time_sec" name="tft_switch_time_sec" min="1" max="3600" step="1" value="30">
+                    <small>Czas między automatycznymi przełączeniami (1-3600 s).</small>
+                </div>
+                <div id="screen_slots_container"></div>
+                <div class="form-group">
+                    <label>Strona 1:</label>
+                    <select id="screen_slot_1">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 2:</label>
+                    <select id="screen_slot_2">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 3:</label>
+                    <select id="screen_slot_3">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 4:</label>
+                    <select id="screen_slot_4">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 5:</label>
+                    <select id="screen_slot_5">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 6:</label>
+                    <select id="screen_slot_6">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 7:</label>
+                    <select id="screen_slot_7">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 8:</label>
+                    <select id="screen_slot_8">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 9:</label>
+                    <select id="screen_slot_9">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 10:</label>
+                    <select id="screen_slot_10">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 11:</label>
+                    <select id="screen_slot_11">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Strona 12:</label>
+                    <select id="screen_slot_12">
+                        <option value="hamclock">HAM CLOCK</option>
+                        <option value="dxcluster">DX CLUSTER</option>
+                        <option value="aprsis">APRS-IS</option>
+                        <option value="aprsradar">APRS RADAR</option>
+                        <option value="bandinfo">BAND INFO</option>
+                        <option value="sunspots">SUN SPOTS</option>
+                        <option value="weather">WEATHER</option>
+                        <option value="weatherforecast">WEATHER FORECAST</option>
+                        <option value="pota">POTA</option>
+                        <option value="hamalert">HAMALERT</option>
+                        <option value="pskmap">PSK MAP</option>
+                        <option value="iss">ISS</option>
+                        <option value="iss">ISS</option>
+                        <option value="unlishunter">UNLIS HUNTER</option>
+                        <option value="matrix">MATRIX</option>
+                        <option value="off">OFF</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3> Kalibracja TFT</h3>
+                <div class="form-group">
+                    <label>TFT Rotation (0-3):</label>
+                    <select id="tft_rotation" name="tft_rotation">
+                        <option value="0">0 - Portrait (pionowy)</option>
+                        <option value="1">1 - Landscape 90° (krajobraz w prawo)</option>
+                        <option value="2">2 - Portrait 180° (pionowy odwrócony)</option>
+                        <option value="3">3 - Landscape 270° (krajobraz w lewo)</option>
+                    </select>
+                    <small>Obrót wyświetlacza TFT_eSPI (domyślnie: 1, wymaga restartu)</small>
+                </div>
+                <div class="form-group">
+                    <label>Inwersja kolorów TFT:</label>
+                    <select id="tft_invert" name="tft_invert">
+                        <option value="0">Normalne</option>
+                        <option value="1">Odwrócone</option>
+                    </select>
+                    <small>Ustawia tft.invertDisplay() (domyślnie: włączone jak w User_Setup.h)</small>
+                </div>
+                <div class="form-group">
+                    <label>Touch Rotation (0-3):</label>
+                    <select id="touch_rotation" name="touch_rotation">
+                        <option value="0">0 - Portrait (pionowy)</option>
+                        <option value="1">1 - Landscape 90° (krajobraz w prawo)</option>
+                        <option value="2">2 - Portrait 180° (pionowy odwrócony)</option>
+                        <option value="3">3 - Landscape 270° (krajobraz w lewo)</option>
+                    </select>
+                    <small>Obrót biblioteki XPT2046_Touchscreen (domyślnie: 1)</small>
+                </div>
+                <div class="form-group">
+                    <label>Ręczna zamiana osi:</label>
+                    <select id="touch_swap_mode" name="touch_swap_mode">
+                        <option value="none">Brak (NONE)</option>
+                        <option value="xy">Zamień osie X↔Y (SWAP XY)</option>
+                        <option value="x">Odwróć oś X (INVERT X)</option>
+                        <option value="y">Odwróć oś Y (INVERT Y)</option>
+                        <option value="both">Odwróć X i Y (INVERT BOTH - obrót 180°)</option>
+                        <option value="rot90cw">Obrót 90° w prawo (SWAP XY + INVERT X)</option>
+                        <option value="rot90ccw">Obrót 90° w lewo (SWAP XY + INVERT Y)</option>
+                        <option value="xy_both">Zamień osie + odwróć oba (SWAP XY + INVERT BOTH)</option>
+                    </select>
+                    <small>Ręczna konfiguracja orientacji dotyku (lub użyj kalibracji z przełącznika CALL_TFT)</small>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn" onclick="resetTftRotation()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślną rotację TFT (DEFAULT)</button>
+                    <small>Ustawia TFT Rotation na 1 i restartuje urządzenie</small>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn" onclick="resetTouchCalibration()" style="background: #d44; border-color: #a22; color: #fff;"> Przywróć domyślne (DEFAULT)</button>
+                    <small>Przywraca domyślne wartości kalibracji dotyku z kodu</small>
+                </div>
+            </div>
+
+            <button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ustawienia TFT</button>
+        </div>
+    </div>
+
+    <div id="alert-page" class="page">
+        <div class="config-form">
+            <h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">ALERT</h2>
+            <div class="config-section">
+                <h3> APRS ALERT</h3>
+                <div class="form-group">
+                    <label>Lista poszukiwanych znaków (po przecinku):</label>
+                    <input type="text" id="aprs_alert" name="aprs_alert" placeholder="SQ3NIK-9, SP3YOR, SP3KON-7">
+                    <small>Jedno pole CSV. Maksymalnie 20 pozycji. Przykład: SQ3NIK-9, SP3YOR, SP3KON* (gwiazdka na końcu = dowolny SSID)</small>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="aprs_alert_enabled" name="aprs_alert_enabled" style="width: auto;" checked>
+                        <span>Włącz powiadomienia APRS ALERT</span>
+                    </label>
+                    <small>Po wyłączeniu lista pozostaje zapisana, ale alerty nie będą zgłaszane.</small>
+                </div>
+                <div class="form-group">
+                    <label>Minimalny odstęp alertu dla tej samej stacji (sekundy):</label>
+                    <input type="number" id="aprs_alert_min_sec" name="aprs_alert_min_sec" value="300" min="0" max="86400" step="1">
+                    <small>0 = alert przy każdym odebraniu. Zakres: 0-86400 sekund.</small>
+                </div>
+                <div class="form-group">
+                    <label>Czas wyświetlania ALERT na ekranie TFT (sekundy):</label>
+                    <input type="number" id="aprs_alert_screen_sec" name="aprs_alert_screen_sec" value="5" min="1" max="60" step="1">
+                    <small>Zakres: 1-60 sekund. Domyślnie: 5 sekund.</small>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="aprs_alert_nearby_enabled" name="aprs_alert_nearby_enabled" style="width: auto;" checked>
+                        <span>Włącz wykrywanie stacji ruchomych w zasięgu (-7 i -9)</span>
+                    </label>
+                    <small>Dotyczy tylko stacji APRS z SSID -7 lub -9 (np. SP3KON-9, SQ3NIK-7).</small>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="aprs_alert_wx_enabled" name="aprs_alert_wx_enabled" style="width: auto;">
+                        <span>Włącz powiadomienia ze stacji pogodowych APRS (WX)</span>
+                    </label>
+                    <small>Po włączeniu APRS ALERT będzie także wykrywał stacje oznaczone symbolem WX i pokaże okno alertu z dekodowanymi danymi pogody.</small>
+                </div>
+                <div class="form-group">
+                    <label>ALERT_Distance dla stacji ruchomych (km):</label>
+                    <input type="number" id="aprs_alert_distance_km" name="aprs_alert_distance_km" value="1" min="0.1" max="500" step="0.1">
+                    <small>Alert pojawi się dla stacji ruchomych w odległości nie większej niż ta wartość.</small>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="enable_led_alert" name="enable_led_alert" style="width: auto;" checked>
+                        <span>Włącz optyczny alert LED ( Blue LED - GPIO17) </span>
+                    </label>
+                    <small>Wyłącza lub włącza miganie diody LED dla APRS ALERT. Można dolutować buzzer 3v.</small>
+                </div>
+                <div class="form-group">
+                    <label>Czas trwania alertu LED (ms):</label>
+                    <input type="number" id="led_alert_duration_ms" name="led_alert_duration_ms" value="5000" min="100" max="60000" step="100">
+                    <small>Zakres: 100-60000 ms. Domyślnie: 5000 ms.</small>
+                </div>
+                <div class="form-group">
+                    <label>Tempo migania LED (ms):</label>
+                    <input type="number" id="led_alert_blink_ms" name="led_alert_blink_ms" value="500" min="50" max="5000" step="10">
+                    <small>Zakres: 50-5000 ms. Domyślnie: 500 ms.</small>
+                </div>
+            </div>
+            <button type="button" class="save-btn" onclick="saveConfig()"> Zapisz ALERT</button>
+        </div>
+    </div>
+    
+    <div id="config-page" class="page">
+        <div class="config-form">
+            <h2 style="color: #e0e0e0; margin-bottom: 20px; text-align: center;">Konfiguracja ESP32-HAM-CLOCK</h2>
+            <form id="config-form" autocomplete="off" data-lpignore="true" data-1p-ignore="true">
+                
+                <!-- Sekcja: Połączenie WiFi -->
+                <div class="config-section">
+                    <h3> Połączenie WiFi</h3>
+                    <div class="form-group">
+                        <label>WiFi SSID:</label>
+                        <input type="text" id="wifi_ssid" name="wifi_ssid" required>
+                        <small>Nazwa sieci WiFi, do której ma się połączyć urządzenie</small>
+                    </div>
+                    <div class="form-group">
+                        <label>WiFi Hasło:</label>
+                        <input type="password" id="wifi_pass" name="wifi_pass" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
+                        <small>Hasło do sieci WiFi (pozostaw puste dla otwartych sieci)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>WiFi SSID (zapasowe):</label>
+                        <input type="text" id="wifi_ssid2" name="wifi_ssid2" placeholder="opcjonalnie">
+                        <small>Drugie SSID używane gdy główne jest niedostępne</small>
+                    </div>
+                    <div class="form-group">
+                        <label>WiFi Hasło (zapasowe):</label>
+                        <input type="password" id="wifi_pass2" name="wifi_pass2" placeholder="opcjonalnie" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
+                        <small>Hasło dla sieci zapasowej (pozostaw puste dla sieci otwartej)</small>
+                    </div>
+                </div>
+                
+                
+                
+                <!-- Sekcja: DX Cluster -->
+                <div class="config-section">
+                    <h3> DX Cluster</h3>
+                    <div class="form-group">
+                        <label>DX Cluster Host:</label>
+                        <input type="text" id="cluster_host" name="cluster_host" required>
+                        <small>Adres serwera DX Cluster (np. dxc.metronet.pl lub dxspots.com)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>DX Cluster Port:</label>
+                        <input type="number" id="cluster_port" name="cluster_port" required>
+                        <small>Port serwera DX Cluster (zwykle 23 dla Telnet)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="cluster_noann" name="cluster_noann" style="width: auto;">
+                            <span>Wyłącz ogłoszenia (set/noann)</span>
+                        </label>
+                        <small>Ukrywa ogłoszenia administracyjne z clustra</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="cluster_nowwv" name="cluster_nowwv" style="width: auto;">
+                            <span>Wyłącz WWV (set/nowwv)</span>
+                        </label>
+                        <small>Ukrywa komunikaty WWV (zegary atomowe)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="cluster_nowcy" name="cluster_nowcy" style="width: auto;">
+                            <span>Wyłącz WCY (set/nowcy)</span>
+                        </label>
+                        <small>Ukrywa komunikaty WCY (zegary atomowe)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="cluster_usefilters" name="cluster_usefilters" style="width: auto;">
+                            <span>Użyj filtrów (set/filter)</span>
+                        </label>
+                        <small>Włącza zaawansowane filtry spotów (wymaga komend poniżej)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Komendy filtrów (jedna na linię):</label>
+                        <textarea id="cluster_filters" name="cluster_filters" rows="4" placeholder="set/filter k,ve/pass&#10;set/filter dxbm/pass hf&#10;set/filter dxbm/reject 6-cw,6-ssb,6-fm" style="font-family: monospace; font-size: 12px;"></textarea>
+                        <small>Komendy filtrowania dla CC-Cluster. Przykłady: set/filter k,ve/pass (tylko K i VE), set/filter dxbm/pass hf (tylko HF), set/filter dxbm/reject 6-cw,6-ssb,6-fm (odrzuć 6m)</small>
+                    </div>
+                </div>
+
+                <!-- Sekcja: POTA Cluster (screen7) -->
+                <div class="config-section">
+                    <h3> POTA Cluster</h3>
+                    <div class="form-group">
+                        <label>External POTA API Link:</label>
+                        <input type="text" id="pota_api_url" name="pota_api_url" value="https://api.pota.app/v1/spots">
+                        <small>Adres z którego backend pobiera spoty POTA (HTTP JSON)</small>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3> HAMALERT</h3>
+                    <div class="form-group">
+                        <label>Telnet Host:</label>
+                        <input type="text" id="hamalert_host" name="hamalert_host" value="hamalert.org" required>
+                        <small>Domyślnie: hamalert.org</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Telnet Port:</label>
+                        <input type="number" id="hamalert_port" name="hamalert_port" value="7300" min="1" max="65535" required>
+                        <small>Domyślnie: 7300</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Login:</label>
+                        <input type="text" id="hamalert_login" name="hamalert_login" required>
+                        <small>Login użytkownika HamAlert do logowania Telnet</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Hasło:</label>
+                        <input type="password" id="hamalert_password" name="hamalert_password" required autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
+                        <small>Pole wymagane do logowania Telnet do HamAlert</small>
+                    </div>
+                </div>
+                
+                <!-- Sekcja: Twoja Stacja -->
+                <div class="config-section">
+                    <h3> Twoja Stacja</h3>
+                    <div class="form-group">
+                        <label>Twój Znak Wywoławczy:</label>
+                        <input type="text" id="user_callsign" name="user_callsign" placeholder="np. SP3KON">
+                        <small>Twój znak wywoławczy używany do logowania do DX Cluster</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Twój Locator (Maidenhead):</label>
+                        <input type="text" id="user_locator" name="user_locator" placeholder="np. JO82LK">
+                        <small>Lokator Maidenhead (4-6 znaków) używany do obliczania odległości do spotów</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Strefa czasowa (UTC):</label>
+                        <input type="number" id="timezone" name="timezone" min="-12" max="14" step="1" value="0">
+                        <small>Przesunięcie godzin względem UTC (np. Polska: 1)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Szerokość geograficzna (Latitude):</label>
+                        <input type="number" step="0.000001" id="user_lat" name="user_lat" placeholder="np. 52.4064">
+                        <small>Współrzędna szerokości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 52.4064 dla Warszawy</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Długość geograficzna (Longitude):</label>
+                        <input type="number" step="0.000001" id="user_lon" name="user_lon" placeholder="np. 16.9252">
+                        <small>Współrzędna długości geograficznej w formacie dziesiętnym (jak Google Maps). Przykład: 16.9252 dla Warszawy</small>
+                    </div>
+                </div>
+                
+                <!-- Sekcja: QRZ.com -->
+                <div class="config-section">
+                    <h3> QRZ.com</h3>
+                    <div class="form-group">
+                        <label>QRZ.com Username (XML API):</label>
+                        <input type="text" id="qrz_user" name="qrz_user" placeholder="login QRZ">
+                        <small>Nazwa użytkownika do API QRZ.com (opcjonalne, dla dodatkowych informacji o znakach)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>QRZ.com Password (XML API):</label>
+                        <input type="password" id="qrz_pass" name="qrz_pass" placeholder="hasło QRZ" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
+                        <small>Hasło do API QRZ.com (opcjonalne)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Status QRZ:</label>
+                        <input type="text" id="qrz_status" name="qrz_status" readonly style="background: #1a1a1a; color: #888;">
+                        <small>Status połączenia z QRZ.com (aktualizowany automatycznie)</small>
+                    </div>
+                </div>
+                
+                <!-- Sekcja: OpenWeather -->
+                <div class="config-section">
+                    <h3> OpenWeather</h3>
+                    <div class="form-group">
+                        <label>OpenWeather API Key:</label>
+                        <input type="password" id="weather_key" name="weather_key" placeholder="klucz API" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" spellcheck="false">
+                        <small>Klucz API z openweathermap.org (wymagany do wyświetlania pogody i prognozy na ekranach TFT)</small>
+                    </div>
+                </div>
+                
+                <!-- Sekcja: KiwiSDR -->
+                <div class="config-section">
+                    <h3> KiwiSDR</h3>
+                    <div class="form-group">
+                        <label>KiwiSDR URL:</label>
+                        <input type="text" id="openwebrx_url" name="openwebrx_url" placeholder="">
+                        <small>Wprowadź adres KiwiSDR z którego chcesz nasłuchiwać stacji np. http://okno.ddns.net:8073/</small>
+                        <small><a href="http://kiwisdr.com/.public/" target="_blank" rel="noopener noreferrer" style="color: #6a6a4a;">Lista dostępnych KiwiSDR: http://kiwisdr.com/.public/</a></small>
+                    </div>
+                </div>
+                
+                <!-- Sekcja: APRS-IS -->
+                <div class="config-section">
+                    <h3> APRS-IS</h3>
+                    <div class="form-group">
+                        <label>APRS-IS Host:</label>
+                        <input type="text" id="aprs_host" name="aprs_host" placeholder="rotate.aprs2.net">
+                        <small>Adres serwera APRS-IS (np. rotate.aprs2.net)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>APRS-IS Port:</label>
+                        <input type="number" id="aprs_port" name="aprs_port" placeholder="14580" min="1" max="65535">
+                        <small>Port serwera APRS-IS (domyślne 14580)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>APRS Callsign:</label>
+                        <input type="text" id="aprs_callsign" name="aprs_callsign" placeholder="sp3kon">
+                        <small>Twój znak wywoławczy do logowania do APRS-IS</small>
+                    </div>
+                    <div class="form-group">
+                        <label>APRS SSID (0-15):</label>
+                        <select id="aprs_ssid" name="aprs_ssid">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                        </select>
+                        <small>SSID dopisywany do callsign przy wysyłce beaconu APRS. 0 = bez sufiksu.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>APRS Passcode:</label>
+                        <input type="number" id="aprs_passcode" name="aprs_passcode" placeholder="23735" min="0" max="99999">
+                        <small>Passcode do logowania do APRS-IS (wygeneruj na aprs.org)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Promień filtrowania (km):</label>
+                        <input type="number" id="aprs_radius" name="aprs_radius" placeholder="50" min="0" max="50">
+                        <small>Promień filtrowania stacji APRS w kilometrach (0-50 km). Filtr i wszystkie obliczenia odległości używają współrzędnych GPS z sekcji "Twoja Stacja" (w formacie xx.xxxxxx)</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="aprs_beacon" name="aprs_beacon">
                             Wysyłaj beacon do APRS-IS
-                        </label><small>Okresowo wyśle Twoją pozycję (TCPIP*). Wymaga ustawionych współrzędnych.</small></div><div class="form-group"><label>Symbol APRS (2 znaki):</label><input type="text" id="aprs_symbol" name="aprs_symbol" maxlength="2" placeholder="/-"><small>Pierwszy znak to tabela (np. / lub \), drugi to symbol (np. -). Używany w beaconie.</small></div><div class="form-group"><label>Komentarz APRS:</label><input type="text" id="aprs_comment" name="aprs_comment" maxlength="43" placeholder="Mój komentarz"><small>Maks. 43 znaki ASCII. Używane w każdym beaconie; pierwszy i co piąty jest linkiem do projektu ESP32-HAM-CLOCK.</small></div><div class="form-group"><label>Wysyłaj z odstępem (minuty):</label><input type="number" id="aprs_interval_min" name="aprs_interval_min" min="1" max="180" value="29" placeholder="29"><small>Odstęp między kolejnymi beaconami po pierwszym (który idzie po 1 minucie). Zakres 1-180 min.</small></div></div><button type="submit" class="save-btn"> Zapisz Konfigurację</button></form></div></div><div id="screensaver-page" class="page"><div class="screensaver-container"><h3> Wygaszacz ekranu (Matrix)</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label style="display: flex; align-items: center; gap: 10px; justify-content: flex-start;"><input type="checkbox" id="screen_saver_enabled" name="screen_saver_enabled" style="width: auto;"><span>Włącz wygaszacz ekranu</span></label><small>Po czasie bezczynności uruchamia efekt Matrix na ekranie.</small></div><div class="form-group" style="text-align: left;"><label>Timeout wygaszacza (minuty):</label><input type="number" id="screen_saver_timeout_min" name="screen_saver_timeout_min" min="1" max="60" step="1" value="5"><small>Czas bezczynności przed włączeniem wygaszacza (1-60 min).</small></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-primary" onclick="saveScreenSaverConfig()"> Zapisz ustawienia wygaszacza</button><div id="screensaver-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div id="psk-page" class="page"><div class="psk-container" style="max-width: 800px; margin: 0 auto; padding: 20px;"><h3> PSK Reporter</h3><div class="form-group" style="text-align: left; margin-top: 20px;"><label>Znak do monitorowania:</label><input type="text" id="psk_receiver" name="psk_receiver" maxlength="15" placeholder="np. SP9ABC"><small>Twoj znak lub znak stacji do monitorowania.</small></div><div class="form-group" style="text-align: left;"><label>Max spotów:</label><input type="number" id="psk_maxspots" name="psk_maxspots" min="10" max="100" step="1" value="50"><small>Liczba spotów do wyświetlenia (10-100).</small></div><div class="form-group" style="text-align: left;"><label>Okres czasowy (godziny):</label><input type="number" id="psk_hours" name="psk_hours" min="1" max="24" step="1" value="6"><small>Ile godzin wstecz pobierać spoty (1-24).</small></div><div class="form-group" style="text-align: left;"><label>Pasmo (opcjonalnie):</label><select id="psk_band" name="psk_band"><option value="">Wszystkie</option><option value="160m">160m</option><option value="80m">80m</option><option value="40m">40m</option><option value="30m">30m</option><option value="20m">20m</option><option value="17m">17m</option><option value="15m">15m</option><option value="12m">12m</option><option value="10m">10m</option><option value="6m">6m</option></select><small>Filtruj spoty według pasma.</small></div><div class="form-group" style="text-align: left;"><label>Tryby (opcjonalne):</label><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;"><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_all" name="psk_mode_all" style="width: auto; margin: 0;"><span><strong>Wszystkie</strong></span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft8" name="psk_mode_ft8" style="width: auto; margin: 0;"><span>FT8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_ft4" name="psk_mode_ft4" style="width: auto; margin: 0;"><span>FT4</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_cw" name="psk_mode_cw" style="width: auto; margin: 0;"><span>CW</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_js8" name="psk_mode_js8" style="width: auto; margin: 0;"><span>JS8</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_rtty" name="psk_mode_rtty" style="width: auto; margin: 0;"><span>RTTY</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_psk" name="psk_mode_psk" style="width: auto; margin: 0;"><span>PSK31</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_mfsk" name="psk_mode_mfsk" style="width: auto; margin: 0;"><span>MFSK</span></label><label style="display: flex; align-items: center; gap: 6px; cursor: pointer;"><input type="checkbox" id="psk_mode_olivia" name="psk_mode_olivia" style="width: auto; margin: 0;"><span>Olivia</span></label></div><small style="margin-top: 8px; display: block;">Zaznacz jeden lub więcej trybów do filtrowania.</small></div><div class="form-group" style="text-align: left;"><label>URL PSK Reporter (opcjonalnie):</label><input type="text" id="psk_url" name="psk_url" maxlength="200" placeholder="https://..."><small>Własny URL do API PSK Reporter.</small></div><hr style="margin: 30px 0;"><h4> HTTP Monitoring</h4><div class="form-group" style="text-align: left;"><label>Znak do monitoringu HTTP:</label><input type="text" id="psk_monitor_callsign" name="psk_monitor_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Znak do sprawdzania w raportach HTTP.</small></div><div class="form-group" style="text-align: left;"><label>Dni raportu:</label><input type="number" id="psk_report_days" name="psk_report_days" min="0" max="62" step="1" value="30"><small>Liczba dni w raporcie (0-62).</small></div><div class="form-group" style="text-align: left;"><label>Auto-odświeżanie (minuty):</label><input type="number" id="psk_auto_refresh" name="psk_auto_refresh" min="0" max="60" step="1" value="5"><small>Co ile minut odświeżać dane (0 = wyłączone).</small></div><hr style="margin: 30px 0;"><h4> MQTT (alternatywny tryb)</h4><div class="form-group" style="text-align: left;"><label style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="psk_mqtt_enabled" name="psk_mqtt_enabled" style="width: auto; margin: 0;"><span><strong>Użyj MQTT zamiast HTTP</strong></span></label><small>Zaznacz aby używać MQTT do odbierania spotów w czasie rzeczywistym.</small></div><div id="mqtt_fields" style="display: none;"><div class="form-group" style="text-align: left;"><label>MQTT Serwer:</label><input type="text" id="psk_mqtt_server" name="psk_mqtt_server" value="mqtt.pskreporter.info"><small>Adres serwera MQTT.</small></div><div class="form-group" style="text-align: left;"><label>MQTT Port:</label><input type="number" id="psk_mqtt_port" name="psk_mqtt_port" min="1" max="65535" value="1883"><small>Port MQTT (domyślnie 1883).</small></div><div class="form-group" style="text-align: left;"><label>MQTT Callsign (filter):</label><input type="text" id="psk_mqtt_callsign" name="psk_mqtt_callsign" maxlength="15" placeholder="np. SP9ABC"><small>Opcjonalny filtr - pokazuje spoty dla tego znaku (4 pierwsze znaki lokatora).</small></div></div><div style="margin-top: 30px; text-align: center;"><button class="btn btn-primary" onclick="savePSKConfig()"> Zapisz ustawienia PSK Reporter</button><div id="psk-save-status" style="margin-top: 10px; font-size: 14px;"></div></div></div></div><div class="controls" style="margin-top: 12px;"><button class="btn" onclick="searchQrz()"> Szukaj</button><button class="btn" onclick="clearQrzSearch()"> Wyczyść</button></div><div id="qrz-result" style="margin-top: 16px;"></div></div><div class="glass-panel" style="margin-top: 16px;"><h3 style="color: #00d4ff;"> Ostatnio wyszukiwane</h3><div id="qrz-history" class="qrz-history"><p style="color: #666; font-size: 12px;">Brak historii wyszukiwań</p></div></div></div></div><div id="manual-page" class="page"><div class="manual-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> Instrukcja</h2><div id="instruction-selector" class="instruction-selector"><button class="btn active" onclick="loadInstruction('default')"> Domyślna</button></div><div class="manual-content" id="manual-content">Ładowanie instrukcji...</div></div></div><!-- ==================== HUNTER PAGE ==================== --><div id="hunter-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">️ Unlis Hunter</h2><div class="cyd-screen"><div id="hunter-status" class="status">Ładowanie danych HUNTER...</div><div id="hunter-data"></div></div></div></div><!-- ==================== ISS PAGE ==================== --><div id="iss-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">ISS - Międzynarodowa Stacja Kosmiczna</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><button class="btn active" onclick="setIssView('frequencies')" id="iss-btn-frequencies">CZĘSTOTLIWOŚCI</button><button class="btn" onclick="setIssView('passes')" id="iss-btn-passes">PRZELOTY</button></div></div><div id="iss-frequencies" class="iss-section"><div class="iss-freq-card"><div class="iss-freq-title"> Voice Repeater</div><div class="iss-freq-detail">RX: 437.800 MHz | TX: 145.990 MHz</div><div class="iss-freq-badge">CTCSS 67.0 Hz</div></div><div class="iss-freq-card"><div class="iss-freq-title"> APRS Digipeater</div><div class="iss-freq-detail">145.825 MHz Simplex</div><div class="iss-freq-badge">AFSK 1200</div></div><div class="iss-freq-card"><div class="iss-freq-title"> SSTV Downlink</div><div class="iss-freq-detail">RX: 145.800 MHz</div><div class="iss-freq-badge">SSTV</div></div><div class="iss-freq-card"><div class="iss-freq-title"> Voice Direct EU</div><div class="iss-freq-detail">RX: 145.800 | TX: 145.200 MHz</div><div class="iss-freq-badge">FM</div></div></div><div id="iss-passes" class="iss-section" style="display:none;"><div id="iss-passes-data">Ładowanie danych o przelotach...</div></div><div id="iss-tracking" class="iss-section" style="display:none;"></div><div id="iss-status" class="status">Oczekiwanie na dane ISS...</div></div></div></div><!-- ==================== UPLOAD PAGE ==================== --><div id="upload-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">Upload BMP - Obrazek startowy</h2><div class="glass-panel"><p style="color: #888; margin-bottom: 16px;">Wybierz plik BMP aby ustawic jako obrazek startowy wyswietlany przy starcie zegarka.</p><div class="upload-zone" id="upload-zone"><div class="upload-icon" style="font-size:32px;">[ ]</div><div class="upload-text">Kliknij aby wybrac plik BMP</div><input type="file" id="file-input" accept=".bmp" style="display:none;"></div><div class="upload-hint"><span>Akceptowane: tylko pliki .bmp (zalecany rozmiar: 320x480)</span></div><div id="upload-progress" class="upload-progress" style="display:none;"><div class="progress-bar"><div id="progress-fill"></div></div><div id="upload-status"></div></div><div id="upload-log" class="upload-log"></div><div id="upload-result" style="margin-top: 16px;"></div><div class="controls" style="margin-top:16px;"><button class="btn" onclick="clearUploadLog()">Wyczysc log</button></div></div></div></div><script>
+                        </label>
+                        <small>Okresowo wyśle Twoją pozycję (TCPIP*). Wymaga ustawionych współrzędnych.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Symbol APRS (2 znaki):</label>
+                        <input type="text" id="aprs_symbol" name="aprs_symbol" maxlength="2" placeholder="/-">
+                        <small>Pierwszy znak to tabela (np. / lub \), drugi to symbol (np. -). Używany w beaconie.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Komentarz APRS:</label>
+                        <input type="text" id="aprs_comment" name="aprs_comment" maxlength="43" placeholder="Mój komentarz">
+                        <small>Maks. 43 znaki ASCII. Używane w każdym beaconie; pierwszy i co piąty jest linkiem do projektu ESP32-HAM-CLOCK.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Wysyłaj z odstępem (minuty):</label>
+                        <input type="number" id="aprs_interval_min" name="aprs_interval_min" min="1" max="180" value="29" placeholder="29">
+                        <small>Odstęp między kolejnymi beaconami po pierwszym (który idzie po 1 minucie). Zakres 1-180 min.</small>
+                    </div>
+                </div>
+                
+                <button type="submit" class="save-btn"> Zapisz Konfigurację</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="screensaver-page" class="page">
+        <div class="screensaver-container">
+            <h3> Wygaszacz ekranu (Matrix)</h3>
+            <div class="form-group" style="text-align: left; margin-top: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; justify-content: flex-start;">
+                    <input type="checkbox" id="screen_saver_enabled" name="screen_saver_enabled" style="width: auto;">
+                    <span>Włącz wygaszacz ekranu</span>
+                </label>
+                <small>Po czasie bezczynności uruchamia efekt Matrix na ekranie.</small>
+            </div>
+            <div class="form-group" style="text-align: left;">
+                <label>Timeout wygaszacza (minuty):</label>
+                <input type="number" id="screen_saver_timeout_min" name="screen_saver_timeout_min" min="1" max="60" step="1" value="5">
+                <small>Czas bezczynności przed włączeniem wygaszacza (1-60 min).</small>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn btn-primary" onclick="saveScreenSaverConfig()"> Zapisz ustawienia wygaszacza</button>
+                <div id="screensaver-save-status" style="margin-top: 10px; font-size: 14px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="psk-page" class="page">
+        <div class="psk-container" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+            <h3> PSK Reporter</h3>
+            
+            <div class="form-group" style="text-align: left; margin-top: 20px;">
+                <label>Znak do monitorowania:</label>
+                <input type="text" id="psk_receiver" name="psk_receiver" maxlength="15" placeholder="np. SP9ABC">
+                <small>Twoj znak lub znak stacji do monitorowania.</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Max spotów:</label>
+                <input type="number" id="psk_maxspots" name="psk_maxspots" min="10" max="100" step="1" value="50">
+                <small>Liczba spotów do wyświetlenia (10-100).</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Okres czasowy (godziny):</label>
+                <input type="number" id="psk_hours" name="psk_hours" min="1" max="24" step="1" value="6">
+                <small>Ile godzin wstecz pobierać spoty (1-24).</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Pasmo (opcjonalnie):</label>
+                <select id="psk_band" name="psk_band">
+                    <option value="">Wszystkie</option>
+                    <option value="160m">160m</option>
+                    <option value="80m">80m</option>
+                    <option value="40m">40m</option>
+                    <option value="30m">30m</option>
+                    <option value="20m">20m</option>
+                    <option value="17m">17m</option>
+                    <option value="15m">15m</option>
+                    <option value="12m">12m</option>
+                    <option value="10m">10m</option>
+                    <option value="6m">6m</option>
+                </select>
+                <small>Filtruj spoty według pasma.</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Tryby (opcjonalne):</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_all" name="psk_mode_all" style="width: auto; margin: 0;">
+                        <span><strong>Wszystkie</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_ft8" name="psk_mode_ft8" style="width: auto; margin: 0;">
+                        <span>FT8</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_ft4" name="psk_mode_ft4" style="width: auto; margin: 0;">
+                        <span>FT4</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_cw" name="psk_mode_cw" style="width: auto; margin: 0;">
+                        <span>CW</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_js8" name="psk_mode_js8" style="width: auto; margin: 0;">
+                        <span>JS8</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_rtty" name="psk_mode_rtty" style="width: auto; margin: 0;">
+                        <span>RTTY</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_psk" name="psk_mode_psk" style="width: auto; margin: 0;">
+                        <span>PSK31</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_mfsk" name="psk_mode_mfsk" style="width: auto; margin: 0;">
+                        <span>MFSK</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="checkbox" id="psk_mode_olivia" name="psk_mode_olivia" style="width: auto; margin: 0;">
+                        <span>Olivia</span>
+                    </label>
+                </div>
+                <small style="margin-top: 8px; display: block;">Zaznacz jeden lub więcej trybów do filtrowania.</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>URL PSK Reporter (opcjonalnie):</label>
+                <input type="text" id="psk_url" name="psk_url" maxlength="200" placeholder="https://...">
+                <small>Własny URL do API PSK Reporter.</small>
+            </div>
+            
+            <hr style="margin: 30px 0;">
+            
+            <h4> HTTP Monitoring</h4>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Znak do monitoringu HTTP:</label>
+                <input type="text" id="psk_monitor_callsign" name="psk_monitor_callsign" maxlength="15" placeholder="np. SP9ABC">
+                <small>Znak do sprawdzania w raportach HTTP.</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Dni raportu:</label>
+                <input type="number" id="psk_report_days" name="psk_report_days" min="0" max="62" step="1" value="30">
+                <small>Liczba dni w raporcie (0-62).</small>
+            </div>
+            
+            <div class="form-group" style="text-align: left;">
+                <label>Auto-odświeżanie (minuty):</label>
+                <input type="number" id="psk_auto_refresh" name="psk_auto_refresh" min="0" max="60" step="1" value="5">
+                <small>Co ile minut odświeżać dane (0 = wyłączone).</small>
+            </div>
+
+            <hr style="margin: 30px 0;">
+
+            <h4> MQTT (alternatywny tryb)</h4>
+
+            <div class="form-group" style="text-align: left;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="psk_mqtt_enabled" name="psk_mqtt_enabled" style="width: auto; margin: 0;">
+                    <span><strong>Użyj MQTT zamiast HTTP</strong></span>
+                </label>
+                <small>Zaznacz aby używać MQTT do odbierania spotów w czasie rzeczywistym.</small>
+            </div>
+
+            <div id="mqtt_fields" style="display: none;">
+                <div class="form-group" style="text-align: left;">
+                    <label>MQTT Serwer:</label>
+                    <input type="text" id="psk_mqtt_server" name="psk_mqtt_server" value="mqtt.pskreporter.info">
+                    <small>Adres serwera MQTT.</small>
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label>MQTT Port:</label>
+                    <input type="number" id="psk_mqtt_port" name="psk_mqtt_port" min="1" max="65535" value="1883">
+                    <small>Port MQTT (domyślnie 1883).</small>
+                </div>
+
+                <div class="form-group" style="text-align: left;">
+                    <label>MQTT Callsign (filter):</label>
+                    <input type="text" id="psk_mqtt_callsign" name="psk_mqtt_callsign" maxlength="15" placeholder="np. SP9ABC">
+                    <small>Opcjonalny filtr - pokazuje spoty dla tego znaku (4 pierwsze znaki lokatora).</small>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn btn-primary" onclick="savePSKConfig()"> Zapisz ustawienia PSK Reporter</button>
+                <div id="psk-save-status" style="margin-top: 10px; font-size: 14px;"></div>
+            </div>
+        </div>
+    </div>
+                <div class="controls" style="margin-top: 12px;">
+                    <button class="btn" onclick="searchQrz()"> Szukaj</button>
+                    <button class="btn" onclick="clearQrzSearch()"> Wyczyść</button>
+                </div>
+                <div id="qrz-result" style="margin-top: 16px;"></div>
+            </div>
+            <div class="glass-panel" style="margin-top: 16px;">
+                <h3 style="color: #00d4ff;"> Ostatnio wyszukiwane</h3>
+                <div id="qrz-history" class="qrz-history">
+                    <p style="color: #666; font-size: 12px;">Brak historii wyszukiwań</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="manual-page" class="page">
+        <div class="manual-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;"> Instrukcja</h2>
+            <div id="instruction-selector" class="instruction-selector">
+                <button class="btn active" onclick="loadInstruction('default')"> Domyślna</button>
+            </div>
+            <div class="manual-content" id="manual-content">Ładowanie instrukcji...</div>
+        </div>
+    </div>
+
+    <!-- ==================== HUNTER PAGE ==================== -->
+    <div id="hunter-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">️ Unlis Hunter</h2>
+            <div class="cyd-screen">
+                <div id="hunter-status" class="status">Ładowanie danych HUNTER...</div>
+                <div id="hunter-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ISS PAGE ==================== -->
+    <div id="iss-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">ISS - Międzynarodowa Stacja Kosmiczna</h2>
+            <div class="cyd-screen">
+                <div class="controls">
+                    <div class="control-group">
+                        <button class="btn active" onclick="setIssView('frequencies')" id="iss-btn-frequencies">CZĘSTOTLIWOŚCI</button>
+                        <button class="btn" onclick="setIssView('passes')" id="iss-btn-passes">PRZELOTY</button>
+                    </div>
+                </div>
+                <div id="iss-frequencies" class="iss-section">
+                    <div class="iss-freq-card">
+                        <div class="iss-freq-title"> Voice Repeater</div>
+                        <div class="iss-freq-detail">RX: 437.800 MHz | TX: 145.990 MHz</div>
+                        <div class="iss-freq-badge">CTCSS 67.0 Hz</div>
+                    </div>
+                    <div class="iss-freq-card">
+                        <div class="iss-freq-title"> APRS Digipeater</div>
+                        <div class="iss-freq-detail">145.825 MHz Simplex</div>
+                        <div class="iss-freq-badge">AFSK 1200</div>
+                    </div>
+                    <div class="iss-freq-card">
+                        <div class="iss-freq-title"> SSTV Downlink</div>
+                        <div class="iss-freq-detail">RX: 145.800 MHz</div>
+                        <div class="iss-freq-badge">SSTV</div>
+                    </div>
+                    <div class="iss-freq-card">
+                        <div class="iss-freq-title"> Voice Direct EU</div>
+                        <div class="iss-freq-detail">RX: 145.800 | TX: 145.200 MHz</div>
+                        <div class="iss-freq-badge">FM</div>
+                    </div>
+                </div>
+                <div id="iss-passes" class="iss-section" style="display:none;">
+                    <div id="iss-passes-data">Ładowanie danych o przelotach...</div>
+                </div>
+                <div id="iss-tracking" class="iss-section" style="display:none;"></div>
+                <div id="iss-status" class="status">Oczekiwanie na dane ISS...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== UPLOAD PAGE ==================== -->
+    <div id="upload-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">Upload BMP - Obrazek startowy</h2>
+            <div class="glass-panel">
+                <p style="color: #888; margin-bottom: 16px;">Wybierz plik BMP aby ustawic jako obrazek startowy wyswietlany przy starcie zegarka.</p>
+                <div class="upload-zone" id="upload-zone">
+                    <div class="upload-icon" style="font-size:32px;">[ ]</div>
+                    <div class="upload-text">Kliknij aby wybrac plik BMP</div>
+                    <input type="file" id="file-input" accept=".bmp" style="display:none;">
+                </div>
+                <div class="upload-hint">
+                    <span>Akceptowane: tylko pliki .bmp (zalecany rozmiar: 320x480)</span>
+                </div>
+                <div id="upload-progress" class="upload-progress" style="display:none;">
+                    <div class="progress-bar"><div id="progress-fill"></div></div>
+                    <div id="upload-status"></div>
+                </div>
+                <div id="upload-log" class="upload-log"></div>
+                <div id="upload-result" style="margin-top: 16px;"></div>
+                <div class="controls" style="margin-top:16px;">
+                    <button class="btn" onclick="clearUploadLog()">Wyczysc log</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
         let currentMode = "All";
         let currentBand = "All";
         let allSpots = [];
@@ -593,7 +1699,97 @@
                 .catch(err => console.log("Błąd ładowania konfiguracji:", err));
         };
 
-    <!-- Nowa zakładka POTA --></script><div id="pota-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">POTA</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><button class="btn" onclick="setPotaMode('All', this)" id="pota_mode_all">All</button><button class="btn" onclick="setPotaMode('SSB', this)" id="pota_mode_ssb">SSB</button><button class="btn" onclick="setPotaMode('CW', this)" id="pota_mode_cw">CW</button><button class="btn" onclick="setPotaMode('FT8FT4', this)" id="pota_mode_ft8">FT8/FT4</button></div><div class="control-group"><button class="btn" onclick="setPotaBand('All', this)" id="pota_band_all">All</button><button class="btn" onclick="setPotaBand('160m', this)">160m</button><button class="btn" onclick="setPotaBand('80m', this)">80m</button><button class="btn" onclick="setPotaBand('40m', this)">40m</button><button class="btn" onclick="setPotaBand('20m', this)">20m</button><button class="btn" onclick="setPotaBand('15m', this)">15m</button><button class="btn" onclick="setPotaBand('10m', this)">10m</button></div></div><table id="pota-table"><thead><tr><th>Czas</th><th>Znak</th><th>Częstotliwość</th><th>Mode</th><th>Kraj</th></tr></thead><tbody id="pota-tbody"></tbody></table><div class="status" id="pota-status">Oczekiwanie na dane POTA...</div><div style="margin-top:20px;"><b>Surowe dane z API POTA:</b><pre id="pota-raw-json" style="background:#222; color:#b0ffb0; font-size:11px; max-height:300px; overflow:auto; border:1px solid #444; padding:8px;"></pre></div></div></div></div><div id="hamalert-page" class="page"><div class="cyd-container"><h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">HAMALERT</h2><div class="cyd-screen"><div class="controls"><div class="control-group"><button class="btn" onclick="setHamalertMode('All', this)" id="hama_mode_all">All</button><button class="btn" onclick="setHamalertMode('SSB', this)" id="hama_mode_ssb">SSB</button><button class="btn" onclick="setHamalertMode('CW', this)" id="hama_mode_cw">CW</button><button class="btn" onclick="setHamalertMode('FT8FT4', this)" id="hama_mode_ft8">FT8/FT4</button></div><div class="control-group hamalert-band-group"><button class="btn" onclick="setHamalertBand('All', this)" id="hama_band_all">All</button><button class="btn" onclick="setHamalertBand('160m', this)">160m</button><button class="btn" onclick="setHamalertBand('80m', this)">80m</button><button class="btn" onclick="setHamalertBand('60m', this)">60m</button><button class="btn" onclick="setHamalertBand('40m', this)">40m</button><button class="btn" onclick="setHamalertBand('30m', this)">30m</button><button class="btn" onclick="setHamalertBand('20m', this)">20m</button></div><div class="control-group hamalert-band-group"><button class="btn" onclick="setHamalertBand('17m', this)">17m</button><button class="btn" onclick="setHamalertBand('15m', this)">15m</button><button class="btn" onclick="setHamalertBand('12m', this)">12m</button><button class="btn" onclick="setHamalertBand('10m', this)">10m</button><button class="btn" onclick="setHamalertBand('VHF', this)">VHF</button><button class="btn" onclick="setHamalertBand('UHF', this)">UHF</button><button class="btn" onclick="setHamalertBand('SHF', this)">SHF</button></div></div><table id="hamalert-table"><thead><tr><th>Czas</th><th>Znak</th><th>Częstotliwość</th><th>Mode</th><th>Kraj</th></tr></thead><tbody id="hamalert-tbody"></tbody></table><div class="status" id="hamalert-status">Oczekiwanie na dane HAMALERT...</div></div></div></div><script>
+    <!-- Nowa zakładka POTA -->
+</script>
+    <div id="pota-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">POTA</h2>
+            <div class="cyd-screen">
+                <div class="controls">
+                    <div class="control-group">
+                        <button class="btn" onclick="setPotaMode('All', this)" id="pota_mode_all">All</button>
+                        <button class="btn" onclick="setPotaMode('SSB', this)" id="pota_mode_ssb">SSB</button>
+                        <button class="btn" onclick="setPotaMode('CW', this)" id="pota_mode_cw">CW</button>
+                        <button class="btn" onclick="setPotaMode('FT8FT4', this)" id="pota_mode_ft8">FT8/FT4</button>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn" onclick="setPotaBand('All', this)" id="pota_band_all">All</button>
+                        <button class="btn" onclick="setPotaBand('160m', this)">160m</button>
+                        <button class="btn" onclick="setPotaBand('80m', this)">80m</button>
+                        <button class="btn" onclick="setPotaBand('40m', this)">40m</button>
+                        <button class="btn" onclick="setPotaBand('20m', this)">20m</button>
+                        <button class="btn" onclick="setPotaBand('15m', this)">15m</button>
+                        <button class="btn" onclick="setPotaBand('10m', this)">10m</button>
+                    </div>
+                </div>
+                <table id="pota-table">
+                    <thead>
+                        <tr>
+                            <th>Czas</th>
+                            <th>Znak</th>
+                            <th>Częstotliwość</th>
+                            <th>Mode</th>
+                            <th>Kraj</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pota-tbody"></tbody>
+                </table>
+                <div class="status" id="pota-status">Oczekiwanie na dane POTA...</div>
+                <div style="margin-top:20px;">
+                    <b>Surowe dane z API POTA:</b>
+                    <pre id="pota-raw-json" style="background:#222; color:#b0ffb0; font-size:11px; max-height:300px; overflow:auto; border:1px solid #444; padding:8px;"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hamalert-page" class="page">
+        <div class="cyd-container">
+            <h2 style="color: #e0e0e0; margin-bottom: 12px; text-align: center;">HAMALERT</h2>
+            <div class="cyd-screen">
+                <div class="controls">
+                    <div class="control-group">
+                        <button class="btn" onclick="setHamalertMode('All', this)" id="hama_mode_all">All</button>
+                        <button class="btn" onclick="setHamalertMode('SSB', this)" id="hama_mode_ssb">SSB</button>
+                        <button class="btn" onclick="setHamalertMode('CW', this)" id="hama_mode_cw">CW</button>
+                        <button class="btn" onclick="setHamalertMode('FT8FT4', this)" id="hama_mode_ft8">FT8/FT4</button>
+                    </div>
+                    <div class="control-group hamalert-band-group">
+                        <button class="btn" onclick="setHamalertBand('All', this)" id="hama_band_all">All</button>
+                        <button class="btn" onclick="setHamalertBand('160m', this)">160m</button>
+                        <button class="btn" onclick="setHamalertBand('80m', this)">80m</button>
+                        <button class="btn" onclick="setHamalertBand('60m', this)">60m</button>
+                        <button class="btn" onclick="setHamalertBand('40m', this)">40m</button>
+                        <button class="btn" onclick="setHamalertBand('30m', this)">30m</button>
+                        <button class="btn" onclick="setHamalertBand('20m', this)">20m</button>
+                    </div>
+                    <div class="control-group hamalert-band-group">
+                        <button class="btn" onclick="setHamalertBand('17m', this)">17m</button>
+                        <button class="btn" onclick="setHamalertBand('15m', this)">15m</button>
+                        <button class="btn" onclick="setHamalertBand('12m', this)">12m</button>
+                        <button class="btn" onclick="setHamalertBand('10m', this)">10m</button>
+                        <button class="btn" onclick="setHamalertBand('VHF', this)">VHF</button>
+                        <button class="btn" onclick="setHamalertBand('UHF', this)">UHF</button>
+                        <button class="btn" onclick="setHamalertBand('SHF', this)">SHF</button>
+                    </div>
+                </div>
+                <table id="hamalert-table">
+                    <thead>
+                        <tr>
+                            <th>Czas</th>
+                            <th>Znak</th>
+                            <th>Częstotliwość</th>
+                            <th>Mode</th>
+                            <th>Kraj</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hamalert-tbody"></tbody>
+                </table>
+                <div class="status" id="hamalert-status">Oczekiwanie na dane HAMALERT...</div>
+            </div>
+        </div>
+    </div>
+<script>
                 // --- POTA TAB LOGIC ---
                 let allPOTASpots = [];
                 let potaModeFilter = "All";
@@ -1579,10 +2775,12 @@
             if (e.key === 'Enter') searchQrz();
         });
         
-    </script><div style="margin: 20px auto 10px; max-width: 980px; padding: 10px 16px; color: #b0b0b0; font-size: 12px; text-align: center;">
+    </script>
+    <div style="margin: 20px auto 10px; max-width: 980px; padding: 10px 16px; color: #b0b0b0; font-size: 12px; text-align: center;">
         Oprogramowanie zaprojektowane przez Konrad Wiśniewski SP3KON<br>
         ESP32-HAM-CLOCK v1.4a | W razie pytań: sp3kon@gmail.com
-    </div><style>
+    </div>
+    <style>
         /* ISS Frequency Cards */
         .iss-freq-card {
             background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,150,200,0.1));
@@ -1681,4 +2879,6 @@
         .manual-container > h2 { flex-shrink: 0; }
         .manual-container > .instruction-selector { flex-shrink: 0; }
         .manual-container > .manual-content { flex: 1; min-height: 0; overflow-y: auto; max-height: calc(100vh - 250px); padding: 16px; background: rgba(0,0,0,0.4); border-radius: 12px; }
-    </style></body></html>
+    </style>
+</body>
+</html>
